@@ -896,3 +896,15 @@ void VarArgUsage(int x, ...) {
   __builtin_va_end(args);
   __builtin_va_end(args2);
 }
+
+void use(int*);
+
+int phi(int n) {
+  int *p = 0;
+  for (int i = 0; i < n; i++) {
+    if (i & 1) {
+      p = &n;
+    }
+    use(p);
+  }
+}

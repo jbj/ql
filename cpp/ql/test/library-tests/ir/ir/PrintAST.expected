@@ -2366,3 +2366,37 @@
 | ir.cpp:888:6:888:16 | VarArgUsage(int) -> void | 36 | 35 | 0 | array to pointer conversion |  |  | prvalue: __va_list_tag * | ir.cpp:897:20:897:24 |
 | ir.cpp:888:6:888:16 | VarArgUsage(int) -> void | 37 | 36 | 0 | args2 |  |  | lvalue: __va_list_tag[1] | ir.cpp:897:20:897:24 |
 | ir.cpp:888:6:888:16 | VarArgUsage(int) -> void | 38 | 1 | 8 | return ... |  |  |  | ir.cpp:898:1:898:1 |
+| ir.cpp:900:6:900:8 | use(int *) -> void | 0 | -1 | 0 | use |  |  |  | ir.cpp:900:6:900:8 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 0 | -1 | 0 | phi |  |  |  | ir.cpp:902:5:902:7 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 1 | 0 | 0 | { ... } |  |  |  | ir.cpp:902:16:910:1 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 2 | 1 | 0 | declaration |  |  |  | ir.cpp:903:3:903:13 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 3 | 2 | 0 | definition of p |  |  | int * | ir.cpp:903:8:903:8 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 4 | 3 | 0 | initializer for p |  |  |  | ir.cpp:903:11:903:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 5 | 4 | 0 | (int *)... | integral to pointer conversion | =0 | prvalue: int * | ir.cpp:903:12:903:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 6 | 5 | 0 | 0 |  | =0 | prvalue: int | ir.cpp:903:12:903:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 7 | 1 | 1 | for(...;...;...) ... |  |  |  | ir.cpp:904:3:909:3 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 8 | 7 | 0 | declaration |  |  |  | ir.cpp:904:8:904:17 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 9 | 8 | 0 | definition of i |  |  | int | ir.cpp:904:12:904:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 10 | 9 | 0 | initializer for i |  |  |  | ir.cpp:904:15:904:16 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 11 | 10 | 0 | 0 |  | =0 | prvalue: int | ir.cpp:904:15:904:16 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 12 | 7 | 1 | ... < ... |  |  | prvalue: bool | ir.cpp:904:19:904:23 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 13 | 12 | 0 | i |  |  | prvalue(load): int | ir.cpp:904:19:904:19 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 14 | 12 | 1 | n |  |  | prvalue(load): int | ir.cpp:904:23:904:23 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 15 | 7 | 2 | ... ++ |  |  | prvalue: int | ir.cpp:904:26:904:28 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 16 | 15 | 0 | i |  |  | lvalue: int | ir.cpp:904:26:904:26 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 17 | 7 | 3 | { ... } |  |  |  | ir.cpp:904:31:909:3 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 18 | 17 | 0 | if (...) ...  |  |  |  | ir.cpp:905:5:907:5 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 19 | 18 | 0 | (bool)... | conversion to bool |  | prvalue: bool | ir.cpp:905:9:905:13 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 20 | 19 | 0 | ... & ... |  |  | prvalue: int | ir.cpp:905:9:905:13 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 21 | 20 | 0 | i |  |  | prvalue(load): int | ir.cpp:905:9:905:9 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 22 | 20 | 1 | 1 |  | =1 | prvalue: int | ir.cpp:905:13:905:13 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 23 | 18 | 1 | { ... } |  |  |  | ir.cpp:905:16:907:5 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 24 | 23 | 0 | ExprStmt |  |  |  | ir.cpp:906:7:906:13 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 25 | 24 | 0 | ... = ... |  |  | lvalue: int * | ir.cpp:906:7:906:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 26 | 25 | 0 | p |  |  | lvalue: int * | ir.cpp:906:7:906:7 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 27 | 25 | 1 | & ... |  |  | prvalue: int * | ir.cpp:906:11:906:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 28 | 27 | 0 | n |  |  | lvalue: int | ir.cpp:906:12:906:12 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 29 | 17 | 1 | ExprStmt |  |  |  | ir.cpp:908:5:908:11 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 30 | 29 | 0 | call to use |  |  | prvalue: void | ir.cpp:908:5:908:7 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 31 | 30 | 0 | p |  |  | prvalue(load): int * | ir.cpp:908:9:908:9 |
+| ir.cpp:902:5:902:7 | phi(int) -> int | 32 | 1 | 2 | return ... |  |  |  | ir.cpp:910:1:910:1 |

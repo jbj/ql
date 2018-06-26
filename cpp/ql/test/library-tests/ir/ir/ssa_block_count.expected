@@ -90,6 +90,7 @@
 | IR: WhileStatements | 4 |
 | IR: min | 4 |
 | IR: operator= | 1 |
+| IR: phi | 6 |
 | IR: ~Base | 1 |
 | IR: ~Derived | 1 |
 | IR: ~DerivedVB | 1 |

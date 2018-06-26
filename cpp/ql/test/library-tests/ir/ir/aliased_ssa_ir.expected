@@ -102,6 +102,7 @@ printIRGraphScopes
 | VarArgs() -> void | VarArgs |
 | WhileStatements(int) -> void | WhileStatements |
 | min<int>(int, int) -> int | min |
+| phi(int) -> int | phi |
 printIRGraphNodes
 | AddressOf() -> int * | 0 |  |  |
 | ArrayAccess(int *, int) -> void | 0 |  |  |
@@ -340,6 +341,12 @@ printIRGraphNodes
 | min<int>(int, int) -> int | 1 |  |  |
 | min<int>(int, int) -> int | 2 |  |  |
 | min<int>(int, int) -> int | 3 |  |  |
+| phi(int) -> int | 0 |  |  |
+| phi(int) -> int | 1 |  |  |
+| phi(int) -> int | 2 |  |  |
+| phi(int) -> int | 3 |  |  |
+| phi(int) -> int | 4 |  |  |
+| phi(int) -> int | 5 |  |  |
 printIRGraphInstructions
 | AddressOf() -> int * | 0 | 0 | EnterFunction | ir.cpp:348:6:348:14 |
 | AddressOf() -> int * | 0 | 1 | UnmodeledDefinition | ir.cpp:348:6:348:14 |
@@ -3424,6 +3431,50 @@ printIRGraphInstructions
 | min<int>(int, int) -> int | 3 | 5 | ReturnValue | ir.cpp:704:3:704:5 |
 | min<int>(int, int) -> int | 3 | 6 | UnmodeledUse | ir.cpp:704:3:704:5 |
 | min<int>(int, int) -> int | 3 | 7 | ExitFunction | ir.cpp:704:3:704:5 |
+| phi(int) -> int | 0 | 0 | EnterFunction | ir.cpp:902:5:902:7 |
+| phi(int) -> int | 0 | 1 | UnmodeledDefinition | ir.cpp:902:5:902:7 |
+| phi(int) -> int | 0 | 2 | InitializeParameter[n] | ir.cpp:902:13:902:13 |
+| phi(int) -> int | 0 | 3 | VariableAddress[n] | ir.cpp:902:13:902:13 |
+| phi(int) -> int | 0 | 4 | Store | ir.cpp:902:13:902:13 |
+| phi(int) -> int | 0 | 5 | VariableAddress[p] | ir.cpp:903:8:903:8 |
+| phi(int) -> int | 0 | 6 | Constant[0] | ir.cpp:903:12:903:12 |
+| phi(int) -> int | 0 | 7 | Store | ir.cpp:903:12:903:12 |
+| phi(int) -> int | 0 | 8 | VariableAddress[i] | ir.cpp:904:12:904:12 |
+| phi(int) -> int | 0 | 9 | Constant[0] | ir.cpp:904:15:904:16 |
+| phi(int) -> int | 0 | 10 | Store | ir.cpp:904:15:904:16 |
+| phi(int) -> int | 1 | 0 | Phi | ir.cpp:904:19:904:19 |
+| phi(int) -> int | 1 | 1 | Phi | ir.cpp:904:19:904:19 |
+| phi(int) -> int | 1 | 2 | VariableAddress[i] | ir.cpp:904:19:904:19 |
+| phi(int) -> int | 1 | 3 | Load | ir.cpp:904:19:904:19 |
+| phi(int) -> int | 1 | 4 | VariableAddress[n] | ir.cpp:904:23:904:23 |
+| phi(int) -> int | 1 | 5 | Load | ir.cpp:904:23:904:23 |
+| phi(int) -> int | 1 | 6 | CompareLT | ir.cpp:904:19:904:23 |
+| phi(int) -> int | 1 | 7 | ConditionalBranch | ir.cpp:904:19:904:23 |
+| phi(int) -> int | 2 | 0 | VariableAddress[i] | ir.cpp:905:9:905:9 |
+| phi(int) -> int | 2 | 1 | Load | ir.cpp:905:9:905:9 |
+| phi(int) -> int | 2 | 2 | Constant[1] | ir.cpp:905:13:905:13 |
+| phi(int) -> int | 2 | 3 | BitAnd | ir.cpp:905:9:905:13 |
+| phi(int) -> int | 2 | 4 | Constant[0] | ir.cpp:905:9:905:13 |
+| phi(int) -> int | 2 | 5 | CompareNE | ir.cpp:905:9:905:13 |
+| phi(int) -> int | 2 | 6 | ConditionalBranch | ir.cpp:905:9:905:13 |
+| phi(int) -> int | 3 | 0 | VariableAddress[n] | ir.cpp:906:12:906:12 |
+| phi(int) -> int | 3 | 1 | VariableAddress[p] | ir.cpp:906:7:906:7 |
+| phi(int) -> int | 3 | 2 | Store | ir.cpp:906:7:906:12 |
+| phi(int) -> int | 4 | 0 | Phi | ir.cpp:908:5:908:7 |
+| phi(int) -> int | 4 | 1 | FunctionAddress[use] | ir.cpp:908:5:908:7 |
+| phi(int) -> int | 4 | 2 | VariableAddress[p] | ir.cpp:908:9:908:9 |
+| phi(int) -> int | 4 | 3 | Load | ir.cpp:908:9:908:9 |
+| phi(int) -> int | 4 | 4 | Invoke | ir.cpp:908:5:908:7 |
+| phi(int) -> int | 4 | 5 | VariableAddress[i] | ir.cpp:904:26:904:26 |
+| phi(int) -> int | 4 | 6 | Load | ir.cpp:904:26:904:28 |
+| phi(int) -> int | 4 | 7 | Constant[1] | ir.cpp:904:26:904:28 |
+| phi(int) -> int | 4 | 8 | Add | ir.cpp:904:26:904:28 |
+| phi(int) -> int | 4 | 9 | Store | ir.cpp:904:26:904:28 |
+| phi(int) -> int | 5 | 0 | NoOp | ir.cpp:910:1:910:1 |
+| phi(int) -> int | 5 | 1 | VariableAddress[#return] | ir.cpp:902:5:902:7 |
+| phi(int) -> int | 5 | 2 | ReturnValue | ir.cpp:902:5:902:7 |
+| phi(int) -> int | 5 | 3 | UnmodeledUse | ir.cpp:902:5:902:7 |
+| phi(int) -> int | 5 | 4 | ExitFunction | ir.cpp:902:5:902:7 |
 printIRGraphEdges
 | Break(int) -> void | 0 | 5 | Goto |
 | Break(int) -> void | 1 | 2 | True |
@@ -3613,6 +3664,13 @@ printIRGraphEdges
 | min<int>(int, int) -> int | 0 | 2 | False |
 | min<int>(int, int) -> int | 1 | 3 | Goto |
 | min<int>(int, int) -> int | 2 | 3 | Goto |
+| phi(int) -> int | 0 | 1 | Goto |
+| phi(int) -> int | 1 | 2 | True |
+| phi(int) -> int | 1 | 5 | False |
+| phi(int) -> int | 2 | 3 | True |
+| phi(int) -> int | 2 | 4 | False |
+| phi(int) -> int | 3 | 4 | Goto |
+| phi(int) -> int | 4 | 1 | Goto |
 printIRGraphDestinationOperands
 | AddressOf() -> int * | 0 | 1 | 0 | @mu0_1(unknown) |
 | AddressOf() -> int * | 0 | 2 | 0 | @r0_2(glval:int *) |
@@ -6062,6 +6120,42 @@ printIRGraphDestinationOperands
 | min<int>(int, int) -> int | 3 | 2 | 0 | @r3_2(int) |
 | min<int>(int, int) -> int | 3 | 3 | 0 | @m3_3(int) |
 | min<int>(int, int) -> int | 3 | 4 | 0 | @r3_4(glval:int) |
+| phi(int) -> int | 0 | 1 | 0 | @mu0_1(unknown) |
+| phi(int) -> int | 0 | 2 | 0 | @r0_2(int) |
+| phi(int) -> int | 0 | 3 | 0 | @r0_3(glval:int) |
+| phi(int) -> int | 0 | 4 | 0 | @mu0_4(int) |
+| phi(int) -> int | 0 | 5 | 0 | @r0_5(glval:int *) |
+| phi(int) -> int | 0 | 6 | 0 | @r0_6(int *) |
+| phi(int) -> int | 0 | 7 | 0 | @m0_7(int *) |
+| phi(int) -> int | 0 | 8 | 0 | @r0_8(glval:int) |
+| phi(int) -> int | 0 | 9 | 0 | @r0_9(int) |
+| phi(int) -> int | 0 | 10 | 0 | @m0_10(int) |
+| phi(int) -> int | 1 | 0 | 0 | @m1_0(int) |
+| phi(int) -> int | 1 | 1 | 0 | @m1_1(int *) |
+| phi(int) -> int | 1 | 2 | 0 | @r1_2(glval:int) |
+| phi(int) -> int | 1 | 3 | 0 | @r1_3(int) |
+| phi(int) -> int | 1 | 4 | 0 | @r1_4(glval:int) |
+| phi(int) -> int | 1 | 5 | 0 | @r1_5(int) |
+| phi(int) -> int | 1 | 6 | 0 | @r1_6(bool) |
+| phi(int) -> int | 2 | 0 | 0 | @r2_0(glval:int) |
+| phi(int) -> int | 2 | 1 | 0 | @r2_1(int) |
+| phi(int) -> int | 2 | 2 | 0 | @r2_2(int) |
+| phi(int) -> int | 2 | 3 | 0 | @r2_3(int) |
+| phi(int) -> int | 2 | 4 | 0 | @r2_4(int) |
+| phi(int) -> int | 2 | 5 | 0 | @r2_5(bool) |
+| phi(int) -> int | 3 | 0 | 0 | @r3_0(glval:int) |
+| phi(int) -> int | 3 | 1 | 0 | @r3_1(glval:int *) |
+| phi(int) -> int | 3 | 2 | 0 | @m3_2(int *) |
+| phi(int) -> int | 4 | 0 | 0 | @m4_0(int *) |
+| phi(int) -> int | 4 | 1 | 0 | @r4_1(bool) |
+| phi(int) -> int | 4 | 2 | 0 | @r4_2(glval:int *) |
+| phi(int) -> int | 4 | 3 | 0 | @r4_3(int *) |
+| phi(int) -> int | 4 | 5 | 0 | @r4_5(glval:int) |
+| phi(int) -> int | 4 | 6 | 0 | @r4_6(int) |
+| phi(int) -> int | 4 | 7 | 0 | @r4_7(int) |
+| phi(int) -> int | 4 | 8 | 0 | @r4_8(int) |
+| phi(int) -> int | 4 | 9 | 0 | @m4_9(int) |
+| phi(int) -> int | 5 | 1 | 0 | @r5_1(glval:int) |
 printIRGraphSourceOperands
 | AddressOf() -> int * | 0 | 4 | 0 | @r0_2 |
 | AddressOf() -> int * | 0 | 4 | 1 | @r0_3 |
@@ -8510,4 +8604,44 @@ printIRGraphSourceOperands
 | min<int>(int, int) -> int | 3 | 5 | 0 | @r3_4 |
 | min<int>(int, int) -> int | 3 | 5 | 5 | @m3_3 |
 | min<int>(int, int) -> int | 3 | 6 | 0 | @mu* |
+| phi(int) -> int | 0 | 4 | 0 | @r0_3 |
+| phi(int) -> int | 0 | 4 | 1 | @r0_2 |
+| phi(int) -> int | 0 | 7 | 0 | @r0_5 |
+| phi(int) -> int | 0 | 7 | 1 | @r0_6 |
+| phi(int) -> int | 0 | 10 | 0 | @r0_8 |
+| phi(int) -> int | 0 | 10 | 1 | @r0_9 |
+| phi(int) -> int | 1 | 0 | 11 | from 0: @m0_10 |
+| phi(int) -> int | 1 | 0 | 11 | from 4: @m4_9 |
+| phi(int) -> int | 1 | 1 | 11 | from 0: @m0_7 |
+| phi(int) -> int | 1 | 1 | 11 | from 4: @m4_0 |
+| phi(int) -> int | 1 | 3 | 0 | @r1_2 |
+| phi(int) -> int | 1 | 3 | 1 | @m1_0 |
+| phi(int) -> int | 1 | 5 | 0 | @r1_4 |
+| phi(int) -> int | 1 | 5 | 1 | @mu0_1 |
+| phi(int) -> int | 1 | 6 | 3 | @r1_3 |
+| phi(int) -> int | 1 | 6 | 4 | @r1_5 |
+| phi(int) -> int | 1 | 7 | 7 | @r1_6 |
+| phi(int) -> int | 2 | 1 | 0 | @r2_0 |
+| phi(int) -> int | 2 | 1 | 1 | @m1_0 |
+| phi(int) -> int | 2 | 3 | 3 | @r2_1 |
+| phi(int) -> int | 2 | 3 | 4 | @r2_2 |
+| phi(int) -> int | 2 | 5 | 3 | @r2_3 |
+| phi(int) -> int | 2 | 5 | 4 | @r2_4 |
+| phi(int) -> int | 2 | 6 | 7 | @r2_5 |
+| phi(int) -> int | 3 | 2 | 0 | @r3_1 |
+| phi(int) -> int | 3 | 2 | 1 | @r3_0 |
+| phi(int) -> int | 4 | 0 | 11 | from 2: @m1_1 |
+| phi(int) -> int | 4 | 0 | 11 | from 3: @m3_2 |
+| phi(int) -> int | 4 | 3 | 0 | @r4_2 |
+| phi(int) -> int | 4 | 3 | 1 | @m4_0 |
+| phi(int) -> int | 4 | 4 | 9 | @r4_1 |
+| phi(int) -> int | 4 | 4 | 11 | @r4_3 |
+| phi(int) -> int | 4 | 6 | 0 | @r4_5 |
+| phi(int) -> int | 4 | 6 | 1 | @m1_0 |
+| phi(int) -> int | 4 | 8 | 3 | @r4_6 |
+| phi(int) -> int | 4 | 8 | 4 | @r4_7 |
+| phi(int) -> int | 4 | 9 | 0 | @r4_5 |
+| phi(int) -> int | 4 | 9 | 1 | @r4_8 |
+| phi(int) -> int | 5 | 2 | 0 | @r5_1 |
+| phi(int) -> int | 5 | 3 | 0 | @mu* |
 #select
