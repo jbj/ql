@@ -1,0 +1,10 @@
+WARNING: Unused predicate edgeIsNullTest (/Users/jonas/code/cpp/ql/src/Likely Bugs/Likely Typos/RedundantNullCheck.ql:91,11-25)
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:8:7:8:7 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:11:7:11:7 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:14:8:14:8 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:17:25:17:25 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:20:7:20:7 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:24:17:24:17 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:25:19:25:19 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:26:20:26:20 | Load | NotNull |
+| test.cpp:0:0:0:0 | test.cpp | test.cpp:33:8:33:14 | Load | Null |
