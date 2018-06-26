@@ -82,10 +82,8 @@ predicate booleanIsNullTest(
 ) {
   explicitNullTest(load, bool, trueIff)
   or
-  bool = any(UnaryInstruction neg |
-    booleanIsNullTest(load, neg.getOperand(), trueIff.negate()) and
-    neg.getOpcode().toString() = "Negate" // TODO: string?
-  )
+  booleanIsNullTest(load, bool.(NegateInstruction).getOperand(),
+                    trueIff.negate())
 }
 
 predicate edgeIsNullTest(
