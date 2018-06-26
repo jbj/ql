@@ -121,6 +121,11 @@ abstract class IRUserVariable extends IRVariable {
 abstract class IRAutomaticVariable extends IRVariable {
 }
 
+/**
+ * Represents a user-declared variable that is allocated on the
+ * stack. This includes all parameters and non-static local variables but not
+ * temporary variables.
+ */
 class IRAutomaticUserVariable extends IRUserVariable, IRAutomaticVariable,
   TIRAutomaticUserVariable {
   LocalScopeVariable localVar;
@@ -130,6 +135,10 @@ class IRAutomaticUserVariable extends IRUserVariable, IRAutomaticVariable,
     var = localVar
   }
 
+  /**
+   * Gets the `LocalScopeVariable` from the AST that corresponds to this
+   * `IRAutomaticUserVariable`.
+   */
   final LocalScopeVariable getLocalVariable() {
     result = localVar
   }

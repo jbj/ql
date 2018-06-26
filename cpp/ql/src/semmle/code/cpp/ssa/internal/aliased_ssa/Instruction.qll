@@ -670,6 +670,12 @@ class UnaryInstruction extends Instruction {
   }
 }
 
+class NegateInstruction extends UnaryInstruction {
+  NegateInstruction() {
+    opcode instanceof Opcode::Negate
+  }
+}
+
 class ConvertInstruction extends UnaryInstruction {
   ConvertInstruction() {
     opcode instanceof Opcode::Convert
