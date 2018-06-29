@@ -36,6 +36,10 @@ class ThisInstruction extends Instruction {
   }
 }
 
+/**
+ * Holds if `bool` is an instruction that explicitly checks whether `checked`
+ * is null and evaluates to true iff `checked` equals `trueIff`.
+ */
 predicate explicitNullTestOfInstruction(
   Instruction checked, Instruction bool, Nullity trueIff
 ) {
@@ -86,6 +90,28 @@ predicate booleanIsNullTest(
                     trueIff.negate())
 }
 
+/*
+if (x != nullptr) {
+  use(x);
+  if (nondet()) {
+    x = nondet();
+  }
+  use(x);
+  if (x != nullptr) {
+    return;
+  }
+  use(x);
+}
+
+// The 'ssa variable' of `x`, which is the memory instruction where the load
+// comes from, is known to be non/null in the entire guarded region.
+// Reassignments don't matter as they are to other SSA variables. All I need is
+// a Guards library.
+//
+// Beware that some memory edges have an implicit 'slicing' on them currently.
+// In particular, two edges from UnmodeledDefinition do not necessarily denote
+// the same value.
+ */
 predicate edgeIsNullTest(
   LoadInstruction load, Instruction i1, Instruction i2, Nullity edgeImplies
 ) {
@@ -118,7 +144,7 @@ predicate instructionMayBe(Instruction i, Nullity value) {
       not i instanceof ThisInstruction and // is never null
       // TODO: exception for std::nothrow
       // TODO: new[]
-      // TODO: is this even correct?
+      // TODO: is this even correct? Or is `new` not supported yet in IR?
       not i.(InvokeInstruction).getCallTarget().(FunctionInstruction).getFunctionSymbol().getName() = "operator new"
     )
     or
@@ -134,7 +160,10 @@ predicate instructionMayBe(Instruction i, Nullity value) {
   or
   instructionMayBe(i.(ConvertInstruction).getOperand(), value)
   or
-  strictcount(i.(PhiInstruction).getAnOperand()) = 1 // TODO: IR bug workaround
+  // TODO: IR bug workaround. If a phi instruction has only one input, we say
+  // that it may be both null and non-null since we have to assume the worst
+  // about the missing other input(s).
+  strictcount(i.(PhiInstruction).getAnOperand()) = 1
 }
 
 from LoadInstruction load, Nullity impossibleNullity
