@@ -1,0 +1,4 @@
+| test.cpp:5:7:5:8 | ip | Redundant null check before free |
+| test.cpp:8:7:8:16 | ... != ... | Redundant null check before free |
+| test.cpp:11:7:11:13 | ... != ... | Redundant null check before free |
+| test.cpp:14:7:14:19 | ... != ... | Redundant null check before free |
