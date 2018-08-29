@@ -88,14 +88,19 @@ private cached module Cached {
   cached
   predicate reachable(ControlFlowNode n)
   {
-    exists(Function f | f.getEntryPoint() = n)
+    locallyReachable(n)
     or
-    // Okay to use successors_extended directly here
-    (not successors_extended(_,n) and not successors_extended(n,_))
-    or
+    // This recursive case looks innocent, but it's actually very tricky. It
+    // desugars to an `and` with recursion on both sides, which means that the
+    // deltafication involves the full product rule:
+    //
+    //     (P and Q)' = (P' and Q) or (Q' * P)
+    //
+    // In other words, in computing the next delta it does not suffice to look
+    // at the previous delta. This makes reachability slow to compute. The
+    // workaround is to make the base case above as large as possible so we
+    // limit the number of iterations necessary in the general predicate.
     reachable(n.getAPredecessor())
-    or
-    n instanceof CatchBlock
   }
 
   /** Holds if `condition` always evaluates to a nonzero value. */

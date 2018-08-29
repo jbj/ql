@@ -59,6 +59,49 @@ private predicate nonAnalyzableFunction(Function f) {
   )
 }
 
+private predicate impossibleEdge(Node pred, Node succ) {
+  impossibleFalseEdge(pred, succ)
+  or
+  impossibleTrueEdge(pred, succ)
+  or
+  impossibleSwitchEdge(pred, succ)
+  or
+  impossibleDefaultSwitchEdge(pred, succ)
+  or
+  getOptions().exprExits(pred)
+}
+
+predicate callRequiringRecursiveAnalysis(FunctionCall call) {
+  // The call _has_ a target that's analyzable, and the call is not virtual
+  exists(Function f | f = call.getTarget() |
+    not nonAnalyzableFunction(f)
+  ) and
+  not call.isVirtual()
+  or
+  // The Options configuration has marked the target as always exiting
+  getOptions().exits(call.getTarget())
+}
+
+/**
+ * Holds if `n` is reachable without doing interprocedural analysis.
+ */
+predicate locallyReachable(Node n)
+{
+  exists(Function f | f.getEntryPoint() = n)
+  or
+  // Okay to use successors_extended directly here
+  (not successors_extended(_,n) and not successors_extended(n,_))
+  or
+  exists(Node pred |
+    successors_extended(pred, n) and
+    locallyReachable(pred) and
+    not impossibleEdge(pred, n) and
+    not callRequiringRecursiveAnalysis(pred)
+  )
+  or
+  n instanceof CatchBlock
+}
+
 /**
  * If a condition is provably true, then control-flow edges to its false successors are impossible.
  */
@@ -152,13 +195,9 @@ private predicate possiblePredecessor(Node pred) {
  * edges, so it is safe (and indeed sensible) to remove them.
  */
 cached predicate successors_adapted(Node pred, Node succ) {
-  successors_extended(pred, succ)
-  and possiblePredecessor(pred)
-  and not impossibleFalseEdge(pred, succ)
-  and not impossibleTrueEdge(pred, succ)
-  and not impossibleSwitchEdge(pred, succ)
-  and not impossibleDefaultSwitchEdge(pred, succ)
-  and not getOptions().exprExits(pred)
+  successors_extended(pred, succ) and
+  possiblePredecessor(pred) and
+  not impossibleEdge(pred, succ)
 }
 
 private predicate compileTimeConstantInt(Expr e, int val) {
