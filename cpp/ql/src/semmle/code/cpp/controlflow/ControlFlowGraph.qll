@@ -88,6 +88,8 @@ private cached module Cached {
   cached
   predicate reachable(ControlFlowNode n)
   {
+    // TODO: work backwards from each call or split  Ignore joins? Collapse
+    // everything uninteresting before doing reachability.
     locallyReachable(n)
     or
     // This recursive case looks innocent, but it's actually very tricky. It
