@@ -1,10 +1,12 @@
 import cpp
 private import PrimitiveBasicBlocks
+private import PrimitiveSubBasicBlocks
 private class Node = ControlFlowNodeBase;
 
 /** A call to a function known not to return. */
 predicate aborting(FunctionCall c) {
-  not potentiallyReturningFunctionCall(c)
+  not callRequiringRecursiveAnalysis(c) and
+  abortingFunction(c.getTarget())
 }
 
 /**
@@ -12,24 +14,7 @@ predicate aborting(FunctionCall c) {
  * exits the program or longjmps to another location.
  */
 predicate abortingFunction(Function f) {
-  not potentiallyReturningFunction(f)
-}
-
-/** A function call that *may* return; if in doubt, we assume it may. */
-private predicate potentiallyReturningFunctionCall(FunctionCall fc) {
-  potentiallyReturningFunction(fc.getTarget()) or fc.isVirtual()
-}
-
-/** A function that *may* return; if in doubt, we assume it may. */
-private predicate potentiallyReturningFunction(Function f) {
-  not getOptions().exits(f)
-  and
-  (
-    nonAnalyzableFunction(f)
-    or
-    // otherwise the exit-point of `f` must be reachable
-    reachable(f)
-  )
+  not reachableBlock(f)
 }
 
 /**
@@ -56,6 +41,70 @@ private predicate nonAnalyzableFunction(Function f) {
     (bb1 = bb2 and pos2 > pos1)
     or
     bb1.getASuccessor+() = bb2
+  )
+}
+
+predicate callRequiringRecursiveAnalysis(FunctionCall call) {
+  // The call _has_ a target that's analyzable, and the call is not virtual
+  exists(Function f | f = call.getTarget() |
+    not nonAnalyzableFunction(f)
+  ) and
+  not call.isVirtual()
+  or
+  // The Options configuration has marked the target as always exiting
+  getOptions().exits(call.getTarget())
+}
+
+private class ReachableCutNode extends PrimitiveSubBasicBlockCutNode {
+  ReachableCutNode() {
+    // Cut just before a callRequiringRecursiveAnalysis
+    exists(Node call |
+      callRequiringRecursiveAnalysis(call) and
+      successors_before_adapted(call, this)
+    )
+    or
+    this instanceof CatchBlock
+    or
+    // This is to save an existential in the hot recursion of reachableBlock
+    this instanceof Function
+  }
+}
+
+predicate reachableBlock(PrimitiveSubBasicBlock b)
+{
+  exists(Function f | f.getEntryPoint() = b)
+  or
+  b instanceof CatchBlock
+  or
+  exists(PrimitiveSubBasicBlock pred, Node predLast |
+    pred = b.getAPredecessor() and
+    reachableBlock(pred) and
+    predLast = pred.getEnd() and
+    (
+      not callRequiringRecursiveAnalysis(predLast)
+      or
+      reachableBlock(predLast.(Call).getTarget())
+    )
+  )
+}
+
+/**
+ * Holds if the control-flow node `n` is reachable, meaning that either
+ * it is an entry point, or there exists a path in the control-flow
+ * graph of its function that connects an entry point to it.
+ * Compile-time constant conditions are taken into account, so that
+ * the call to `f` is not reachable in `if (0) f();` even if the
+ * `if` statement as a whole is reachable.
+ */
+cached
+predicate reachableNode(ControlFlowNode n)
+{
+  // Okay to use successors_extended directly here
+  (not successors_extended(_,n) and not successors_extended(n,_))
+  or
+  exists(PrimitiveSubBasicBlock b |
+    reachableBlock(b) and
+    n = b.getANode()
   )
 }
 
@@ -137,13 +186,17 @@ private predicate impossibleDefaultSwitchEdge(Block switchBlock, DefaultCase dc)
 }
 
 /**
- * If `pred` is a function call with (at least) one function target,
- * (at least) one such target must be potentially returning.
+ * An adapted version of the `successors_extended` relation that excludes
+ * impossible control-flow edges - flow will never occur along these
+ * edges, so it is safe (and indeed sensible) to remove them.
  */
-private predicate possiblePredecessor(Node pred) {
-  not exists(pred.(FunctionCall).getTarget())
-  or
-  potentiallyReturningFunctionCall(pred)
+predicate successors_before_adapted(Node pred, Node succ) {
+  successors_extended(pred, succ)
+  and not impossibleFalseEdge(pred, succ)
+  and not impossibleTrueEdge(pred, succ)
+  and not impossibleSwitchEdge(pred, succ)
+  and not impossibleDefaultSwitchEdge(pred, succ)
+  and not getOptions().exprExits(pred)
 }
 
 /**
@@ -152,13 +205,8 @@ private predicate possiblePredecessor(Node pred) {
  * edges, so it is safe (and indeed sensible) to remove them.
  */
 cached predicate successors_adapted(Node pred, Node succ) {
-  successors_extended(pred, succ)
-  and possiblePredecessor(pred)
-  and not impossibleFalseEdge(pred, succ)
-  and not impossibleTrueEdge(pred, succ)
-  and not impossibleSwitchEdge(pred, succ)
-  and not impossibleDefaultSwitchEdge(pred, succ)
-  and not getOptions().exprExits(pred)
+  successors_before_adapted(pred, succ) and
+  reachable(succ)
 }
 
 private predicate compileTimeConstantInt(Expr e, int val) {
