@@ -59,7 +59,7 @@ private predicate nonAnalyzableFunction(Function f) {
   )
 }
 
-private predicate impossibleEdge(Node pred, Node succ) {
+predicate impossibleEdge(Node pred, Node succ) {
   impossibleFalseEdge(pred, succ)
   or
   impossibleTrueEdge(pred, succ)
@@ -82,6 +82,11 @@ predicate callRequiringRecursiveAnalysis(FunctionCall call) {
   getOptions().exits(call.getTarget())
 }
 
+predicate successors_pruned(Node n1, Node n2) {
+  successors_extended(n1, n2) and
+  not impossibleEdge(n1, n2)
+}
+
 /**
  * Holds if `n` is reachable without doing interprocedural analysis.
  */
@@ -93,9 +98,8 @@ predicate locallyReachable(Node n)
   (not successors_extended(_,n) and not successors_extended(n,_))
   or
   exists(Node pred |
-    successors_extended(pred, n) and
     locallyReachable(pred) and
-    not impossibleEdge(pred, n) and
+    successors_pruned(pred, n) and
     not callRequiringRecursiveAnalysis(pred)
   )
   or

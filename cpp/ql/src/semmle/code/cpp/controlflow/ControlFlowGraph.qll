@@ -77,6 +77,51 @@ class ControlFlowNode extends Locatable, ControlFlowNodeBase {
 
 import Cached
 private cached module Cached {
+  private predicate entry(ControlFlowNode n) {
+    exists(Function f | f.getEntryPoint() = n)
+    or
+    n instanceof CatchBlock
+  }
+
+  private predicate splitty(ControlFlowNode n) {
+    strictcount(ControlFlowNode succ | successors_extended(n, succ)) > 1
+  }
+
+  private class Interesting extends ControlFlowNode {
+    Interesting() {
+      splitty(this)
+      or
+      not successors_pruned(this, _)
+      or
+      callRequiringRecursiveAnalysis(this)
+    }
+  }
+
+  private
+  predicate interestingAncestorEdge(ControlFlowNode n1, ControlFlowNode n2) {
+    not n1 instanceof Interesting and
+    successors_extended(n1, n2) and
+    not impossibleEdge(n1, n2)
+  }
+
+  private predicate interesting_edge(ControlFlowNode n1, ControlFlowNode n2) {
+    (
+      entry(n1)
+      or
+      n1 instanceof Interesting
+    ) and
+    exists(ControlFlowNode ancestor |
+      successors_pruned(n1, ancestor) and
+      ancestorOf(ancestor, n2)
+    )
+  }
+
+  // If `interesting` is reachable, then `n` is too.
+  private predicate ancestorOf(
+      ControlFlowNode n, Interesting interesting) {
+    interestingAncestorEdge*(n, interesting)
+  }
+
   /**
    * Holds if the control-flow node `n` is reachable, meaning that either
    * it is an entry point, or there exists a path in the control-flow
