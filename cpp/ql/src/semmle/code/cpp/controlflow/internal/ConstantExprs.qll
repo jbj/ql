@@ -4,7 +4,8 @@ private class Node = ControlFlowNodeBase;
 
 /** A call to a function known not to return. */
 predicate aborting(FunctionCall c) {
-  not potentiallyReturningFunctionCall(c)
+  not callRequiringRecursiveAnalysis(c) and
+  abortingFunction(c.getTarget())
 }
 
 /**
@@ -12,7 +13,7 @@ predicate aborting(FunctionCall c) {
  * exits the program or longjmps to another location.
  */
 predicate abortingFunction(Function f) {
-  not potentiallyReturningFunction(f)
+  not reachable(f)
 }
 
 /**
@@ -89,6 +90,32 @@ private predicate nonAnalyzableFunction(Function f) {
     (bb1 = bb2 and pos2 > pos1)
     or
     bb1.getASuccessor+() = bb2
+  )
+}
+
+
+private predicate callRequiringRecursiveAnalysis(FunctionCall call) {
+  // The call _has_ a target that's analyzable, and the call is not virtual
+  exists(Function f | f = call.getTarget() |
+    not nonAnalyzableFunction(f)
+  ) and
+  not call.isVirtual()
+}
+
+predicate reachableNode(Node n)
+{
+  exists(Function f | f.getEntryPoint() = n)
+  or
+  n instanceof CatchBlock
+  or
+  exists(Node pred |
+    successors_before_adapted(pred, n) and
+    reachableNode(pred) and
+    (
+      not callRequiringRecursiveAnalysis(pred)
+      or
+      reachableNode(pred.(Call).getTarget())
+    )
   )
 }
 
@@ -188,33 +215,23 @@ private predicate nonReturningFunction(Function f)
 private predicate impossibleFunctionReturn(FunctionCall fc, Node succ) {
   nonReturningFunction(fc.getTarget()) and
   not fc.isVirtual() and
-  successors_extended(fc, succ)
-}
-
-/**
- * If `pred` is a function call with (at least) one function target,
- * (at least) one such target must be potentially returning.
- */
-private predicate possiblePredecessor(Node pred) {
-  not exists(pred.(FunctionCall).getTarget())
-  or
-  potentiallyReturningFunctionCall(pred)
+  successors_extended(fc, succ) // TODO: no need for `succ` here. This predicate can be unary.
 }
 
 /**
  * An adapted version of the `successors_extended` relation that excludes
- * impossible control-flow edges - flow will never occur along these
+ * locally impossible control-flow edges - flow will never occur along these
  * edges, so it is safe (and indeed sensible) to remove them.
  */
-cached predicate successors_adapted(Node pred, Node succ) {
+predicate successors_before_adapted(Node pred, Node succ) {
   successors_extended(pred, succ)
-  and possiblePredecessor(pred)
   and not impossibleFalseEdge(pred, succ)
   and not impossibleTrueEdge(pred, succ)
   and not impossibleSwitchEdge(pred, succ)
   and not impossibleDefaultSwitchEdge(pred, succ)
   and not impossibleFunctionReturn(pred, succ)
   and not getOptions().exprExits(pred)
+  and not getOptions().exits(pred.(Call).getTarget())
 }
 
 private predicate compileTimeConstantInt(Expr e, int val) {
