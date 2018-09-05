@@ -13,7 +13,7 @@ predicate aborting(FunctionCall c) {
  * exits the program or longjmps to another location.
  */
 predicate abortingFunction(Function f) {
-   not reachableNode(f)
+   not reachable(f)
 }
 
 /**
@@ -52,7 +52,7 @@ private predicate callRequiringRecursiveAnalysis(FunctionCall call) {
   not call.isVirtual()
 }
 
-private predicate reachableNodePre(Node n)
+predicate reachableNodePre(Node n)
 {
   exists(Function f | f.getEntryPoint() = n)
   or
@@ -67,23 +67,6 @@ private predicate reachableNodePre(Node n)
       reachableNodePre(pred.(Call).getTarget())
     )
   )
-}
-
-/**
- * Holds if the control-flow node `n` is reachable, meaning that either
- * it is an entry point, or there exists a path in the control-flow
- * graph of its function that connects an entry point to it.
- * Compile-time constant conditions are taken into account, so that
- * the call to `f` is not reachable in `if (0) f();` even if the
- * `if` statement as a whole is reachable.
- */
-cached
-predicate reachableNode(ControlFlowNode n)
-{
-  // Okay to use successors_extended directly here
-  (not successors_extended(_,n) and not successors_extended(n,_))
-  or
-  reachableNodePre(n)
 }
 
 /**
@@ -168,7 +151,7 @@ private predicate impossibleDefaultSwitchEdge(Block switchBlock, DefaultCase dc)
  * locally impossible control-flow edges - flow will never occur along these
  * edges, so it is safe (and indeed sensible) to remove them.
  */
-private predicate successors_before_adapted(Node pred, Node succ) {
+predicate successors_before_adapted(Node pred, Node succ) {
   successors_extended(pred, succ)
   and not impossibleFalseEdge(pred, succ)
   and not impossibleTrueEdge(pred, succ)
@@ -176,16 +159,6 @@ private predicate successors_before_adapted(Node pred, Node succ) {
   and not impossibleDefaultSwitchEdge(pred, succ)
   and not getOptions().exprExits(pred)
   and not getOptions().exits(pred.(Call).getTarget())
-}
-
-/**
- * An adapted version of the `successors_extended` relation that excludes
- * impossible control-flow edges - flow will never occur along these
- * edges, so it is safe (and indeed sensible) to remove them.
- */
-cached predicate successors_adapted(Node pred, Node succ) {
-  successors_before_adapted(pred, succ) and
-  reachableNode(succ)
 }
 
 private predicate compileTimeConstantInt(Expr e, int val) {
