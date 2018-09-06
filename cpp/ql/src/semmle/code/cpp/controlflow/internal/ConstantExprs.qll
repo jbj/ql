@@ -52,8 +52,64 @@ private predicate callRequiringRecursiveAnalysis(FunctionCall call) {
   not call.isVirtual()
 }
 
-predicate reachableNodePre(Node n)
+private predicate isReachabilityEntryPoint(Node n) {
+  exists(Function f | f.getEntryPoint() = n)
+  or
+  n instanceof CatchBlock
+}
+
+/*private*/ class SuperNode extends Node {
+  SuperNode() {
+    strictcount(Node succ | successors_before_adapted(this, succ)) > 1
+    or
+    // Has no successor but _does_ have a predecessor. Otherwise it'll be handled in `reachable`.
+    not successors_before_adapted(this, _) and
+    successors_before_adapted(_, this)
+    or
+    callRequiringRecursiveAnalysis(this)
+    or
+    isReachabilityEntryPoint(this)
+  }
+
+  Node getAnAncestor() {
+    interestingAncestorEdge*(result, this)
+  }
+
+  SuperNode getASuccessor() {
+    // TODO: getAnAncestor might be a bit large. It should be enough to check "leaf" nodes
+    successors_before_adapted(this, result.getAnAncestor())
+  }
+}
+
+/*private*/
+predicate interestingAncestorEdge(Node n1, Node n2) {
+  not n1 instanceof SuperNode and
+  successors_before_adapted(n1, n2)
+}
+
+predicate reachableSuperNode(SuperNode sn)
 {
+  isReachabilityEntryPoint(sn)
+  or
+  exists(SuperNode pred |
+    pred.getASuccessor() = sn and
+    reachableSuperNode(pred) and
+    (
+      not callRequiringRecursiveAnalysis(sn)
+      or
+      reachableSuperNode(pred.(Call).getTarget())
+    )
+  )
+}
+
+predicate reachableNodePre2(Node n) {
+  exists(SuperNode sn |
+    reachableSuperNode(sn) and
+    n = sn.getAnAncestor()
+  )
+}
+
+predicate reachableNodePre(Node n) {
   exists(Function f | f.getEntryPoint() = n)
   or
   n instanceof CatchBlock

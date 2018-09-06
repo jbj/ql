@@ -75,6 +75,22 @@ class ControlFlowNode extends Locatable, ControlFlowNodeBase {
   }
 }
 
+/**
+ * Holds if the control-flow node `n` is reachable, meaning that either
+ * it is an entry point, or there exists a path in the control-flow
+ * graph of its function that connects an entry point to it.
+ * Compile-time constant conditions are taken into account, so that
+ * the call to `f` is not reachable in `if (0) f();` even if the
+ * `if` statement as a whole is reachable.
+ */
+predicate reachable2(ControlFlowNode n)
+{
+  // Okay to use successors_extended directly here
+  (not successors_extended(_,n) and not successors_extended(n,_))
+  or
+  reachableNodePre2(n)
+}
+
 import Cached
 private cached module Cached {
   /**
