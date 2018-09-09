@@ -102,7 +102,7 @@ private cached module Cached {
   cached
   predicate successors_adapted(ControlFlowNode pred, ControlFlowNode succ) {
     successors_before_adapted(pred, succ) and
-    reachable(succ)
+    not aborting(pred)
   }
 
   /** Holds if `condition` always evaluates to a nonzero value. */
