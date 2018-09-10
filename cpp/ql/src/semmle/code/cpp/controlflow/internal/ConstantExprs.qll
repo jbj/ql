@@ -13,7 +13,11 @@ predicate aborting(FunctionCall c) {
  * exits the program or longjmps to another location.
  */
 predicate abortingFunction(Function f) {
-   not reachable(f)
+  getOptions().exits(f)
+  or
+  not nonAnalyzableFunction(f) and
+  // otherwise the exit-point of `f` must be reachable
+  not reachable(f)
 }
 
 /**
