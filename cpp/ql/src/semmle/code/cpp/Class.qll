@@ -12,6 +12,7 @@ private import semmle.code.cpp.internal.ResolveClass
  */
 class Class extends UserType {
   Class() {
+    underlyingElement(this) = resolveClass(_) and
     isClass(underlyingElement(this))
   }
 
