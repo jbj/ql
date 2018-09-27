@@ -48,6 +48,8 @@ pragma[inline]
  * `getLocation`, or `hasLocationInfo`.
  */
 class ElementBase extends @element {
+  ElementBase() { isElement(this) }
+
   /** Gets a textual representation of this element. */
   string toString() { none() }
 
