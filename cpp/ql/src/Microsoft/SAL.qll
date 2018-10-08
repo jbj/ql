@@ -4,29 +4,35 @@ class SALMacro extends Macro {
   SALMacro() {
     this.getFile().getBaseName() = "sal.h" or
     this.getFile().getBaseName() = "specstrings_strict.h" or
-    this.getFile().getBaseName() = "specstrings.h"
+    this.getFile().getBaseName() = "specstrings.h" or
+    this.getFile().getBaseName() = "w32p.h" or
+    this.getFile().getBaseName() = "minwindef.h"
   }
+}
+
+pragma[noinline]
+predicate isTopLevelMacroAccess(MacroAccess ma) {
+	not exists(ma.getParentInvocation())
 }
 
 class SALAnnotation extends MacroInvocation {
   SALAnnotation() {
     this.getMacro() instanceof SALMacro and
-    not exists(this.getParentInvocation())
+    isTopLevelMacroAccess(this)
   }
 
   /** Returns the `Declaration` annotated by `this`. */
   Declaration getDeclaration() {
-    annotatesAt(this, result.getADeclarationEntry(), _, _)
+    annotatesAt(this, result.getADeclarationEntry(), _, _) and
+    not result instanceof Type // exclude typedefs
   }
 
   /** Returns the `DeclarationEntry` annotated by `this`. */
   DeclarationEntry getDeclarationEntry() {
-    annotatesAt(this, result, _, _)
+    annotatesAt(this, result, _, _) and
+    not result instanceof TypeDeclarationEntry // exclude typedefs
   }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// Particular SAL annotations of interest
 
 class SALCheckReturn extends SALAnnotation {
   SALCheckReturn() {
@@ -42,8 +48,8 @@ class SALNotNull extends SALAnnotation {
     exists(SALMacro m | m = this.getMacro() |
       not m.getName().matches("%\\_opt\\_%") and
       (
-        m.getName().matches("\\_In%") or
-        m.getName().matches("\\_Out%") or
+        m.getName().matches("_In%") or
+        m.getName().matches("_Out%") or
         m.getName() = "_Ret_notnull_"
       )
     )
@@ -68,38 +74,90 @@ class SALMaybeNull extends SALAnnotation {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Implementation details
-
-private predicate annotatesAt(SALAnnotation a, DeclarationEntry e,
+/**
+ * Holds if `a` annotates the declaration entry `d` and
+ * its location is the `idx`th location in `file` that holds a SAL element.
+ */
+predicate annotatesAt(SALAnnotation a, DeclarationEntry d,
                               File file, int idx) {
-  a = salElementAt(file, idx) and
+  annotatesAtLocation(a.getLocation(), d, file, idx)
+}
+
+/**
+ * Holds if `loc` is the `idx`th location in `file` that holds a SAL element,
+ * which annotates the declaration entry `d` (by occurring before it without
+ * any other declaration entries in between).
+ */
+// For performance reasons, do not mention the annotation itself here,
+// but compute with locations instead.
+private predicate annotatesAtLocation(Location loc, DeclarationEntry d,
+                                  File file, int idx) {
+  loc = salRelevantLocationAt(file, idx) and
+  // Stop the recursion at the location of a declaration entry.
+  not declarationEntryLocation(loc) and
   (
-    // Base case: `a` right before `e`
-    e = salElementAt(file, idx + 1)
-    or
-    // Recursive case: `a` right before some annotation on `e`
-    annotatesAt(_, e, file, idx + 1)
+    // Base case: `loc` right before `d`
+    d.getLocation() = salRelevantLocationAt(file, idx + 1) or
+    // Recursive case: `loc` right before some annotation on `d`
+    annotatesAtLocation(_, d, file, idx + 1)
   )
 }
 
+/**
+ * A parameter annotated by one or more SAL annotations.
+ */
+class SALParameter extends Parameter {
+	/** One of this parameter's annotations. */
+	SALAnnotation a;
+
+	SALParameter() {
+		annotatesAt(a, this.getADeclarationEntry(), _, _)
+	}
+
+	predicate isIn() { a.getMacroName().toLowerCase().matches("%\\_in%") }
+
+	predicate isOut() { a.getMacroName().toLowerCase().matches("%\\_out%") }
+
+	predicate isInOut() { a.getMacroName().toLowerCase().matches("%\\_inout%") }
+}
+
+/**
+ * A SAL element, i.e. a SAL annotation or a declaration entry
+ * that may have SAL annotations.
+ */
 library class SALElement extends Element {
   SALElement() {
-    this instanceof DeclarationEntry or
+    containsSALAnnotation(this.(DeclarationEntry).getFile()) or
     this instanceof SALAnnotation
   }
 }
 
-/** Gets the `idx`th `SALElement` in `file`. */
-private SALElement salElementAt(File file, int idx) {
-  interestingLoc(file, result, interestingStartPos(file, idx))
+/** Holds if `file` contains a SAL annotation. */
+pragma[noinline]
+private predicate containsSALAnnotation(File file) {
+  any(SALAnnotation a).getFile() = file
 }
 
-/** Holds if an SALElement element at character `result` comes at
- * position `idx` in `file`. */
-private int interestingStartPos(File file, int idx) {
-  result = rank[idx](int otherStart | interestingLoc(file, _, otherStart))
+/** Holds if `loc` is the location of a SAL element. */
+pragma[noinline]
+private predicate salLocation(Location loc) {
+  any(SALElement e).getLocation() = loc
 }
 
-/** Holds if `element` in `file` is at character `startPos`. */
-private predicate interestingLoc(File file, SALElement element, int startPos) {
-  element.getLocation().charLoc(file, startPos, _)
+/** Holds if `loc` is the location of a declaration entry. */
+pragma[noinline]
+private predicate declarationEntryLocation(Location loc) {
+  any(DeclarationEntry e).getLocation() = loc
+}
+
+/**
+ * Gets the `idx`th location in `file` that holds a SAL element,
+ * ordering locations lexicographically by their
+ * start line, start column, end line, and end column.
+ */
+private Location salRelevantLocationAt(File file, int idx) {
+  result = rank[idx](Location loc |
+    salLocation(loc) and loc.getFile() = file |
+    loc order by loc.getStartLine(), loc.getStartColumn(), loc.getEndLine(), loc.getEndColumn()
+  )
 }
