@@ -27,3 +27,13 @@ char *f2(
 // [KNOWN BUG] Because of ODASA-5806, we can't see that the annotation belongs
 // on `x`.
 void f3(void (*fp)(_In_ int *x), int a);
+
+int getSALVersion() {
+  return _SAL_VERSION;
+}
+
+void hasNoAnnotations1();
+
+int salVersionVariable = _SAL_VERSION;
+
+void hasNoAnnotations2();

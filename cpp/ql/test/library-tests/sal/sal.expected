@@ -13,3 +13,5 @@
 | test.cpp:21:1:21:14 | _Check_return_ | test.cpp:22:7:22:8 | f2 |
 | test.cpp:23:5:23:9 | _Out_ | test.cpp:25:6:25:6 | x |
 | test.cpp:29:20:29:23 | _In_ | test.cpp:29:38:29:38 | a |
+| test.cpp:32:10:32:21 | _SAL_VERSION | test.cpp:35:6:35:22 | hasNoAnnotations1 |
+| test.cpp:37:26:37:37 | _SAL_VERSION | test.cpp:39:6:39:22 | hasNoAnnotations2 |
