@@ -76,30 +76,32 @@ class SALMaybeNull extends SALAnnotation {
 // Implementation details
 /**
  * Holds if `a` annotates the declaration entry `d` and
- * its location is the `idx`th location in `file` that holds a SAL element.
+ * its start position is the `idx`th position in `file` that holds a SAL element.
  */
 predicate annotatesAt(SALAnnotation a, DeclarationEntry d,
                               File file, int idx) {
-  annotatesAtLocation(a.getLocation(), d, file, idx)
+  annotatesAtPosition(a.(SALElement).getStartPosition(), d, file, idx)
 }
 
 /**
- * Holds if `loc` is the `idx`th location in `file` that holds a SAL element,
+ * Holds if `pos` is the `idx`th position in `file` that holds a SAL element,
  * which annotates the declaration entry `d` (by occurring before it without
  * any other declaration entries in between).
  */
 // For performance reasons, do not mention the annotation itself here,
-// but compute with locations instead.
-private predicate annotatesAtLocation(Location loc, DeclarationEntry d,
-                                  File file, int idx) {
-  loc = salRelevantLocationAt(file, idx) and
-  // Stop the recursion at the location of a declaration entry.
-  not declarationEntryLocation(loc) and
+// but compute with positions instead. This performs better on databases
+// with many annotations at the same position.
+private predicate annotatesAtPosition(
+  SALPosition pos, DeclarationEntry d, File file, int idx
+) {
+  pos = salRelevantPositionAt(file, idx) and
+  salAnnotationPos(pos) and
   (
-    // Base case: `loc` right before `d`
-    d.getLocation() = salRelevantLocationAt(file, idx + 1) or
-    // Recursive case: `loc` right before some annotation on `d`
-    annotatesAtLocation(_, d, file, idx + 1)
+    // Base case: `pos` right before `d`
+    d.(SALElement).getStartPosition() = salRelevantPositionAt(file, idx + 1)
+    or
+    // Recursive case: `pos` right before some annotation on `d`
+    annotatesAtPosition(_, d, file, idx + 1)
   )
 }
 
@@ -130,6 +132,36 @@ library class SALElement extends Element {
     containsSALAnnotation(this.(DeclarationEntry).getFile()) or
     this instanceof SALAnnotation
   }
+
+  predicate hasStartPosition(File file, int line, int col) {
+    exists(Location loc | loc = this.getLocation() |
+      file = loc.getFile() and
+      line = loc.getStartLine() and
+      col = loc.getStartColumn()
+    )
+  }
+
+  predicate hasEndPosition(File file, int line, int col) {
+    exists(Location loc |
+      loc = this.(FunctionDeclarationEntry).getBlock().getLocation()
+      or
+      this = any(VariableDeclarationEntry vde |
+        vde.isDefinition() and
+        loc = vde.getVariable().getInitializer().getLocation()
+      )
+    |
+      file = loc.getFile() and
+      line = loc.getEndLine() and
+      col = loc.getEndColumn()
+    )
+  }
+
+  SALPosition getStartPosition() {
+    exists(File file, int line, int col |
+      this.hasStartPosition(file, line, col) and
+      result = MkSALPosition(file, line, col)
+    )
+  }
 }
 
 /** Holds if `file` contains a SAL annotation. */
@@ -138,26 +170,34 @@ private predicate containsSALAnnotation(File file) {
   any(SALAnnotation a).getFile() = file
 }
 
-/** Holds if `loc` is the location of a SAL element. */
-pragma[noinline]
-private predicate salLocation(Location loc) {
-  any(SALElement e).getLocation() = loc
-}
+/**
+ * A source-file position of a `SALElement`. Unlike location, this denotes a
+ * point in the file rather than a range.
+ */
+private newtype SALPosition =
+  MkSALPosition(File file, int line, int col) {
+    exists(SALElement e |
+      e.hasStartPosition(file, line, col)
+      or
+      e.hasEndPosition(file, line, col)
+    )
+  }
 
-/** Holds if `loc` is the location of a declaration entry. */
+/** Holds if `pos` is the start position of a SAL annotation. */
 pragma[noinline]
-private predicate declarationEntryLocation(Location loc) {
-  any(DeclarationEntry e).getLocation() = loc
+private predicate salAnnotationPos(SALPosition pos) {
+  any(SALAnnotation a).(SALElement).getStartPosition() = pos
 }
 
 /**
- * Gets the `idx`th location in `file` that holds a SAL element,
- * ordering locations lexicographically by their
- * start line, start column, end line, and end column.
+ * Gets the `idx`th position in `file` that holds a SAL element,
+ * ordering positions lexicographically by their start line and start column.
  */
-private Location salRelevantLocationAt(File file, int idx) {
-  result = rank[idx](Location loc |
-    salLocation(loc) and loc.getFile() = file |
-    loc order by loc.getStartLine(), loc.getStartColumn(), loc.getEndLine(), loc.getEndColumn()
+private SALPosition salRelevantPositionAt(File file, int idx) {
+  result = rank[idx](SALPosition pos, int line, int col |
+    pos = MkSALPosition(file, line, col)
+  |
+    pos
+    order by line, col
   )
 }
