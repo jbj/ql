@@ -1,0 +1,2 @@
+| override.cpp:19:21:19:24 | definition of arg1 | Missing SAL annotation _In_ in definition of arg1 although it is present on $@. | override.cpp:5:27:5:30 | declaration of arg1 | declaration of arg1 |
+| override.cpp:23:21:23:23 | definition of arg | Missing SAL annotation _In_ in definition of arg although it is present on $@. | override.cpp:6:27:6:30 | declaration of arg as arg1 | declaration of arg as arg1 |
