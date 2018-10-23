@@ -1,4 +1,4 @@
-#define _SAL_VERSION 20
+#define __SAL_VERSION 20
 // sufficient macros for the test to compile
 #define __in
 #define __in_ecount(x)

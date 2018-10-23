@@ -29,11 +29,11 @@ char *f2(
 void f3(void (*fp)(_In_ int *x), int a);
 
 int getSALVersion() {
-  return _SAL_VERSION;
+  return __SAL_VERSION;
 }
 
 void hasNoAnnotations1();
 
-int salVersionVariable = _SAL_VERSION;
+int salVersionVariable = __SAL_VERSION;
 
 void hasNoAnnotations2();

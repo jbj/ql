@@ -2,11 +2,20 @@ import cpp
 
 class SALMacro extends Macro {
   SALMacro() {
-    this.getFile().getBaseName() = "sal.h" or
-    this.getFile().getBaseName() = "specstrings_strict.h" or
-    this.getFile().getBaseName() = "specstrings.h" or
-    this.getFile().getBaseName() = "w32p.h" or
-    this.getFile().getBaseName() = "minwindef.h"
+    exists(string filename | filename = this.getFile().getBaseName() |
+      filename = "sal.h" or
+      filename = "specstrings_strict.h" or
+      filename = "specstrings.h" or
+      filename = "w32p.h" or
+      filename = "minwindef.h"
+    ) and
+    (
+      // Dialect for Windows 8 and above
+      this.getName().matches("\\_%\\_")
+      or
+      // Dialect for Windows 7
+      this.getName().matches("\\_\\_%")
+    )
   }
 }
 
