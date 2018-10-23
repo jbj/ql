@@ -57,8 +57,8 @@ class SALNotNull extends SALAnnotation {
     exists(SALMacro m | m = this.getMacro() |
       not m.getName().matches("%\\_opt\\_%") and
       (
-        m.getName().matches("_In%") or
-        m.getName().matches("_Out%") or
+        m.getName().matches("\\_In%") or
+        m.getName().matches("\\_Out%") or
         m.getName() = "_Ret_notnull_"
       )
     )
@@ -75,7 +75,7 @@ class SALMaybeNull extends SALAnnotation {
   SALMaybeNull() {
     exists(SALMacro m | m = this.getMacro() |
     m.getName().matches("%\\_opt\\_%") or
-    m.getName().matches("\\_Ret_maybenull\\_%") or
+    m.getName().matches("\\_Ret\\_maybenull\\_%") or
     m.getName() = "_Result_nullonfailure_"
     )
   }
