@@ -79,7 +79,7 @@ private cached module Cached {
   /** Gets the number of control-flow nodes in the primitive basic block `bb`. */
   cached
   int primitive_bb_length(PrimitiveBasicBlock bb) {
-    result = strictcount(Node node | primitive_basic_block_member(node, bb, _))
+    result = 1 + max(int pos | primitive_basic_block_member(_, bb, pos))
   }
 
   /** Successor relation for primitive basic blocks. */
