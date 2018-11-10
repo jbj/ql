@@ -100,10 +100,14 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   p1.isBefore() and
   p2.isAt()
   or
-  // All short-circuiting operators start with themselves.
-  n1.(ShortCircuitOperator) = n2 and
-  p1.isBefore() and
-  p2.isAt()
+  // -> op -> child1 -> ...
+  exists(ShortCircuitOperator op |
+    p1.nodeBefore(n1, op) and
+    p2.nodeAt(n2, op)
+    or
+    p1.nodeAt(n1, op) and
+    p2.nodeBefore(n2, controlOrderChild(op, 0))
+  )
   or
   // -> {} -> child1 -> ... -> childN ->
   exists(Block b |
@@ -125,7 +129,19 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAt(n1, b) and
     p2.nodeAfter(n2, b)
   )
+  or
   // -> initializer -> expr ->
+  exists(Initializer init, Expr e | e = init.getExpr() |
+    p1.nodeBefore(n1, init) and
+    p2.nodeAt(n2, init)
+    or
+    p1.nodeAt(n1, init) and
+    p2.nodeBefore(n2, e)
+    or
+    p1.nodeAfter(n1, e) and
+    p2.nodeAfter(n2, init)
+  )
+  // return [-> expr] ->
 }
 
 private class ProperConditionContext extends Expr {
@@ -156,34 +172,33 @@ private class ShortCircuitOperator extends Expr {
  * have a true and a false edge out of it, where the edge goes to before
  * `targetBefore` when `test` evaluates to `truth`.
  */
-private predicate conditionJumpsTop(Expr test, boolean truth, Node targetBefore) {
+private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, Pos targetPos) {
   exists(IfStmt s | test = s.getCondition() |
     truth = true and
-    targetBefore = s.getThen()
+    targetPos.nodeBefore(targetNode, s.getThen())
     or
     truth = false and
-    targetBefore = s.getElse()
+    targetPos.nodeBefore(targetNode, s.getElse())
   )
   or
   exists(ConditionalExpr e | test = e.getCondition() |
     truth = true and
-    targetBefore = e.getThen()
+    targetPos.nodeBefore(targetNode, e.getThen())
     or
     truth = false and
-    targetBefore = e.getElse()
+    targetPos.nodeBefore(targetNode, e.getElse())
   )
 }
 
-// TODO: Replace targetBefore with a pair of target and pos.
 // Needed for `x = a && b`, where the target is after `a && b`.
 private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos targetPos) {
-  conditionJumpsTop(test, truth, targetNode) and
-  targetPos.isBefore()
+  conditionJumpsTop(test, truth, targetNode, targetPos)
   or
-  not conditionJumpsTop(test, _, _) and
+  // TODO: This is wrong. When true and false go to the same place, it's just a
+  // normal edge. But maybe we should fix this up via post-processing.
+  not conditionJumpsTop(test, _, _, _) and
   test instanceof ShortCircuitOperator and
-  targetNode = test and
-  targetPos.isAfter() and
+  targetPos.nodeAfter(targetNode, test) and
   (truth = false or truth = true)
   or
   exists(ConditionalExpr e |
