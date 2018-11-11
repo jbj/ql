@@ -48,14 +48,28 @@ private class PostOrderNode extends Node {
 }
 
 // TODO: Does this belong in PostOrderNode and PreOrderNode?
-private Node controlOrderChild(Node n, int i) {
+private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
   not n instanceof Assignment // they go from right to left
   or
+  n = any(Assignment a |
+    i = 0 and result = a.getRValue()
+    or
+    i = 1 and result = a.getLValue()
+  )
+  or
   result = n.(Stmt).getChild(i)
-  // TODO: assignment
+  or
+  result = n.(DeclStmt).getDeclaration(i).(Variable).getInitializer()
   // TODO: more cases
-  // TODO: squeeze children together with rank
+}
+
+private Node controlOrderChild(Node n, int i) {
+  result = rank[i + 1](Node child, int childIdx |
+    child = controlOrderChildSparse(n, childIdx)
+  | child
+    order by childIdx
+  )
 }
 
 private Node lastControlOrderChild(Node n) {
@@ -63,36 +77,27 @@ private Node lastControlOrderChild(Node n) {
 }
 
 private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
-  // -> child1 -> ... -> childN -> @self ->
+  // child0 -> ... -> childN
+  exists(Node n, int i |
+    p1.nodeAfter(n1, controlOrderChild(n, i)) and
+    p2.nodeBefore(n2, controlOrderChild(n, i+1))
+  )
+  or
+  // -> [children ->] PostOrderNode ->
   exists(PostOrderNode pon |
-    n1 = pon and
-    p1.isBefore() and
-    controlOrderChild(n1, 0) = n2 and
-    p2.isBefore()
+    p1.nodeBefore(n1, pon) and
+    p2.nodeBefore(n2, controlOrderChild(pon, 0))
     or
-    exists(int i |
-      n1 = controlOrderChild(pon, i) and
-      p1.isAfter() and
-      n1 = controlOrderChild(pon, i+1) and
-      p2.isBefore()
-    )
-    or
-    n1 = lastControlOrderChild(pon) and
-    p1.isAfter() and
-    n2 = pon and
-    p2.isAt()
+    p1.nodeAfter(n1, lastControlOrderChild(pon)) and
+    p2.nodeAt(n2, pon)
     or
     // Short circuit if there are no children
     not exists(lastControlOrderChild(pon)) and
-    n1 = pon and
-    p1.isBefore() and
-    n2 = pon and
-    p2.isAt()
+    p1.nodeBefore(n1, pon) and
+    p2.nodeAt(n2, pon)
     or
-    n1 = pon and
-    p1.isAt() and
-    n2 = pon and
-    p2.isAfter()
+    p1.nodeAt(n1, pon) and
+    p2.nodeAfter(n2, pon)
   )
   or
   // All statements start with themselves.
@@ -109,7 +114,7 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeBefore(n2, controlOrderChild(op, 0))
   )
   or
-  // -> {} -> child1 -> ... -> childN ->
+  // -> {} [-> children] ->
   exists(Block b |
     p1.nodeBefore(n1, b) and
     p2.nodeAt(n2, b)
@@ -117,20 +122,19 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAt(n1, b) and
     p2.nodeBefore(n2, controlOrderChild(b, 0))
     or
-    exists(int i |
-      p1.nodeAfter(n1, controlOrderChild(b, i)) and
-      p2.nodeBefore(n2, controlOrderChild(b, i+1))
-    )
-    or
     p1.nodeAfter(n1, lastControlOrderChild(b)) and
     p2.nodeAfter(n2, b)
     or
     // Short circuit if there are no children
+    // TODO: Can we find a cleaner way to do this? Maybe generalise controlOrderChild to a
+    // predicate straightLine(Node scope, int i, Node n, Pos p), where self and
+    // following nodes are -1 etc.
+    not exists(lastControlOrderChild(b)) and
     p1.nodeAt(n1, b) and
     p2.nodeAfter(n2, b)
   )
   or
-  // -> initializer -> expr ->
+  // -> Initializer -> Expr ->
   exists(Initializer init, Expr e | e = init.getExpr() |
     p1.nodeBefore(n1, init) and
     p2.nodeAt(n2, init)
@@ -141,7 +145,34 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAfter(n1, e) and
     p2.nodeAfter(n2, init)
   )
-  // return [-> expr] ->
+  or
+  // ReturnStmt [-> Expr] -> Function
+  exists(ReturnStmt ret |
+    exists(Expr e | e = ret.getExpr() |
+      p1.nodeAt(n1, ret) and
+      p2.nodeBefore(n2, e)
+      or
+      p1.nodeAfter(n1, e) and
+      p2.nodeAt(n2, ret.getEnclosingFunction())
+    )
+    or
+    not exists(ret.getExpr()) and
+    p1.nodeAt(n1, ret) and
+    p2.nodeAt(n2, ret.getEnclosingFunction())
+  )
+  or
+  // DeclStmt [-> children] ->
+  exists(DeclStmt d |
+    p1.nodeAt(n1, d) and
+    p2.nodeBefore(n2, controlOrderChild(d, 0))
+    or
+    p1.nodeAfter(n1, controlOrderChild(d, 0)) and
+    p2.nodeAfter(n2, d)
+    or
+    not exists(lastControlOrderChild(d)) and
+    p1.nodeAt(n1, d) and
+    p2.nodeAfter(n2, d)
+  )
 }
 
 private class ProperConditionContext extends Expr {
