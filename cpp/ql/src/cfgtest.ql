@@ -41,13 +41,23 @@ private class Pos extends int {
 
 private class PostOrderNode extends Node {
   PostOrderNode() {
+    // TODO: positive list instead of negative list
     this instanceof Expr and
     not this instanceof ShortCircuitOperator and
     not this instanceof Conversion // not in CFG
   }
 }
 
-// TODO: Does this belong in PostOrderNode and PreOrderNode?
+private class PreOrderNode extends Node {
+  PreOrderNode() {
+    this instanceof Initializer
+    or
+    this instanceof DeclStmt
+    or
+    this instanceof Block
+  }
+}
+
 private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
   not n instanceof Assignment // they go from right to left
@@ -58,10 +68,11 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 1 and result = a.getLValue()
   )
   or
-  result = n.(Stmt).getChild(i)
+  i = 0 and result = n.(Initializer).getExpr()
+  or
+  result = n.(PreOrderNode).(Stmt).getChild(i)
   or
   result = n.(DeclStmt).getDeclaration(i).(Variable).getInitializer()
-  // TODO: more cases
 }
 
 private Node controlOrderChild(Node n, int i) {
@@ -84,20 +95,37 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   )
   or
   // -> [children ->] PostOrderNode ->
-  exists(PostOrderNode pon |
-    p1.nodeBefore(n1, pon) and
-    p2.nodeBefore(n2, controlOrderChild(pon, 0))
+  exists(PostOrderNode n |
+    p1.nodeBefore(n1, n) and
+    p2.nodeBefore(n2, controlOrderChild(n, 0))
     or
-    p1.nodeAfter(n1, lastControlOrderChild(pon)) and
-    p2.nodeAt(n2, pon)
+    p1.nodeAfter(n1, lastControlOrderChild(n)) and
+    p2.nodeAt(n2, n)
     or
     // Short circuit if there are no children
-    not exists(lastControlOrderChild(pon)) and
-    p1.nodeBefore(n1, pon) and
-    p2.nodeAt(n2, pon)
+    not exists(lastControlOrderChild(n)) and
+    p1.nodeBefore(n1, n) and
+    p2.nodeAt(n2, n)
     or
-    p1.nodeAt(n1, pon) and
-    p2.nodeAfter(n2, pon)
+    p1.nodeAt(n1, n) and
+    p2.nodeAfter(n2, n)
+  )
+  or
+  // -> PreOrderNode -> [children ->]
+  exists(PreOrderNode n |
+    p1.nodeBefore(n1, n) and
+    p2.nodeAt(n2, n)
+    or
+    p1.nodeAt(n1, n) and
+    p2.nodeBefore(n2, controlOrderChild(n, 0))
+    or
+    p1.nodeAfter(n1, lastControlOrderChild(n)) and
+    p2.nodeAfter(n2, n)
+    or
+    // Short circuit if there are no children
+    not exists(lastControlOrderChild(n)) and
+    p1.nodeAt(n1, n) and
+    p2.nodeAfter(n2, n)
   )
   or
   // All statements start with themselves.
@@ -105,45 +133,13 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   p1.isBefore() and
   p2.isAt()
   or
-  // -> op -> child1 -> ...
+  // -> ShortCircuitOperator -> child1 -> ...
   exists(ShortCircuitOperator op |
     p1.nodeBefore(n1, op) and
     p2.nodeAt(n2, op)
     or
     p1.nodeAt(n1, op) and
     p2.nodeBefore(n2, controlOrderChild(op, 0))
-  )
-  or
-  // -> {} [-> children] ->
-  exists(Block b |
-    p1.nodeBefore(n1, b) and
-    p2.nodeAt(n2, b)
-    or
-    p1.nodeAt(n1, b) and
-    p2.nodeBefore(n2, controlOrderChild(b, 0))
-    or
-    p1.nodeAfter(n1, lastControlOrderChild(b)) and
-    p2.nodeAfter(n2, b)
-    or
-    // Short circuit if there are no children
-    // TODO: Can we find a cleaner way to do this? Maybe generalise controlOrderChild to a
-    // predicate straightLine(Node scope, int i, Node n, Pos p), where self and
-    // following nodes are -1 etc.
-    not exists(lastControlOrderChild(b)) and
-    p1.nodeAt(n1, b) and
-    p2.nodeAfter(n2, b)
-  )
-  or
-  // -> Initializer -> Expr ->
-  exists(Initializer init, Expr e | e = init.getExpr() |
-    p1.nodeBefore(n1, init) and
-    p2.nodeAt(n2, init)
-    or
-    p1.nodeAt(n1, init) and
-    p2.nodeBefore(n2, e)
-    or
-    p1.nodeAfter(n1, e) and
-    p2.nodeAfter(n2, init)
   )
   or
   // ReturnStmt [-> Expr] -> Function
@@ -161,31 +157,17 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeAt(n2, ret.getEnclosingFunction())
   )
   or
-  // DeclStmt [-> children] ->
-  exists(DeclStmt d |
-    p1.nodeAt(n1, d) and
-    p2.nodeBefore(n2, controlOrderChild(d, 0))
+  // IfStmt -> condition ; { then, else } ->
+  exists(IfStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getCondition())
     or
-    p1.nodeAfter(n1, controlOrderChild(d, 0)) and
-    p2.nodeAfter(n2, d)
+    p1.nodeAfter(n1, s.getThen()) and
+    p2.nodeAfter(n2, s)
     or
-    not exists(lastControlOrderChild(d)) and
-    p1.nodeAt(n1, d) and
-    p2.nodeAfter(n2, d)
+    p1.nodeAfter(n1, s.getElse()) and
+    p2.nodeAfter(n2, s)
   )
-}
-
-private class ProperConditionContext extends Expr {
-  ProperConditionContext() {
-    //exists(ControlStructure cs |
-    //  // TODO: exclude all switch statements or only non-Boolean ones?
-    //  cs.getControllingExpr()
-    this instanceof LogicalAndExpr
-    or
-    this instanceof LogicalOrExpr
-    or
-    this instanceof ConditionalExpr
-  }
 }
 
 private class ShortCircuitOperator extends Expr {
@@ -221,12 +203,15 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
   )
 }
 
-// Needed for `x = a && b`, where the target is after `a && b`.
+/**
+ * Holds if there should be a `truth`-labeled edge from _after_ `test` to
+ * `(targetPos, targetNode)`.
+ */
 private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos targetPos) {
   conditionJumpsTop(test, truth, targetNode, targetPos)
   or
-  // TODO: This is wrong. When true and false go to the same place, it's just a
-  // normal edge. But maybe we should fix this up via post-processing.
+  // When true and false go to the same place, it's just a normal edge. But we
+  // can fix this up via post-processing.
   not conditionJumpsTop(test, _, _, _) and
   test instanceof ShortCircuitOperator and
   targetPos.nodeAfter(targetNode, test) and
@@ -252,17 +237,20 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   )
 }
 
-//private predicate branchesTo(boolean truth, Expr test, Expr context) {
-//  
-//}
-
-/**
- * Holds if there's a "true" edge from _after_ n1 to _before_ n2.
- */
-private predicate trueEdge(Node n1, Node n2) {
-  //exists(WhileStmt 
-  // TODO: needs general treatment, including short-circuiting operators
-  none()
+private predicate groupMember(Node memberNode, Pos memberPos, Node atNode) {
+  memberNode = atNode and
+  memberPos.isAt()
+  or
+  exists(Node succNode, Pos succPos |
+    groupMember(succNode, succPos, atNode) and
+    not memberPos.isAt()
+  |
+    normalEdge(memberNode, memberPos, succNode, succPos)
+    or
+    // TODO: If we cut groups at `isAt` positions, can we then recover the jump edges?
+    conditionJumps(memberNode, _, succNode, succPos) and
+    memberPos.isAfter()
+  )
 }
 
 select 1
