@@ -241,17 +241,26 @@ private predicate groupMember(Node memberNode, Pos memberPos, Node atNode) {
   memberNode = atNode and
   memberPos.isAt()
   or
+  // TODO: this is a transitive closure. If it's slow, we can speed it up with
+  // FastTC (and IPA).
   exists(Node succNode, Pos succPos |
     groupMember(succNode, succPos, atNode) and
     not memberPos.isAt()
   |
     normalEdge(memberNode, memberPos, succNode, succPos)
-    or
-    // TODO: If we cut groups at `isAt` positions, can we then recover the jump
-    // edges? But we can't cut at any other positions.
-    conditionJumps(memberNode, _, succNode, succPos) and
-    memberPos.isAfter()
   )
 }
+
+private predicate edge(Node n1, Node n2) {
+  exists(Node memberNode, Pos memberPos |
+    normalEdge(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
+    groupMember(memberNode, memberPos, n2)
+  )
+}
+
+// TODO: To find true/false edges, search forward and backward among the
+// ordinary half-edges from a true/false half-edge, stopping at At-nodes. Then
+// link, with true/false, any At-nodes found backwrads with any At-nodes found
+// forward.
 
 select 1
