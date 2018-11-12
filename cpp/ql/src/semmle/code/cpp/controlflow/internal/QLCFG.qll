@@ -192,6 +192,10 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     or
     truth = false and
     targetPos.nodeBefore(targetNode, s.getElse())
+    or
+    not exists(s.getElse()) and
+    truth = false and
+    targetPos.nodeAfter(targetNode, s)
   )
   or
   exists(ConditionalExpr e | test = e.getCondition() |
@@ -245,9 +249,38 @@ private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode)
   // FastTC (and IPA).
   exists(Node succNode, Pos succPos |
     normalGroupMember(succNode, succPos, atNode) and
-    not memberPos.isAt()
-  |
+    not memberPos.isAt() and
     normalEdge(memberNode, memberPos, succNode, succPos)
+  )
+}
+
+private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
+  memberNode = test and
+  memberPos.isAfter()
+  or
+  // TODO: this is a transitive closure. If it's slow, we can speed it up with
+  // FastTC (and IPA).
+  exists(Node succNode, Pos succPos |
+    precedesCondition(succNode, succPos, test) and
+    normalEdge(memberNode, memberPos, succNode, succPos) and
+    // Unlike the similar TC in normalGroupMember we're here including the
+    // At-node in the group. This should generalize better to the case where
+    // the base case isn't always an After-node.
+    not succPos.isAt()
+  )
+}
+
+// To find true/false edges, search forward and backward among the ordinary
+// half-edges from a true/false half-edge, stopping at At-nodes. Then link,
+// with true/false, any At-nodes found backwrads with any At-nodes found
+// forward.
+private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
+  // TODO: this is a join of some rather large relations. It's possible that
+  // some of them should be cut down with manual magic before being joined.
+  exists(Node test, Node targetNode, Pos targetPos |
+    precedesCondition(n1, any(Pos at | at.isAt()), test) and
+    conditionJumps(test, truth, targetNode, targetPos) and
+    normalGroupMember(targetNode, targetPos, n2)
   )
 }
 
@@ -256,13 +289,16 @@ predicate qlCFGSuccessor(Node n1, Node n2) {
     normalEdge(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
     normalGroupMember(memberNode, memberPos, n2)
   )
+  or
+  conditionalSuccessor(n1, _, n2)
 }
 
-predicate qlCFGTrueSuccessor(Node n1, Node n2) { none() }
+predicate qlCFGTrueSuccessor(Node n1, Node n2) {
+  conditionalSuccessor(n1, true, n2) and
+  not conditionalSuccessor(n1, false, n2)
+}
 
-predicate qlCFGFalseSuccessor(Node n1, Node n2) { none() }
-
-// TODO: To find true/false edges, search forward and backward among the
-// ordinary half-edges from a true/false half-edge, stopping at At-nodes. Then
-// link, with true/false, any At-nodes found backwrads with any At-nodes found
-// forward.
+predicate qlCFGFalseSuccessor(Node n1, Node n2) {
+  conditionalSuccessor(n1, false, n2) and
+  not conditionalSuccessor(n1, true, n2)
+}
