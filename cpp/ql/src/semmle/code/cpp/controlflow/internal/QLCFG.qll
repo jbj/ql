@@ -225,6 +225,12 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     (test = e.getThen() or test = e.getElse()) and
     conditionJumps(e, truth, targetNode, targetPos)
   )
+  // TODO: handle `!` better? Like this?
+  //or
+  //exists(NotExpr e |
+  //  test = e.getOperand() and
+  //  conditionJumps(e, truth.booleanNot(), targetNode, targetPos)
+  //)
   or
   exists(LogicalAndExpr e |
     test = e.getLeftOperand() and
@@ -239,6 +245,7 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     test = e.getRightOperand() and
     conditionJumps(e, truth, targetNode, targetPos)
   )
+  // TODO: test that we really handle `!` that badly, also in `!(a && b)`.
 }
 
 private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode) {
