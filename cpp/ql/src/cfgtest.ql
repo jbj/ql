@@ -247,7 +247,8 @@ private predicate groupMember(Node memberNode, Pos memberPos, Node atNode) {
   |
     normalEdge(memberNode, memberPos, succNode, succPos)
     or
-    // TODO: If we cut groups at `isAt` positions, can we then recover the jump edges?
+    // TODO: If we cut groups at `isAt` positions, can we then recover the jump
+    // edges? But we can't cut at any other positions.
     conditionJumps(memberNode, _, succNode, succPos) and
     memberPos.isAfter()
   )
