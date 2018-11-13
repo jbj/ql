@@ -53,8 +53,12 @@ predicate differentFunction(Function f) {
 
 string scope(ControlFlowNode x) {
   if exists(x.getControlFlowScope().getQualifiedName())
-  then result = x.getControlFlowScope().getQualifiedName()
-  else result = "<no scope>"
+  then
+    result =
+      x.getFile().getBaseName().splitAt(".", 0) + "__" +
+      x.getControlFlowScope().getQualifiedName().replaceAll("::", "_")
+  else
+    result = x.getFile().getBaseName()
 }
 
 module QLCFG {
@@ -76,7 +80,7 @@ module QLCFG {
     string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
   ) {
     scopeElement = x.getControlFlowScope() and // TODO: nodes outside functions
-    scopeString = scope(x) + "-ql" and
+    scopeString = scope(x) + "_ql" and
     (
       isNode(isEdge, x, y, label)
       or
@@ -104,7 +108,7 @@ module ExtractorCFG {
     string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
   ) {
     scopeElement = x.getControlFlowScope() and // TODO: nodes outside functions
-    scopeString = scope(x) + "-extractor" and
+    scopeString = scope(x) + "_extractor" and
     (
       isNode(isEdge, x, y, label)
       or
