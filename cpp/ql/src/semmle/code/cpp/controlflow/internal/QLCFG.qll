@@ -170,6 +170,15 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeAt(n2, ret.getEnclosingFunction())
   )
   or
+  // entry point -> Function
+  // TODO: delete this later. Only for compatibility with extractor quirks. It
+  // happens when the extractor doesn't synthesize a `ReturnStmt` because it
+  // can tell that it wouldn't be reached.
+  exists(Function f |
+    p1.nodeAfter(n1, f.getEntryPoint()) and
+    p2.nodeAt(n2, f)
+  )
+  or
   // IfStmt -> condition ; { then, else } ->
   exists(IfStmt s |
     p1.nodeAt(n1, s) and
@@ -200,19 +209,48 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeBefore(n2, s.getCondition())
   )
   or
-  // ForStmt -> init -> condition ; body -> update -> condition
   exists(ForStmt s |
+    // ForStmt [-> init] [-> condition]
     p1.nodeAt(n1, s) and
-    p2.nodeBefore(n2, s.getInitialization())
+    (
+      p2.nodeBefore(n2, s.getInitialization())
+      or
+      not exists(s.getInitialization()) and
+      p2.nodeBefore(n2, s.getCondition())
+      or
+      not exists(s.getInitialization()) and
+      not exists(s.getCondition()) and
+      p2.nodeBefore(n2, s.getStmt())
+    )
     or
     p1.nodeAfter(n1, s.getInitialization()) and
-    p2.nodeBefore(n2, s.getCondition())
+    (
+      p2.nodeBefore(n2, s.getCondition())
+      or
+      not exists(s.getCondition()) and
+      p2.nodeBefore(n2, s.getStmt())
+    )
     or
+    // body [-> update] [-> condition]
     p1.nodeAfter(n1, s.getStmt()) and
-    p2.nodeBefore(n2, s.getUpdate())
+    (
+      p2.nodeBefore(n2, s.getUpdate())
+      or
+      not exists(s.getUpdate()) and
+      p2.nodeBefore(n2, s.getCondition())
+      or
+      not exists(s.getUpdate()) and
+      not exists(s.getCondition()) and
+      p2.nodeBefore(n2, s.getStmt())
+    )
     or
     p1.nodeAfter(n1, s.getUpdate()) and
-    p2.nodeBefore(n2, s.getCondition())
+    (
+      p2.nodeBefore(n2, s.getCondition())
+      or
+      not exists(s.getCondition()) and
+      p2.nodeBefore(n2, s.getStmt())
+    )
   )
   or
   // ExprStmt -> expr ->

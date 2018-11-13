@@ -1,0 +1,3 @@
+| enum.c | enum.c:2:6:2:6 | 1 | enum.c:2:10:2:10 | 1 | Standard edge, only from QL |
+| enum.c | enum.c:2:6:2:10 | initializer for a | enum.c:2:6:2:6 | 1 | Standard edge, only from QL |
+| enum.c | enum.c:2:10:2:10 | 1 | enum.c:2:6:2:10 | ... + ... | Standard edge, only from QL |
