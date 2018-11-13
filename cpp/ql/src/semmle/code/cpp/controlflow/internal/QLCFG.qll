@@ -12,7 +12,9 @@ TODO: difficulties:
     - Variable init at start of switch block
   - VlaDeclStmt
 - The nodes that may or may not have children at all
-  - ReturnStmt, BlockStmt, ThrowStmt, PostOrderNode, ForStmt
+  - ReturnStmt, BlockStmt, ThrowStmt, PostOrderNode
+- Nodes with optional children
+  - IfStmt (else), ForStmt (all three)
 - lastControlFlowNodeBeforeDestructors and following_destructor
   - Can we just construct the CFG and then inject these calls?
  */
