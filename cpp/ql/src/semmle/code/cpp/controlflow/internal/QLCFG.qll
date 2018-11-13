@@ -44,6 +44,7 @@ private class PostOrderNode extends Node {
     // TODO: positive list instead of negative list
     this instanceof Expr and
     not this instanceof ShortCircuitOperator and
+    //not this instanceof ThrowExpr and // TODO
     not this instanceof Conversion // not in CFG
   }
 }
@@ -86,11 +87,126 @@ private Node controlOrderChild(Node n, int i) {
   )
 }
 
+private int controlOrderChildMax(Node n) {
+  result = max(int i | exists(controlOrderChild(n, i)))
+  or
+  not exists(controlOrderChild(n, _)) and
+  result = -1
+}
+
 private Node lastControlOrderChild(Node n) {
-  result = controlOrderChild(n, max(int i | exists(controlOrderChild(n, i))))
+  result = controlOrderChild(n, controlOrderChildMax(n))
+}
+
+// TODO:
+// predicate straightLine, taking a Spec, which is a supertype of Pos and
+// includes also Around and Barrier.
+private class Spec extends int {
+  bindingset[this]
+  Spec() { any() }
+
+  predicate isBefore() { this = -1 }
+  predicate isAt() { this = 0 }
+  predicate isAfter() { this = 1 }
+  predicate isAround() { this = 2 }
+  predicate isBarrier() { this = 3 }
+
+  Pos asLeftPos() {
+    this = [-1 .. 1] and
+    result = this
+    or
+    this.isAround() and
+    result.isAfter()
+  }
+
+  Pos asRightPos() {
+    this = [-1 .. 1] and
+    result = this
+    or
+    this.isAround() and
+    result.isBefore()
+  }
+}
+
+private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
+  scope = any(PostOrderNode n |
+    i = -1 and ni = n and spec.isBefore()
+    or
+    // TODO: here we can use the raw one if we also have a min instead of
+    // hard-coding -1. Alternatively, just use min instead of rank to make
+    // numbering start at 0.
+    ni = controlOrderChild(scope, i) and spec.isAround()
+    or
+    i = controlOrderChildMax(scope) + 1 and ni = n and spec.isAt()
+    or
+    i = controlOrderChildMax(scope) + 2 and ni = n and spec.isAfter()
+  )
+  or
+  scope = any(PreOrderNode n |
+    i = -1 and ni = n and spec.isBefore()
+    or
+    i = 0 and ni = n and spec.isAt()
+    or
+    // TODO: change this so we can write `i = ...`
+    ni = controlOrderChild(scope, i - 1) and spec.isAround()
+    or
+    i = controlOrderChildMax(scope) + 2 and ni = n and spec.isAfter()
+  )
+  or
+  scope = any(ReturnStmt ret |
+    i = -1 and ni = ret and spec.isAt()
+    or
+    i = 0 and ni = ret.getExpr() and spec.isAround()
+    or
+    i = 1 and ni = ret.getEnclosingFunction() and spec.isAt()
+  )
+  or
+  scope = any(ForStmt s |
+    // ForStmt [-> init]
+    i = -1 and ni = s and spec.isAt()
+    or
+    i = 0 and ni = s.getInitialization() and spec.isAround()
+    or
+    if exists(s.getCondition())
+    then (
+      // ... -> before condition
+      i = 1 and ni = s.getCondition() and spec.isBefore()
+      or
+      // body [-> update] -> before condition
+      i = 2 and ni = s and spec.isBarrier()
+      or
+      i = 3 and ni = s.getStmt() and spec.isAfter()
+      or
+      i = 4 and ni = s.getUpdate() and spec.isAround()
+      or
+      i = 5 and ni = s.getCondition() and spec.isBefore()
+    ) else (
+      // ... -> body [-> update] -> before body
+      i = 1 and ni = s.getStmt() and spec.isAround()
+      or
+      i = 2 and ni = s.getUpdate() and spec.isAround()
+      or
+      i = 3 and ni = s.getStmt() and spec.isBefore()
+    )
+  )
+}
+
+private predicate straightLineRanked(Node scope, int rnk, Node nrnk, Spec spec) {
+  exists(int i |
+    straightLine(scope, i, nrnk, spec) and
+    i = rank[rnk](int idx | straightLine(scope, idx, _, _))
+  )
 }
 
 private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
+  exists(Node scope, int rnk, Spec spec1, Spec spec2 |
+    straightLineRanked(scope, rnk, n1, spec1) and
+    straightLineRanked(scope, rnk + 1, n2, spec2) and
+    p1 = spec1.asLeftPos() and
+    p2 = spec2.asRightPos()
+  )
+  or
+  // TODO: cases from here when moved to straightLine.
   // child0 -> ... -> childN
   exists(Node n, int i |
     p1.nodeAfter(n1, controlOrderChild(n, i)) and
@@ -207,50 +323,6 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     or
     p1.nodeAfter(n1, s.getStmt()) and
     p2.nodeBefore(n2, s.getCondition())
-  )
-  or
-  exists(ForStmt s |
-    // ForStmt [-> init] [-> condition]
-    p1.nodeAt(n1, s) and
-    (
-      p2.nodeBefore(n2, s.getInitialization())
-      or
-      not exists(s.getInitialization()) and
-      p2.nodeBefore(n2, s.getCondition())
-      or
-      not exists(s.getInitialization()) and
-      not exists(s.getCondition()) and
-      p2.nodeBefore(n2, s.getStmt())
-    )
-    or
-    p1.nodeAfter(n1, s.getInitialization()) and
-    (
-      p2.nodeBefore(n2, s.getCondition())
-      or
-      not exists(s.getCondition()) and
-      p2.nodeBefore(n2, s.getStmt())
-    )
-    or
-    // body [-> update] [-> condition]
-    p1.nodeAfter(n1, s.getStmt()) and
-    (
-      p2.nodeBefore(n2, s.getUpdate())
-      or
-      not exists(s.getUpdate()) and
-      p2.nodeBefore(n2, s.getCondition())
-      or
-      not exists(s.getUpdate()) and
-      not exists(s.getCondition()) and
-      p2.nodeBefore(n2, s.getStmt())
-    )
-    or
-    p1.nodeAfter(n1, s.getUpdate()) and
-    (
-      p2.nodeBefore(n2, s.getCondition())
-      or
-      not exists(s.getCondition()) and
-      p2.nodeBefore(n2, s.getStmt())
-    )
   )
   or
   // ExprStmt -> expr ->
