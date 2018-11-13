@@ -3,18 +3,16 @@ import cpp
 /*
 TODO: difficulties:
 - Particular AST nodes
-  - Short-circuiting operators
   - New-expressions
   - throw -> handler
-  - StmtExpr and ExprStmt
+  - StmtExpr
   - CommaExpr
   - BlockExpr??? (clang extension)
+  - Unstructured switch statements
+    - Variable init at start of switch block
+  - VlaDeclStmt
 - The nodes that may or may not have children at all
   - ReturnStmt, BlockStmt, ThrowStmt, PostOrderNode
-  - could firstChild and lastChild return something special? Like the node itself.
-    - beforeFirstChild returns (node itself, before)
-      afterLastChild returns (node itself, before)
-      Is that good enough for ThrowStmt?
 - lastControlFlowNodeBeforeDestructors and following_destructor
   - Can we just construct the CFG and then inject these calls?
  */
@@ -54,7 +52,10 @@ private class PreOrderNode extends Node {
     or
     this instanceof DeclStmt
     or
+    // TODO: also for the block after a switch?
     this instanceof Block
+    or
+    this instanceof LabelStmt
   }
 }
 
@@ -131,6 +132,8 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   )
   or
   // All statements start with themselves.
+  // TODO: does that mean we should never make edges to _before_ a statement
+  // but always _at_ the statement? Or is that premature optimization?
   n1.(Stmt) = n2 and
   p1.isBefore() and
   p2.isAt()
@@ -224,6 +227,28 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   exists(JumpStmt s |
     p1.nodeAt(n1, s) and
     p2.nodeBefore(n2, s.getTarget())
+  )
+  or
+  // SwitchCase ->
+  // (note: doesn't evaluate its argument)
+  exists(SwitchCase s |
+    p1.nodeAt(n1, s) and
+    p2.nodeAfter(n2, s)
+  )
+  or
+  // SwitchStmt -> expr -> block -> cases
+  exists(SwitchStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getExpr())
+    or
+    p1.nodeAfter(n1, s.getExpr()) and
+    p2.nodeBefore(n2, s.getStmt())
+    or
+    exists(SwitchCase case |
+      case.getSwitchStmt() = s and
+      p1.nodeAt(n1, s.getStmt()) and
+      p2.nodeBefore(n2, case)
+    )
   )
 }
 
