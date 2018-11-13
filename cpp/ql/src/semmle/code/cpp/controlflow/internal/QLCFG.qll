@@ -236,7 +236,7 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeAfter(n2, s)
   )
   or
-  // SwitchStmt -> expr -> block -> cases
+  // SwitchStmt -> expr -> block -> { cases ; after block } ->
   exists(SwitchStmt s |
     p1.nodeAt(n1, s) and
     p2.nodeBefore(n2, s.getExpr())
@@ -249,6 +249,14 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
       p1.nodeAt(n1, s.getStmt()) and
       p2.nodeBefore(n2, case)
     )
+    or
+    // If there is no default case, we can jump to after the block
+    not exists(DefaultCase default | default.getSwitchStmt() = s) and
+    p1.nodeAt(n1, s.getStmt()) and
+    p2.nodeAfter(n2, s.getStmt())
+    or
+    p1.nodeAfter(n1, s.getStmt()) and
+    p2.nodeAfter(n2, s)
   )
 }
 
