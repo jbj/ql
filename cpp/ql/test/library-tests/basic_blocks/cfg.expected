@@ -24,36 +24,31 @@
 | f_and_1 | true | 812 | 810 |  |
 | f_and_1 | true | 814 | 808 |  |
 | f_and_2 | false | 819 | 819 | f_and_2 |
-| f_and_2 | false | 825 | 825 | x |
-| f_and_2 | false | 827 | 827 | y |
-| f_and_2 | false | 829 | 829 | ! ... |
-| f_and_2 | false | 831 | 831 | ... && ... |
-| f_and_2 | false | 833 | 833 | initializer for b |
-| f_and_2 | false | 837 | 837 | declaration |
-| f_and_2 | false | 839 | 839 | b |
-| f_and_2 | false | 841 | 841 | x |
-| f_and_2 | false | 843 | 843 | return ... |
-| f_and_2 | false | 845 | 845 | { ... } |
-| f_and_2 | false | 847 | 847 | if (...) ...  |
-| f_and_2 | false | 849 | 849 | y |
-| f_and_2 | false | 851 | 851 | return ... |
-| f_and_2 | false | 853 | 853 | { ... } |
-| f_and_2 | true | 825 | 827 | T |
-| f_and_2 | true | 825 | 847 | F |
-| f_and_2 | true | 827 | 829 |  |
-| f_and_2 | true | 829 | 847 |  |
-| f_and_2 | true | 831 | 825 |  |
-| f_and_2 | true | 833 | 831 |  |
-| f_and_2 | true | 837 | 833 |  |
-| f_and_2 | true | 839 | 845 | T |
-| f_and_2 | true | 839 | 851 | F |
-| f_and_2 | true | 841 | 819 |  |
-| f_and_2 | true | 843 | 841 |  |
-| f_and_2 | true | 845 | 843 |  |
-| f_and_2 | true | 847 | 839 |  |
-| f_and_2 | true | 849 | 819 |  |
-| f_and_2 | true | 851 | 849 |  |
-| f_and_2 | true | 853 | 837 |  |
+| f_and_2 | false | 824 | 824 | x |
+| f_and_2 | false | 826 | 826 | y |
+| f_and_2 | false | 828 | 828 | ... && ... |
+| f_and_2 | false | 830 | 830 | (...) |
+| f_and_2 | false | 832 | 832 | ! ... |
+| f_and_2 | false | 834 | 834 | x |
+| f_and_2 | false | 836 | 836 | return ... |
+| f_and_2 | false | 838 | 838 | { ... } |
+| f_and_2 | false | 840 | 840 | if (...) ...  |
+| f_and_2 | false | 842 | 842 | y |
+| f_and_2 | false | 844 | 844 | return ... |
+| f_and_2 | false | 846 | 846 | { ... } |
+| f_and_2 | true | 824 | 826 | T |
+| f_and_2 | true | 824 | 832 | F |
+| f_and_2 | true | 826 | 832 |  |
+| f_and_2 | true | 828 | 824 |  |
+| f_and_2 | true | 832 | 838 | T |
+| f_and_2 | true | 832 | 844 | F |
+| f_and_2 | true | 834 | 819 |  |
+| f_and_2 | true | 836 | 834 |  |
+| f_and_2 | true | 838 | 836 |  |
+| f_and_2 | true | 840 | 828 |  |
+| f_and_2 | true | 842 | 819 |  |
+| f_and_2 | true | 844 | 842 |  |
+| f_and_2 | true | 846 | 840 |  |
 | f_cond_1 | false | 346 | 346 | f_cond_1 |
 | f_cond_1 | false | 351 | 351 | i |
 | f_cond_1 | false | 355 | 355 | 3 |
@@ -288,26 +283,26 @@
 | f_if_3 | true | 117 | 108 |  |
 | f_if_3 | true | 119 | 103 |  |
 | f_if_3 | true | 121 | 117 |  |
-| f_if_ternary_1 | false | 859 | 859 | f_if_ternary_1 |
-| f_if_ternary_1 | false | 865 | 865 | b |
-| f_if_ternary_1 | false | 867 | 867 | x |
-| f_if_ternary_1 | false | 869 | 869 | y |
-| f_if_ternary_1 | false | 871 | 871 | ... ? ... : ... |
-| f_if_ternary_1 | false | 873 | 873 | { ... } |
-| f_if_ternary_1 | false | 875 | 875 | if (...) ...  |
-| f_if_ternary_1 | false | 877 | 877 | return ... |
-| f_if_ternary_1 | false | 879 | 879 | { ... } |
-| f_if_ternary_1 | true | 865 | 867 | T |
-| f_if_ternary_1 | true | 865 | 869 | F |
-| f_if_ternary_1 | true | 867 | 873 | T |
-| f_if_ternary_1 | true | 867 | 877 | F |
-| f_if_ternary_1 | true | 869 | 873 | T |
-| f_if_ternary_1 | true | 869 | 877 | F |
-| f_if_ternary_1 | true | 871 | 865 |  |
-| f_if_ternary_1 | true | 873 | 877 |  |
-| f_if_ternary_1 | true | 875 | 871 |  |
-| f_if_ternary_1 | true | 877 | 859 |  |
-| f_if_ternary_1 | true | 879 | 875 |  |
+| f_if_ternary_1 | false | 852 | 852 | f_if_ternary_1 |
+| f_if_ternary_1 | false | 858 | 858 | b |
+| f_if_ternary_1 | false | 860 | 860 | x |
+| f_if_ternary_1 | false | 862 | 862 | y |
+| f_if_ternary_1 | false | 864 | 864 | ... ? ... : ... |
+| f_if_ternary_1 | false | 866 | 866 | { ... } |
+| f_if_ternary_1 | false | 868 | 868 | if (...) ...  |
+| f_if_ternary_1 | false | 870 | 870 | return ... |
+| f_if_ternary_1 | false | 872 | 872 | { ... } |
+| f_if_ternary_1 | true | 858 | 860 | T |
+| f_if_ternary_1 | true | 858 | 862 | F |
+| f_if_ternary_1 | true | 860 | 866 | T |
+| f_if_ternary_1 | true | 860 | 870 | F |
+| f_if_ternary_1 | true | 862 | 866 | T |
+| f_if_ternary_1 | true | 862 | 870 | F |
+| f_if_ternary_1 | true | 864 | 858 |  |
+| f_if_ternary_1 | true | 866 | 870 |  |
+| f_if_ternary_1 | true | 868 | 864 |  |
+| f_if_ternary_1 | true | 870 | 852 |  |
+| f_if_ternary_1 | true | 872 | 868 |  |
 | f_switch_1 | false | 429 | 429 | f_switch_1 |
 | f_switch_1 | false | 433 | 433 | i |
 | f_switch_1 | false | 437 | 437 | 0 |

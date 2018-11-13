@@ -24,36 +24,31 @@
 | f_and_1 | true | 812 | 810 |  |
 | f_and_1 | true | 814 | 808 |  |
 | f_and_2 | false | 819 | 819 | f_and_2 |
-| f_and_2 | false | 825 | 825 | x |
-| f_and_2 | false | 827 | 827 | y |
-| f_and_2 | false | 829 | 829 | ! ... |
-| f_and_2 | false | 831 | 831 | ... && ... |
-| f_and_2 | false | 833 | 833 | initializer for b |
-| f_and_2 | false | 837 | 837 | declaration |
-| f_and_2 | false | 839 | 839 | b |
-| f_and_2 | false | 841 | 841 | x |
-| f_and_2 | false | 843 | 843 | return ... |
-| f_and_2 | false | 845 | 845 | { ... } |
-| f_and_2 | false | 847 | 847 | if (...) ...  |
-| f_and_2 | false | 849 | 849 | y |
-| f_and_2 | false | 851 | 851 | return ... |
-| f_and_2 | false | 853 | 853 | { ... } |
-| f_and_2 | true | 825 | 827 | T |
-| f_and_2 | true | 825 | 847 | F |
-| f_and_2 | true | 827 | 829 |  |
-| f_and_2 | true | 829 | 847 |  |
-| f_and_2 | true | 831 | 825 |  |
-| f_and_2 | true | 833 | 831 |  |
-| f_and_2 | true | 837 | 833 |  |
-| f_and_2 | true | 839 | 845 | T |
-| f_and_2 | true | 839 | 851 | F |
-| f_and_2 | true | 841 | 819 |  |
-| f_and_2 | true | 843 | 841 |  |
-| f_and_2 | true | 845 | 843 |  |
-| f_and_2 | true | 847 | 839 |  |
-| f_and_2 | true | 849 | 819 |  |
-| f_and_2 | true | 851 | 849 |  |
-| f_and_2 | true | 853 | 837 |  |
+| f_and_2 | false | 824 | 824 | x |
+| f_and_2 | false | 826 | 826 | y |
+| f_and_2 | false | 828 | 828 | ... && ... |
+| f_and_2 | false | 830 | 830 | (...) |
+| f_and_2 | false | 832 | 832 | ! ... |
+| f_and_2 | false | 834 | 834 | x |
+| f_and_2 | false | 836 | 836 | return ... |
+| f_and_2 | false | 838 | 838 | { ... } |
+| f_and_2 | false | 840 | 840 | if (...) ...  |
+| f_and_2 | false | 842 | 842 | y |
+| f_and_2 | false | 844 | 844 | return ... |
+| f_and_2 | false | 846 | 846 | { ... } |
+| f_and_2 | true | 824 | 826 | T |
+| f_and_2 | true | 824 | 832 | F |
+| f_and_2 | true | 826 | 832 |  |
+| f_and_2 | true | 828 | 824 |  |
+| f_and_2 | true | 832 | 838 | T |
+| f_and_2 | true | 832 | 844 | F |
+| f_and_2 | true | 834 | 819 |  |
+| f_and_2 | true | 836 | 834 |  |
+| f_and_2 | true | 838 | 836 |  |
+| f_and_2 | true | 840 | 828 |  |
+| f_and_2 | true | 842 | 819 |  |
+| f_and_2 | true | 844 | 842 |  |
+| f_and_2 | true | 846 | 840 |  |
 | f_cond_1 | false | 346 | 346 | f_cond_1 |
 | f_cond_1 | false | 351 | 351 | i |
 | f_cond_1 | false | 355 | 355 | 3 |
@@ -117,8 +112,13 @@
 | f_do_1 | false | 304 | 304 | do (...) ... |
 | f_do_1 | false | 306 | 306 | return ... |
 | f_do_1 | false | 308 | 308 | { ... } |
+| f_do_1 | true | 294 | 302 | T |
+| f_do_1 | true | 294 | 306 | F |
 | f_do_1 | true | 296 | 298 |  |
+| f_do_1 | true | 298 | 294 |  |
+| f_do_1 | true | 300 | 296 |  |
 | f_do_1 | true | 302 | 300 |  |
+| f_do_1 | true | 304 | 302 |  |
 | f_do_1 | true | 306 | 290 |  |
 | f_do_1 | true | 308 | 304 |  |
 | f_do_2 | false | 311 | 311 | f_do_2 |
@@ -128,7 +128,11 @@
 | f_do_2 | false | 321 | 321 | do (...) ... |
 | f_do_2 | false | 323 | 323 | return ... |
 | f_do_2 | false | 325 | 325 | { ... } |
+| f_do_2 | true | 316 | 319 | T |
+| f_do_2 | true | 316 | 323 | F |
+| f_do_2 | true | 317 | 316 |  |
 | f_do_2 | true | 319 | 317 |  |
+| f_do_2 | true | 321 | 319 |  |
 | f_do_2 | true | 323 | 311 |  |
 | f_do_2 | true | 325 | 321 |  |
 | f_do_3 | false | 328 | 328 | f_do_3 |
@@ -138,7 +142,11 @@
 | f_do_3 | false | 338 | 338 | do (...) ... |
 | f_do_3 | false | 340 | 340 | return ... |
 | f_do_3 | false | 342 | 342 | { ... } |
+| f_do_3 | true | 333 | 336 | T |
+| f_do_3 | true | 333 | 340 | F |
+| f_do_3 | true | 334 | 333 |  |
 | f_do_3 | true | 336 | 334 |  |
+| f_do_3 | true | 338 | 336 |  |
 | f_do_3 | true | 340 | 328 |  |
 | f_do_3 | true | 342 | 338 |  |
 | f_for_1 | false | 124 | 124 | f_for_1 |
@@ -160,10 +168,17 @@
 | f_for_1 | true | 130 | 156 |  |
 | f_for_1 | true | 132 | 136 |  |
 | f_for_1 | true | 136 | 137 |  |
+| f_for_1 | true | 137 | 141 | T |
+| f_for_1 | true | 137 | 158 | F |
+| f_for_1 | true | 139 | 152 |  |
 | f_for_1 | true | 141 | 139 |  |
 | f_for_1 | true | 143 | 148 |  |
 | f_for_1 | true | 147 | 143 |  |
+| f_for_1 | true | 148 | 132 |  |
+| f_for_1 | true | 150 | 147 |  |
 | f_for_1 | true | 152 | 154 |  |
+| f_for_1 | true | 154 | 132 |  |
+| f_for_1 | true | 156 | 150 |  |
 | f_for_1 | true | 158 | 124 |  |
 | f_for_1 | true | 160 | 130 |  |
 | f_for_2 | false | 163 | 163 | f_for_2 |
@@ -181,10 +196,17 @@
 | f_for_2 | false | 193 | 193 | return ... |
 | f_for_2 | false | 195 | 195 | { ... } |
 | f_for_2 | true | 169 | 191 |  |
+| f_for_2 | true | 173 | 176 | T |
+| f_for_2 | true | 173 | 193 | F |
+| f_for_2 | true | 174 | 187 |  |
 | f_for_2 | true | 176 | 174 |  |
 | f_for_2 | true | 178 | 183 |  |
 | f_for_2 | true | 182 | 178 |  |
+| f_for_2 | true | 183 | 173 |  |
+| f_for_2 | true | 185 | 182 |  |
 | f_for_2 | true | 187 | 189 |  |
+| f_for_2 | true | 189 | 173 |  |
+| f_for_2 | true | 191 | 185 |  |
 | f_for_2 | true | 193 | 163 |  |
 | f_for_2 | true | 195 | 169 |  |
 | f_for_3 | false | 198 | 198 | f_for_3 |
@@ -202,10 +224,17 @@
 | f_for_3 | false | 228 | 228 | return ... |
 | f_for_3 | false | 230 | 230 | { ... } |
 | f_for_3 | true | 204 | 226 |  |
+| f_for_3 | true | 208 | 211 | T |
+| f_for_3 | true | 208 | 228 | F |
+| f_for_3 | true | 209 | 222 |  |
 | f_for_3 | true | 211 | 209 |  |
 | f_for_3 | true | 213 | 218 |  |
 | f_for_3 | true | 217 | 213 |  |
+| f_for_3 | true | 218 | 208 |  |
+| f_for_3 | true | 220 | 217 |  |
 | f_for_3 | true | 222 | 224 |  |
+| f_for_3 | true | 224 | 208 |  |
+| f_for_3 | true | 226 | 220 |  |
 | f_for_3 | true | 228 | 198 |  |
 | f_for_3 | true | 230 | 204 |  |
 | f_if_1 | false | 61 | 61 | f_if_1 |
@@ -219,7 +248,9 @@
 | f_if_1 | false | 79 | 79 | { ... } |
 | f_if_1 | true | 65 | 69 | T |
 | f_if_1 | true | 65 | 73 | F |
+| f_if_1 | true | 67 | 77 |  |
 | f_if_1 | true | 69 | 67 |  |
+| f_if_1 | true | 71 | 77 |  |
 | f_if_1 | true | 73 | 71 |  |
 | f_if_1 | true | 75 | 65 |  |
 | f_if_1 | true | 77 | 61 |  |
@@ -235,7 +266,9 @@
 | f_if_2 | false | 100 | 100 | { ... } |
 | f_if_2 | true | 87 | 90 | T |
 | f_if_2 | true | 87 | 94 | F |
+| f_if_2 | true | 88 | 98 |  |
 | f_if_2 | true | 90 | 88 |  |
+| f_if_2 | true | 92 | 98 |  |
 | f_if_2 | true | 94 | 92 |  |
 | f_if_2 | true | 96 | 87 |  |
 | f_if_2 | true | 98 | 82 |  |
@@ -251,31 +284,33 @@
 | f_if_3 | false | 121 | 121 | { ... } |
 | f_if_3 | true | 108 | 111 | T |
 | f_if_3 | true | 108 | 115 | F |
+| f_if_3 | true | 109 | 119 |  |
 | f_if_3 | true | 111 | 109 |  |
+| f_if_3 | true | 113 | 119 |  |
 | f_if_3 | true | 115 | 113 |  |
 | f_if_3 | true | 117 | 108 |  |
 | f_if_3 | true | 119 | 103 |  |
 | f_if_3 | true | 121 | 117 |  |
-| f_if_ternary_1 | false | 859 | 859 | f_if_ternary_1 |
-| f_if_ternary_1 | false | 865 | 865 | b |
-| f_if_ternary_1 | false | 867 | 867 | x |
-| f_if_ternary_1 | false | 869 | 869 | y |
-| f_if_ternary_1 | false | 871 | 871 | ... ? ... : ... |
-| f_if_ternary_1 | false | 873 | 873 | { ... } |
-| f_if_ternary_1 | false | 875 | 875 | if (...) ...  |
-| f_if_ternary_1 | false | 877 | 877 | return ... |
-| f_if_ternary_1 | false | 879 | 879 | { ... } |
-| f_if_ternary_1 | true | 865 | 867 | T |
-| f_if_ternary_1 | true | 865 | 869 | F |
-| f_if_ternary_1 | true | 867 | 873 | T |
-| f_if_ternary_1 | true | 867 | 877 | F |
-| f_if_ternary_1 | true | 869 | 873 | T |
-| f_if_ternary_1 | true | 869 | 877 | F |
-| f_if_ternary_1 | true | 871 | 865 |  |
-| f_if_ternary_1 | true | 873 | 877 |  |
-| f_if_ternary_1 | true | 875 | 871 |  |
-| f_if_ternary_1 | true | 877 | 859 |  |
-| f_if_ternary_1 | true | 879 | 875 |  |
+| f_if_ternary_1 | false | 852 | 852 | f_if_ternary_1 |
+| f_if_ternary_1 | false | 858 | 858 | b |
+| f_if_ternary_1 | false | 860 | 860 | x |
+| f_if_ternary_1 | false | 862 | 862 | y |
+| f_if_ternary_1 | false | 864 | 864 | ... ? ... : ... |
+| f_if_ternary_1 | false | 866 | 866 | { ... } |
+| f_if_ternary_1 | false | 868 | 868 | if (...) ...  |
+| f_if_ternary_1 | false | 870 | 870 | return ... |
+| f_if_ternary_1 | false | 872 | 872 | { ... } |
+| f_if_ternary_1 | true | 858 | 860 | T |
+| f_if_ternary_1 | true | 858 | 862 | F |
+| f_if_ternary_1 | true | 860 | 866 | T |
+| f_if_ternary_1 | true | 860 | 870 | F |
+| f_if_ternary_1 | true | 862 | 866 | T |
+| f_if_ternary_1 | true | 862 | 870 | F |
+| f_if_ternary_1 | true | 864 | 858 |  |
+| f_if_ternary_1 | true | 866 | 870 |  |
+| f_if_ternary_1 | true | 868 | 864 |  |
+| f_if_ternary_1 | true | 870 | 852 |  |
+| f_if_ternary_1 | true | 872 | 868 |  |
 | f_switch_1 | false | 429 | 429 | f_switch_1 |
 | f_switch_1 | false | 433 | 433 | i |
 | f_switch_1 | false | 437 | 437 | 0 |
@@ -300,6 +335,7 @@
 | f_switch_1 | false | 478 | 478 | { ... } |
 | f_switch_1 | true | 440 | 429 |  |
 | f_switch_1 | true | 447 | 429 |  |
+| f_switch_1 | true | 459 | 464 |  |
 | f_switch_1 | true | 466 | 429 |  |
 | f_switch_1 | true | 470 | 429 |  |
 | f_switch_1 | true | 472 | 438 |  |
@@ -327,6 +363,7 @@
 | f_switch_2 | false | 527 | 527 | { ... } |
 | f_switch_2 | true | 493 | 482 |  |
 | f_switch_2 | true | 500 | 482 |  |
+| f_switch_2 | true | 512 | 517 |  |
 | f_switch_2 | true | 519 | 482 |  |
 | f_switch_2 | true | 521 | 491 |  |
 | f_switch_2 | true | 525 | 482 |  |
@@ -355,6 +392,7 @@
 | f_switch_3 | false | 579 | 579 | { ... } |
 | f_switch_3 | true | 541 | 530 |  |
 | f_switch_3 | true | 548 | 530 |  |
+| f_switch_3 | true | 560 | 565 |  |
 | f_switch_3 | true | 567 | 530 |  |
 | f_switch_3 | true | 571 | 530 |  |
 | f_switch_3 | true | 573 | 539 |  |
@@ -382,6 +420,7 @@
 | f_switch_4 | false | 627 | 627 | { ... } |
 | f_switch_4 | true | 593 | 582 |  |
 | f_switch_4 | true | 600 | 582 |  |
+| f_switch_4 | true | 612 | 617 |  |
 | f_switch_4 | true | 619 | 582 |  |
 | f_switch_4 | true | 621 | 591 |  |
 | f_switch_4 | true | 625 | 582 |  |
@@ -410,6 +449,7 @@
 | f_switch_5 | false | 679 | 679 | { ... } |
 | f_switch_5 | true | 641 | 630 |  |
 | f_switch_5 | true | 648 | 630 |  |
+| f_switch_5 | true | 660 | 665 |  |
 | f_switch_5 | true | 667 | 630 |  |
 | f_switch_5 | true | 671 | 630 |  |
 | f_switch_5 | true | 673 | 639 |  |
@@ -437,6 +477,7 @@
 | f_switch_6 | false | 727 | 727 | { ... } |
 | f_switch_6 | true | 693 | 682 |  |
 | f_switch_6 | true | 700 | 682 |  |
+| f_switch_6 | true | 712 | 717 |  |
 | f_switch_6 | true | 719 | 682 |  |
 | f_switch_6 | true | 721 | 691 |  |
 | f_switch_6 | true | 725 | 682 |  |
@@ -469,6 +510,7 @@
 | f_switch_7 | true | 743 | 735 |  |
 | f_switch_7 | true | 750 | 731 |  |
 | f_switch_7 | true | 757 | 731 |  |
+| f_switch_7 | true | 769 | 774 |  |
 | f_switch_7 | true | 776 | 731 |  |
 | f_switch_7 | true | 778 | 748 |  |
 | f_switch_7 | true | 782 | 731 |  |
@@ -482,8 +524,13 @@
 | f_while_1 | false | 248 | 248 | while (...) ... |
 | f_while_1 | false | 250 | 250 | return ... |
 | f_while_1 | false | 252 | 252 | { ... } |
+| f_while_1 | true | 238 | 246 | T |
+| f_while_1 | true | 238 | 250 | F |
 | f_while_1 | true | 240 | 242 |  |
+| f_while_1 | true | 242 | 238 |  |
+| f_while_1 | true | 244 | 240 |  |
 | f_while_1 | true | 246 | 244 |  |
+| f_while_1 | true | 248 | 238 |  |
 | f_while_1 | true | 250 | 234 |  |
 | f_while_1 | true | 252 | 248 |  |
 | f_while_2 | false | 255 | 255 | f_while_2 |
@@ -493,7 +540,11 @@
 | f_while_2 | false | 265 | 265 | while (...) ... |
 | f_while_2 | false | 267 | 267 | return ... |
 | f_while_2 | false | 269 | 269 | { ... } |
+| f_while_2 | true | 260 | 263 | T |
+| f_while_2 | true | 260 | 267 | F |
+| f_while_2 | true | 261 | 260 |  |
 | f_while_2 | true | 263 | 261 |  |
+| f_while_2 | true | 265 | 260 |  |
 | f_while_2 | true | 267 | 255 |  |
 | f_while_2 | true | 269 | 265 |  |
 | f_while_3 | false | 272 | 272 | f_while_3 |
@@ -503,6 +554,10 @@
 | f_while_3 | false | 282 | 282 | while (...) ... |
 | f_while_3 | false | 284 | 284 | return ... |
 | f_while_3 | false | 286 | 286 | { ... } |
+| f_while_3 | true | 277 | 280 | T |
+| f_while_3 | true | 277 | 284 | F |
+| f_while_3 | true | 278 | 277 |  |
 | f_while_3 | true | 280 | 278 |  |
+| f_while_3 | true | 282 | 277 |  |
 | f_while_3 | true | 284 | 272 |  |
 | f_while_3 | true | 286 | 282 |  |
