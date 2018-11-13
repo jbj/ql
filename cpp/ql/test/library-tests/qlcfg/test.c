@@ -223,14 +223,13 @@ int f_and_1(int x, int y) {
 }
 
 int f_and_2(int x, int y) {
-  int b = x && !y;
-  if (b) {
+  if (!(x && y)) {
     return x;
   }
   return y;
 }
 
-int f_if_ternary_1(int b, int x, int y) {
+void f_if_ternary_1(int b, int x, int y) {
   if (b ? x : y) {
   }
 }

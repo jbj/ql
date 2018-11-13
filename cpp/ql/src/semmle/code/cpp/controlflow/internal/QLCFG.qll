@@ -7,7 +7,7 @@ TODO: difficulties:
   - New-expressions
   - throw -> handler
   - StmtExpr and ExprStmt
-  - Initializer
+  - CommaExpr
   - BlockExpr??? (clang extension)
 - The nodes that may or may not have children at all
   - ReturnStmt, BlockStmt, ThrowStmt, PostOrderNode
@@ -102,7 +102,9 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAfter(n1, lastControlOrderChild(n)) and
     p2.nodeAt(n2, n)
     or
-    // Short circuit if there are no children
+    // Short circuit if there are no children.
+    // TODO: We could make a predicate straightLine(Node scope, int i, Node n,
+    // Pos p), where child nodes are inserted with gaps between them.
     not exists(lastControlOrderChild(n)) and
     p1.nodeBefore(n1, n) and
     p2.nodeAt(n2, n)
@@ -142,6 +144,12 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeBefore(n2, op.getChild(0))
   )
   or
+  // EmptyStmt ->
+  exists(EmptyStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeAfter(n2, s)
+  )
+  or
   // ReturnStmt [-> Expr] -> Function
   exists(ReturnStmt ret |
     exists(Expr e | e = ret.getExpr() |
@@ -167,6 +175,55 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     or
     p1.nodeAfter(n1, s.getElse()) and
     p2.nodeAfter(n2, s)
+  )
+  or
+  // WhileStmt -> condition ; body -> condition
+  exists(WhileStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getCondition())
+    or
+    p1.nodeAfter(n1, s.getStmt()) and
+    p2.nodeBefore(n2, s.getCondition())
+  )
+  or
+  // DoStmt -> body ; body -> condition
+  exists(DoStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getStmt())
+    or
+    p1.nodeAfter(n1, s.getStmt()) and
+    p2.nodeBefore(n2, s.getCondition())
+  )
+  or
+  // ForStmt -> init -> condition ; body -> update -> condition
+  exists(ForStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getInitialization())
+    or
+    p1.nodeAfter(n1, s.getInitialization()) and
+    p2.nodeBefore(n2, s.getCondition())
+    or
+    p1.nodeAfter(n1, s.getStmt()) and
+    p2.nodeBefore(n2, s.getUpdate())
+    or
+    p1.nodeAfter(n1, s.getUpdate()) and
+    p2.nodeBefore(n2, s.getCondition())
+  )
+  or
+  // ExprStmt -> expr ->
+  exists(ExprStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getExpr())
+    or
+    p1.nodeAfter(n1, s.getExpr()) and
+    p2.nodeAfter(n2, s)
+  )
+  or
+  // JumpStmt -> target
+  // TODO: should the extractor continue to compute these targets?
+  exists(JumpStmt s |
+    p1.nodeAt(n1, s) and
+    p2.nodeBefore(n2, s.getTarget())
   )
 }
 
@@ -198,6 +255,14 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     targetPos.nodeAfter(targetNode, s)
   )
   or
+  exists(Loop l | test = l.getCondition() |
+    truth = true and
+    targetPos.nodeBefore(targetNode, l.getStmt())
+    or
+    truth = false and
+    targetPos.nodeAfter(targetNode, l)
+  )
+  or
   exists(ConditionalExpr e | test = e.getCondition() |
     truth = true and
     targetPos.nodeBefore(targetNode, e.getThen())
@@ -215,7 +280,7 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   conditionJumpsTop(test, truth, targetNode, targetPos)
   or
   // When true and false go to the same place, it's just a normal edge. But we
-  // can fix this up via post-processing.
+  // fix this up via post-processing.
   not conditionJumpsTop(test, _, _, _) and
   test instanceof ShortCircuitOperator and
   targetPos.nodeAfter(targetNode, test) and
@@ -225,7 +290,7 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     (test = e.getThen() or test = e.getElse()) and
     conditionJumps(e, truth, targetNode, targetPos)
   )
-  // TODO: handle `!` better? Like this?
+  // TODO: handle `!` better in the future. Like this?
   //or
   //exists(NotExpr e |
   //  test = e.getOperand() and
@@ -235,8 +300,7 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   exists(LogicalAndExpr e |
     test = e.getLeftOperand() and
     truth = true and
-    targetNode = e.getRightOperand() and
-    targetPos.isBefore()
+    targetPos.nodeBefore(targetNode, e.getRightOperand())
     or
     test = e.getLeftOperand() and
     truth = false and
@@ -245,7 +309,19 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     test = e.getRightOperand() and
     conditionJumps(e, truth, targetNode, targetPos)
   )
-  // TODO: test that we really handle `!` that badly, also in `!(a && b)`.
+  or
+  exists(LogicalOrExpr e |
+    test = e.getLeftOperand() and
+    truth = false and
+    targetPos.nodeBefore(targetNode, e.getRightOperand())
+    or
+    test = e.getLeftOperand() and
+    truth = true and
+    conditionJumps(e, true, targetNode, targetPos)
+    or
+    test = e.getRightOperand() and
+    conditionJumps(e, truth, targetNode, targetPos)
+  )
 }
 
 private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode) {
