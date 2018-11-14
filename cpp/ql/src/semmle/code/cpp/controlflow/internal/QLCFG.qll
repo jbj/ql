@@ -91,6 +91,40 @@ private predicate isDeleteDestructorCall(DestructorCall c) {
   exists(DeleteArrayExpr del | c = del.getDestructorCall())
 }
 
+// TODO: How are parameters destructed? By the caller?
+// TODO: What about variables not in a Block? Like init of a for loop. Or
+// nonsense like `if (1) T x;`.
+private predicate declIndex(Block block, int i, int j, LocalVariable var) {
+  exists(DeclStmt decl |
+    decl = block.getChild(i) and
+    var = decl.getDeclaration(j)
+  )
+}
+
+private predicate destructionRank(Block block, int rnk, LocalVariable var) {
+  var = rank[rnk](int i, int j, LocalVariable var_ij |
+    declIndex(block, i, j, var_ij)
+  | var_ij
+    order by i desc, j desc
+  )
+}
+
+private class SyntheticDestructorCall extends DestructorCall {
+  SyntheticDestructorCall() {
+    not exists(this.getParent()) and
+    not isDeleteDestructorCall(this) and
+    not this.isUnevaluated()
+  }
+}
+
+// TODO: call this
+private predicate destructorCallRank(Block block, int rnk, SyntheticDestructorCall c) {
+  exists(LocalVariable var |
+    destructionRank(block, rnk, var) and
+    c.getQualifier().(VariableAccess).getTarget() = var
+  )
+}
+
 private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
   not n instanceof Assignment and // they go from right to left
@@ -377,6 +411,8 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     targetPos.nodeAfter(targetNode, s)
   )
   or
+  // TODO: Is it slow to use the abstract class `Loop`? It gets compiled to a
+  // join with `stmts`.
   exists(Loop l | test = l.getCondition() |
     truth = true and
     targetPos.nodeBefore(targetNode, l.getStmt())

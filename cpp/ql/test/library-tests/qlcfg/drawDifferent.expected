@@ -1,0 +1,25 @@
+| void_bug__void_bug_extractor | false | 72 | 72 | void_bug |
+| void_bug__void_bug_extractor | false | 79 | 79 | declaration |
+| void_bug__void_bug_extractor | false | 83 | 83 | 0 |
+| void_bug__void_bug_extractor | false | 84 | 84 | return ... |
+| void_bug__void_bug_extractor | false | 86 | 86 | { ... } |
+| void_bug__void_bug_extractor | false | 88 | 88 | v |
+| void_bug__void_bug_extractor | false | 90 | 90 | call to v.~VoidBug |
+| void_bug__void_bug_extractor | true | 79 | 84 |  |
+| void_bug__void_bug_extractor | true | 83 | 88 |  |
+| void_bug__void_bug_extractor | true | 84 | 83 |  |
+| void_bug__void_bug_extractor | true | 86 | 79 |  |
+| void_bug__void_bug_extractor | true | 88 | 90 |  |
+| void_bug__void_bug_extractor | true | 90 | 72 |  |
+| void_bug__void_bug_ql | false | 72 | 72 | void_bug |
+| void_bug__void_bug_ql | false | 79 | 79 | declaration |
+| void_bug__void_bug_ql | false | 83 | 83 | 0 |
+| void_bug__void_bug_ql | false | 84 | 84 | return ... |
+| void_bug__void_bug_ql | false | 86 | 86 | { ... } |
+| void_bug__void_bug_ql | false | 88 | 88 | v |
+| void_bug__void_bug_ql | false | 90 | 90 | call to v.~VoidBug |
+| void_bug__void_bug_ql | true | 79 | 84 |  |
+| void_bug__void_bug_ql | true | 83 | 72 |  |
+| void_bug__void_bug_ql | true | 84 | 83 |  |
+| void_bug__void_bug_ql | true | 86 | 79 |  |
+| void_bug__void_bug_ql | true | 88 | 90 |  |
