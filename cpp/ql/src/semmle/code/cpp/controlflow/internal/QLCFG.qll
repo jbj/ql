@@ -24,7 +24,10 @@ private class Node extends ControlFlowNodeBase {
   Node() {
     // TODO: It appears the extractor doesn't produce CFG for free-standing
     // expressions. Why?
-    exists(this.(ControlFlowNode).getControlFlowScope())
+    exists(this.(ControlFlowNode).getControlFlowScope()) and
+    not this.(Expr).getParent+() instanceof SwitchCase and
+    not this.(Expr).getParent+() instanceof ConstructorInit
+    // TODO: sizeof etc.?
   }
 }
 
@@ -71,13 +74,24 @@ private class PreOrderNode extends Node {
     this instanceof ExprStmt
     or
     this instanceof EmptyStmt
+    or
+    this instanceof AsmStmt
   }
+}
+
+private predicate isDeleteDestructorCall(DestructorCall c) {
+  exists(DeleteExpr del | c = del.getDestructorCall())
+  or
+  exists(DeleteArrayExpr del | c = del.getDestructorCall())
 }
 
 private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
   not n instanceof Assignment and // they go from right to left
-  not n instanceof Call // qualifier comes last
+  not n instanceof Call and // qualifier comes last
+  not n instanceof DeleteExpr and
+  not n instanceof DeleteArrayExpr and
+  not isDeleteDestructorCall(n) // already evaluated
   or
   n = any(Assignment a |
     i = 0 and result = a.getRValue()
@@ -86,11 +100,30 @@ private Node controlOrderChildSparse(Node n, int i) {
   )
   or
   n = any(Call c |
-    i = -1 and result = c.(ExprCall).getExpr()
+    not isDeleteDestructorCall(c) and
+    (
+      i = -1 and result = c.(ExprCall).getExpr()
+      or
+      result = c.getArgument(i)
+      or
+      i = c.getNumberOfArguments() and result = c.getQualifier()
+    )
+  )
+  or
+  n = any(DeleteExpr del |
+    i = 0 and result = del.getExpr()
     or
-    result = c.getArgument(i)
+    i = 1 and result = del.getDestructorCall()
     or
-    i = c.getNumberOfArguments() and result = c.getQualifier()
+    i = 2 and result = del.getAllocatorCall()
+  )
+  or
+  n = any(DeleteArrayExpr del |
+    i = 0 and result = del.getExpr()
+    or
+    i = 1 and result = del.getDestructorCall()
+    or
+    i = 2 and result = del.getAllocatorCall()
   )
   or
   i = 0 and result = n.(Initializer).getExpr()
@@ -115,13 +148,6 @@ private int controlOrderChildMax(Node n) {
   result = -1
 }
 
-private Node lastControlOrderChild(Node n) {
-  result = controlOrderChild(n, controlOrderChildMax(n))
-}
-
-// TODO:
-// predicate straightLine, taking a Spec, which is a supertype of Pos and
-// includes also Around and Barrier.
 private class Spec extends int {
   bindingset[this]
   Spec() { any() }
