@@ -66,6 +66,10 @@ private class PreOrderNode extends Node {
     this instanceof Block
     or
     this instanceof LabelStmt
+    or
+    this instanceof ExprStmt
+    or
+    this instanceof EmptyStmt
   }
 }
 
@@ -160,6 +164,14 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     i = controlOrderChildMax(scope) + 2 and ni = n and spec.isAfter()
   )
   or
+  scope = any(ShortCircuitOperator op |
+    i = -1 and ni = op and spec.isBefore()
+    or
+    i = 0 and ni = op and spec.isAt()
+    or
+    i = 1 and ni = op.getChild(0) and spec.isBefore()
+  )
+  or
   scope = any(ReturnStmt ret |
     i = -1 and ni = ret and spec.isAt()
     or
@@ -220,21 +232,6 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   p1.isBefore() and
   p2.isAt()
   or
-  // -> ShortCircuitOperator -> child1 -> ...
-  exists(ShortCircuitOperator op |
-    p1.nodeBefore(n1, op) and
-    p2.nodeAt(n2, op)
-    or
-    p1.nodeAt(n1, op) and
-    p2.nodeBefore(n2, op.getChild(0))
-  )
-  or
-  // EmptyStmt ->
-  exists(EmptyStmt s |
-    p1.nodeAt(n1, s) and
-    p2.nodeAfter(n2, s)
-  )
-  or
   // entry point -> Function
   // TODO: delete this later. Only for compatibility with extractor quirks. It
   // happens when the extractor doesn't synthesize a `ReturnStmt` because it
@@ -272,15 +269,6 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     or
     p1.nodeAfter(n1, s.getStmt()) and
     p2.nodeBefore(n2, s.getCondition())
-  )
-  or
-  // ExprStmt -> expr ->
-  exists(ExprStmt s |
-    p1.nodeAt(n1, s) and
-    p2.nodeBefore(n2, s.getExpr())
-    or
-    p1.nodeAfter(n1, s.getExpr()) and
-    p2.nodeAfter(n2, s)
   )
   or
   // JumpStmt -> target
