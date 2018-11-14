@@ -11,6 +11,7 @@ TODO: difficulties:
   - Unstructured switch statements
     - Variable init at start of switch block
   - VlaDeclStmt
+  - Pointer-to-member call and access
 - The nodes that may or may not have children at all
   - ReturnStmt, BlockStmt, ThrowStmt, PostOrderNode
 - Nodes with optional children
@@ -75,12 +76,21 @@ private class PreOrderNode extends Node {
 
 private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
-  not n instanceof Assignment // they go from right to left
+  not n instanceof Assignment and // they go from right to left
+  not n instanceof Call // qualifier comes last
   or
   n = any(Assignment a |
     i = 0 and result = a.getRValue()
     or
     i = 1 and result = a.getLValue()
+  )
+  or
+  n = any(Call c |
+    i = -1 and result = c.(ExprCall).getExpr()
+    or
+    result = c.getArgument(i)
+    or
+    i = c.getNumberOfArguments() and result = c.getQualifier()
   )
   or
   i = 0 and result = n.(Initializer).getExpr()
