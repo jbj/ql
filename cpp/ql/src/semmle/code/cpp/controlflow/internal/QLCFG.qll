@@ -19,7 +19,13 @@ TODO: difficulties:
   - Can we just construct the CFG and then inject these calls?
  */
 
-private class Node = ControlFlowNodeBase;
+private class Node extends ControlFlowNodeBase {
+  Node() {
+    // TODO: It appears the extractor doesn't produce CFG for free-standing
+    // expressions. Why?
+    exists(this.(ControlFlowNode).getControlFlowScope())
+  }
+}
 
 private class Pos extends int {
   // This is to make sure we get compile errors in code that forgets to restrict a `Pos`.
@@ -51,7 +57,8 @@ private class PostOrderNode extends Node {
 
 private class PreOrderNode extends Node {
   PreOrderNode() {
-    this instanceof Initializer
+    // TODO: this is to mimic the extractor. Why not extend to all initializers?
+    this.(Initializer).getDeclaration() instanceof LocalVariable
     or
     this instanceof DeclStmt
     or

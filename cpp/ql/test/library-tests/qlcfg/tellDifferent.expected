@@ -1,6 +1,0 @@
-| enum.c | enum.c:2:6:2:6 | 1 | enum.c:2:10:2:10 | 1 | Standard edge, only from QL |
-| enum.c | enum.c:2:6:2:10 | initializer for a | enum.c:2:6:2:6 | 1 | Standard edge, only from QL |
-| enum.c | enum.c:2:10:2:10 | 1 | enum.c:2:6:2:10 | ... + ... | Standard edge, only from QL |
-| parameterinitializer__c_c | file://:0:0:0:0 | initializer for j | parameterinitializer.cpp:13:12:13:12 | call to g | Standard edge, only from QL |
-| parameterinitializer__c_method | file://:0:0:0:0 | initializer for k | parameterinitializer.cpp:15:22:15:22 | call to g | Standard edge, only from QL |
-| parameterinitializer__f | file://:0:0:0:0 | initializer for i | parameterinitializer.cpp:7:16:7:16 | call to g | Standard edge, only from QL |
