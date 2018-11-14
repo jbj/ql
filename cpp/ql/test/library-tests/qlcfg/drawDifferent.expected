@@ -1,29 +1,47 @@
+| enum.c_extractor | false | 591 | 591 | initializer for a |
+| enum.c_extractor | false | 594 | 594 | 1 |
+| enum.c_extractor | false | 597 | 597 | 1 |
+| enum.c_extractor | false | 598 | 598 | ... + ... |
+| enum.c_ql | false | 591 | 591 | initializer for a |
+| enum.c_ql | false | 594 | 594 | 1 |
+| enum.c_ql | false | 597 | 597 | 1 |
+| enum.c_ql | false | 598 | 598 | ... + ... |
+| enum.c_ql | true | 591 | 594 |  |
+| enum.c_ql | true | 594 | 597 |  |
+| enum.c_ql | true | 597 | 598 |  |
 | parameterinitializer__c_c_extractor | false | 886 | 886 | c |
 | parameterinitializer__c_c_extractor | false | 888 | 888 | call to g |
+| parameterinitializer__c_c_extractor | false | 890 | 890 | initializer for j |
 | parameterinitializer__c_c_extractor | false | 893 | 893 | return ... |
 | parameterinitializer__c_c_extractor | false | 895 | 895 | { ... } |
 | parameterinitializer__c_c_extractor | true | 893 | 886 |  |
 | parameterinitializer__c_c_extractor | true | 895 | 893 |  |
 | parameterinitializer__c_c_ql | false | 886 | 886 | c |
 | parameterinitializer__c_c_ql | false | 888 | 888 | call to g |
+| parameterinitializer__c_c_ql | false | 890 | 890 | initializer for j |
 | parameterinitializer__c_c_ql | false | 893 | 893 | return ... |
 | parameterinitializer__c_c_ql | false | 895 | 895 | { ... } |
+| parameterinitializer__c_c_ql | true | 890 | 888 |  |
 | parameterinitializer__c_c_ql | true | 893 | 886 |  |
 | parameterinitializer__c_c_ql | true | 895 | 893 |  |
 | parameterinitializer__c_method_extractor | false | 899 | 899 | method |
 | parameterinitializer__c_method_extractor | false | 901 | 901 | call to g |
+| parameterinitializer__c_method_extractor | false | 903 | 903 | initializer for k |
 | parameterinitializer__c_method_extractor | false | 906 | 906 | return ... |
 | parameterinitializer__c_method_extractor | false | 908 | 908 | { ... } |
 | parameterinitializer__c_method_extractor | true | 906 | 899 |  |
 | parameterinitializer__c_method_extractor | true | 908 | 906 |  |
 | parameterinitializer__c_method_ql | false | 899 | 899 | method |
 | parameterinitializer__c_method_ql | false | 901 | 901 | call to g |
+| parameterinitializer__c_method_ql | false | 903 | 903 | initializer for k |
 | parameterinitializer__c_method_ql | false | 906 | 906 | return ... |
 | parameterinitializer__c_method_ql | false | 908 | 908 | { ... } |
+| parameterinitializer__c_method_ql | true | 903 | 901 |  |
 | parameterinitializer__c_method_ql | true | 906 | 899 |  |
 | parameterinitializer__c_method_ql | true | 908 | 906 |  |
 | parameterinitializer__f_extractor | false | 851 | 851 | f |
 | parameterinitializer__f_extractor | false | 855 | 855 | call to g |
+| parameterinitializer__f_extractor | false | 857 | 857 | initializer for i |
 | parameterinitializer__f_extractor | false | 862 | 862 | call to printf |
 | parameterinitializer__f_extractor | false | 870 | 870 | Got %d\n |
 | parameterinitializer__f_extractor | false | 871 | 871 | array to pointer conversion |
@@ -40,6 +58,7 @@
 | parameterinitializer__f_extractor | true | 881 | 877 |  |
 | parameterinitializer__f_ql | false | 851 | 851 | f |
 | parameterinitializer__f_ql | false | 855 | 855 | call to g |
+| parameterinitializer__f_ql | false | 857 | 857 | initializer for i |
 | parameterinitializer__f_ql | false | 862 | 862 | call to printf |
 | parameterinitializer__f_ql | false | 870 | 870 | Got %d\n |
 | parameterinitializer__f_ql | false | 871 | 871 | array to pointer conversion |
@@ -48,6 +67,7 @@
 | parameterinitializer__f_ql | false | 877 | 877 | ExprStmt |
 | parameterinitializer__f_ql | false | 879 | 879 | return ... |
 | parameterinitializer__f_ql | false | 881 | 881 | { ... } |
+| parameterinitializer__f_ql | true | 857 | 855 |  |
 | parameterinitializer__f_ql | true | 862 | 879 |  |
 | parameterinitializer__f_ql | true | 870 | 875 |  |
 | parameterinitializer__f_ql | true | 875 | 862 |  |

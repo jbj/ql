@@ -5,4 +5,4 @@ from
 where
   differentEdge(n1, n2, msg)
 select
-  scope(n1), n1, n2, msg
+  getScopeName(n1), n1, n2, msg
