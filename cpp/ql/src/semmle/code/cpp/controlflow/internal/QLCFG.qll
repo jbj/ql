@@ -206,49 +206,6 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2 = spec2.asRightPos()
   )
   or
-  // TODO: cases from here when moved to straightLine.
-  // child0 -> ... -> childN
-  exists(Node n, int i |
-    p1.nodeAfter(n1, controlOrderChild(n, i)) and
-    p2.nodeBefore(n2, controlOrderChild(n, i+1))
-  )
-  or
-  // -> [children ->] PostOrderNode ->
-  exists(PostOrderNode n |
-    p1.nodeBefore(n1, n) and
-    p2.nodeBefore(n2, controlOrderChild(n, 0))
-    or
-    p1.nodeAfter(n1, lastControlOrderChild(n)) and
-    p2.nodeAt(n2, n)
-    or
-    // Short circuit if there are no children.
-    // TODO: We could make a predicate straightLine(Node scope, int i, Node n,
-    // Pos p), where child nodes are inserted with gaps between them.
-    not exists(lastControlOrderChild(n)) and
-    p1.nodeBefore(n1, n) and
-    p2.nodeAt(n2, n)
-    or
-    p1.nodeAt(n1, n) and
-    p2.nodeAfter(n2, n)
-  )
-  or
-  // -> PreOrderNode -> [children ->]
-  exists(PreOrderNode n |
-    p1.nodeBefore(n1, n) and
-    p2.nodeAt(n2, n)
-    or
-    p1.nodeAt(n1, n) and
-    p2.nodeBefore(n2, controlOrderChild(n, 0))
-    or
-    p1.nodeAfter(n1, lastControlOrderChild(n)) and
-    p2.nodeAfter(n2, n)
-    or
-    // Short circuit if there are no children
-    not exists(lastControlOrderChild(n)) and
-    p1.nodeAt(n1, n) and
-    p2.nodeAfter(n2, n)
-  )
-  or
   // All statements start with themselves.
   // TODO: does that mean we should never make edges to _before_ a statement
   // but always _at_ the statement? Or is that premature optimization?
@@ -269,21 +226,6 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   exists(EmptyStmt s |
     p1.nodeAt(n1, s) and
     p2.nodeAfter(n2, s)
-  )
-  or
-  // ReturnStmt [-> Expr] -> Function
-  exists(ReturnStmt ret |
-    exists(Expr e | e = ret.getExpr() |
-      p1.nodeAt(n1, ret) and
-      p2.nodeBefore(n2, e)
-      or
-      p1.nodeAfter(n1, e) and
-      p2.nodeAt(n2, ret.getEnclosingFunction())
-    )
-    or
-    not exists(ret.getExpr()) and
-    p1.nodeAt(n1, ret) and
-    p2.nodeAt(n2, ret.getEnclosingFunction())
   )
   or
   // entry point -> Function
