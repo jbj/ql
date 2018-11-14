@@ -20,13 +20,19 @@ TODO: difficulties:
   - Can we just construct the CFG and then inject these calls?
  */
 
-private class Node extends ControlFlowNodeBase {
-  Node() {
+private class Node = ControlFlowNodeBase;
+
+/**
+ * For compatibility with the extractor-generated CFG, the QL-generated CFG
+ * will only be produced for nodes in this class.
+ */
+private class SupportedNode extends Node {
+  SupportedNode() {
     // TODO: It appears the extractor doesn't produce CFG for free-standing
     // expressions. Why?
     exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.(Expr).getParent+() instanceof SwitchCase and
-    not this.(Expr).getParent+() instanceof ConstructorInit
+    not this.(Expr).getParent*() instanceof ConstructorInit
     // TODO: sizeof etc.?
   }
 }
@@ -134,10 +140,9 @@ private Node controlOrderChildSparse(Node n, int i) {
 }
 
 private Node controlOrderChild(Node n, int i) {
-  result = rank[i + 1](Node child, int childIdx |
-    child = controlOrderChildSparse(n, childIdx)
-  | child
-    order by childIdx
+  exists(int sparseIndex |
+    result = controlOrderChildSparse(n, sparseIndex) and
+    i = sparseIndex - min(int j | exists(controlOrderChildSparse(n, j)))
   )
 }
 
@@ -194,7 +199,6 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 0 and ni = n and spec.isAt()
     or
-    // TODO: change this so we can write `i = ...`
     ni = controlOrderChild(scope, i - 1) and spec.isAround()
     or
     i = controlOrderChildMax(scope) + 2 and ni = n and spec.isAfter()
@@ -444,7 +448,10 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
 
 private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode) {
   memberNode = atNode and
-  memberPos.isAt()
+  memberPos.isAt() and
+  // We check for SupportedNode here as it's slower to check in all the leaf
+  // cases during construction of the half-graph.
+  atNode instanceof SupportedNode
   or
   // TODO: this is a transitive closure. If it's slow, we can speed it up with
   // FastTC (and IPA).
