@@ -1,6 +1,56 @@
 import cpp
 import semmle.code.cpp.controlflow.internal.QLCFG
 
+// TODO: copied from QLCFG.qll. Needed?
+private predicate isDeleteDestructorCall(DestructorCall c) {
+  exists(DeleteExpr del | c = del.getDestructorCall())
+  or
+  exists(DeleteArrayExpr del | c = del.getDestructorCall())
+}
+
+private class SyntheticDestructorCall extends DestructorCall {
+  SyntheticDestructorCall() {
+    not exists(this.getParent()) and
+    not isDeleteDestructorCall(this) and
+    not this.isUnevaluated() /*and
+    this.isCompilerGenerated()*/
+  }
+}
+
+import CollapseDestructorCalls
+private module CollapseDestructorCalls {
+  private predicate shouldSkip(Expr e) {
+    exists(SyntheticDestructorCall c |
+      e = c
+      or
+      e.getParent() = c
+    )
+  }
+
+  private predicate isMember(ControlFlowNode member, ControlFlowNode group) {
+    not shouldSkip(group) and
+    member = group
+    or
+    exists(ControlFlowNode succ |
+      isMember(succ, group) and
+      successors(member, succ) and
+      shouldSkip(member)
+    )
+  }
+
+  predicate successors_collapsed(ControlFlowNode n1, ControlFlowNode n2) {
+    not shouldSkip(n1) and
+    exists(ControlFlowNode member |
+      successors(n1, member) and
+      isMember(member, n2)
+    )
+    or
+    // Preserve edges within pair of access and call in order to to mimic the QL
+    // construction.
+    n1.(VariableAccess).getParent() = n2.(SyntheticDestructorCall)
+  }
+}
+
 class DestructorCallEnhanced extends DestructorCall {
     override string toString() {
         if exists(this.getQualifier().(VariableAccess).getTarget().getName())
@@ -10,11 +60,11 @@ class DestructorCallEnhanced extends DestructorCall {
 }
 
 predicate differentEdge(ControlFlowNode n1, ControlFlowNode n2, string msg) {
-  successors(n1, n2) and
+  successors_collapsed(n1, n2) and
   not qlCFGSuccessor(n1, n2) and
   msg = "Standard edge, only from extractor"
   or
-  not successors(n1, n2) and
+  not successors_collapsed(n1, n2) and
   qlCFGSuccessor(n1, n2) and
   msg = "Standard edge, only from QL"
   or
@@ -103,7 +153,7 @@ module ExtractorCFG {
   predicate isSuccessor(boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label) {
       exists(string truelabel, string falselabel |
              isEdge = true
-         and successors(x, y)
+         and successors_collapsed(x, y)
          and if truecond_base(x, y) then truelabel  = "T" else truelabel  = ""
          and if falsecond_base(x, y) then falselabel = "F" else falselabel = ""
          and label = truelabel + falselabel)
