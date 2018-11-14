@@ -36,29 +36,35 @@ predicate differentEdge(ControlFlowNode n1, ControlFlowNode n2, string msg) {
 }
 
 // TODO: account for nodes that are not in functions
-predicate differentFunction(Function f) {
+predicate differentScope(Element e) {
   exists(ControlFlowNode n1 |
-    n1.getControlFlowScope() = f and
+    getScopeElement(n1) = e and
     differentEdge(n1, _, _)
   )
 }
 
-// TODO: delete?
-//predicate edgeMessage(ControlFlowNode n1, ControlFlowNode n2, string msg) {
-//  exists(string shortMsg |
-//    differentEdge(n1, n2, shortMsg) and
-//    msg = "[" + concat(n1.toString(), ", ") + "] -> [" + concat(n2.toString(), ", ") + "]"
-//  )
-//}
+Element getScopeElement(ControlFlowNode x) {
+  result = x.getControlFlowScope()
+  or
+  not exists(x.getControlFlowScope()) and
+  result = x.getFile()
+}
 
-string scope(ControlFlowNode x) {
-  if exists(x.getControlFlowScope().getQualifiedName())
-  then
+string getScopeName(ControlFlowNode x) {
+  exists(Function scope | scope = getScopeElement(x) |
     result =
-      x.getFile().getBaseName().splitAt(".", 0) + "__" +
-      x.getControlFlowScope().getQualifiedName().replaceAll("::", "_")
-  else
-    result = x.getFile().getBaseName()
+      scope.getFile().getBaseName().splitAt(".", 0) + "__" +
+      scope.getQualifiedName().replaceAll("::", "_")
+  )
+  or
+  result = getScopeElement(x).(File).getBaseName()
+    //if exists(scope.(Function).getQualifiedName())
+    //then
+    //  result =
+    //    scope.getFile().getBaseName().splitAt(".", 0) + "__" +
+    //    scope.(Function).getQualifiedName().replaceAll("::", "_")
+    //else
+    //  result = scope.(File).getBaseName()
 }
 
 module QLCFG {
@@ -79,8 +85,8 @@ module QLCFG {
     Element scopeElement,
     string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
   ) {
-    scopeElement = x.getControlFlowScope() and // TODO: nodes outside functions
-    scopeString = scope(x) + "_ql" and
+    scopeElement = getScopeElement(x) and
+    scopeString = getScopeName(x) + "_ql" and
     (
       isNode(isEdge, x, y, label)
       or
@@ -107,8 +113,8 @@ module ExtractorCFG {
     Element scopeElement,
     string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
   ) {
-    scopeElement = x.getControlFlowScope() and // TODO: nodes outside functions
-    scopeString = scope(x) + "_extractor" and
+    scopeElement = getScopeElement(x) and
+    scopeString = getScopeName(x) + "_extractor" and
     (
       isNode(isEdge, x, y, label)
       or

@@ -6,6 +6,6 @@ from
   string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
 where
   BothCFG::qltestGraph(scopeElement, scopeString, isEdge, x, y, label) and
-  differentFunction(scopeElement)
+  differentScope(scopeElement)
 select
   scopeString, isEdge, x, y, label
