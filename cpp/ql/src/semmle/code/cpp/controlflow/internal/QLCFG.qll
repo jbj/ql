@@ -231,7 +231,7 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 1 and ni = e and spec.isAt()
     or
-    i = 2 and ni = e.getEnclosingFunction() and spec.isAt()
+    i = 2 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isAt()
   )
   or
   scope = any(ReturnStmt ret |
@@ -269,6 +269,14 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
       or
       i = 3 and ni = s.getStmt() and spec.isBefore()
     )
+  )
+  or
+  scope = any(TryStmt s |
+    i = -1 and ni = s and spec.isAt()
+    or
+    i = 0 and ni = s.getStmt() and spec.isAround()
+    or
+    i = 1 and ni = s and spec.isAfter()
   )
 }
 
@@ -369,6 +377,24 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAfter(n1, s.getStmt()) and
     p2.nodeAfter(n2, s)
   )
+  or
+  exists(Handler h |
+    p1.nodeAt(n1, h) and
+    p2.nodeBefore(n2, h.getBlock())
+    or
+    exists(int i, TryStmt try |
+      h = try.getChild(i) and
+      p1.nodeAt(n1, h) and
+      p2.nodeAt(n2, try.getChild(i+1))
+    )
+    or
+    p1.nodeAt(n1, h) and
+    p2.nodeAt(n2, h.(ExceptionSource).getExceptionTarget())
+  )
+  or exists(CatchBlock cb |
+    p1.nodeAfter(n1, cb) and
+    p2.nodeAfter(n2, cb.getTryStmt())
+  )
 }
 
 private class ShortCircuitOperator extends Expr {
@@ -378,6 +404,49 @@ private class ShortCircuitOperator extends Expr {
     this instanceof LogicalOrExpr
     or
     this instanceof ConditionalExpr
+  }
+}
+
+private class ExceptionTarget extends ControlFlowNode {
+  ExceptionTarget() { this instanceof Handler or this instanceof Function }
+}
+
+private class LastHandler extends Handler {
+  LastHandler() {
+    exists(int i, TryStmt try |
+      this = try.getChild(i) and
+      i = max(int j | exists(try.getChild(j)))
+    )
+  }
+}
+
+private class ExceptionSource extends ControlFlowNode {
+  ExceptionSource() { this instanceof ThrowExpr or this instanceof LastHandler }
+
+  // TODO: Performance: if there are multiple throws far down in the AST, this
+  // will compute their parents separately without sharing. If that's a
+  // performance problem, we can go up the tree first with a unary predicate
+  // `isThrowParent` and then down along those edges only.
+  private predicate reachesParent(Stmt parent) {
+    parent = this.(ThrowExpr).getEnclosingStmt()
+    or
+    parent = this.(LastHandler).getTryStmt().getEnclosingStmt()
+    or
+    exists(Stmt e |
+      this.reachesParent(e) and
+      not e instanceof TryStmt and
+      parent = e.getParent()
+    )
+  }
+
+  ExceptionTarget getExceptionTarget() {
+    exists(Stmt parent |
+      this.reachesParent(parent)
+    |
+      result.(Function).getBlock() = parent
+      or
+      result = parent.(TryStmt).getChild(1)
+    )
   }
 }
 
