@@ -38,7 +38,7 @@ private module CollapseDestructorCalls {
     )
   }
 
-  predicate successors_collapsed(ControlFlowNode n1, ControlFlowNode n2) {
+  predicate successorsForCompare(ControlFlowNode n1, ControlFlowNode n2) {
     not shouldSkip(n1) and
     exists(ControlFlowNode member |
       successors(n1, member) and
@@ -48,6 +48,20 @@ private module CollapseDestructorCalls {
     // Preserve edges within pair of access and call in order to to mimic the QL
     // construction.
     n1.(VariableAccess).getParent() = n2.(SyntheticDestructorCall)
+  }
+
+  predicate truecondForCompare(ControlFlowNode n1, ControlFlowNode n2) {
+    exists(ControlFlowNode member |
+      truecond_base(n1, member) and
+      isMember(member, n2)
+    )
+  }
+
+  predicate falsecondForCompare(ControlFlowNode n1, ControlFlowNode n2) {
+    exists(ControlFlowNode member |
+      falsecond_base(n1, member) and
+      isMember(member, n2)
+    )
   }
 }
 
@@ -60,27 +74,27 @@ class DestructorCallEnhanced extends DestructorCall {
 }
 
 predicate differentEdge(ControlFlowNode n1, ControlFlowNode n2, string msg) {
-  successors_collapsed(n1, n2) and
+  successorsForCompare(n1, n2) and
   not qlCFGSuccessor(n1, n2) and
   msg = "Standard edge, only from extractor"
   or
-  not successors_collapsed(n1, n2) and
+  not successorsForCompare(n1, n2) and
   qlCFGSuccessor(n1, n2) and
   msg = "Standard edge, only from QL"
   or
-  truecond_base(n1, n2) and
+  truecondForCompare(n1, n2) and
   not qlCFGTrueSuccessor(n1, n2) and
   msg = "True edge, only from extractor"
   or
-  not truecond_base(n1, n2) and
+  not truecondForCompare(n1, n2) and
   qlCFGTrueSuccessor(n1, n2) and
   msg = "True edge, only from QL"
   or
-  falsecond_base(n1, n2) and
+  falsecondForCompare(n1, n2) and
   not qlCFGFalseSuccessor(n1, n2) and
   msg = "False edge, only from extractor"
   or
-  not falsecond_base(n1, n2) and
+  not falsecondForCompare(n1, n2) and
   qlCFGFalseSuccessor(n1, n2) and
   msg = "False edge, only from QL"
 }
@@ -153,9 +167,9 @@ module ExtractorCFG {
   predicate isSuccessor(boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label) {
       exists(string truelabel, string falselabel |
              isEdge = true
-         and successors_collapsed(x, y)
-         and if truecond_base(x, y) then truelabel  = "T" else truelabel  = ""
-         and if falsecond_base(x, y) then falselabel = "F" else falselabel = ""
+         and successorsForCompare(x, y)
+         and if truecondForCompare(x, y) then truelabel  = "T" else truelabel  = ""
+         and if falsecondForCompare(x, y) then falselabel = "F" else falselabel = ""
          and label = truelabel + falselabel)
   }
 
@@ -173,7 +187,35 @@ module ExtractorCFG {
   }
 }
 
-module BothCFG {
+module UnmodifiedCFG {
+  predicate isNode(boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label) {
+      isEdge = false and x = y and label = x.toString()
+  }
+
+  predicate isSuccessor(boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label) {
+      exists(string truelabel, string falselabel |
+             isEdge = true
+         and successors(x, y)
+         and if truecond_base(x, y) then truelabel  = "T" else truelabel  = ""
+         and if falsecond_base(x, y) then falselabel = "F" else falselabel = ""
+         and label = truelabel + falselabel)
+  }
+
+  predicate qltestGraph(
+    Element scopeElement,
+    string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
+  ) {
+    scopeElement = getScopeElement(x) and
+    scopeString = getScopeName(x) + "_unmodified" and
+    (
+      isNode(isEdge, x, y, label)
+      or
+      isSuccessor(isEdge, x, y, label)
+    )
+  }
+}
+
+module AllCFG {
   predicate qltestGraph(
     Element scopeElement,
     string scopeString, boolean isEdge, ControlFlowNode x, ControlFlowNode y, string label
@@ -181,5 +223,7 @@ module BothCFG {
     QLCFG::qltestGraph(scopeElement, scopeString, isEdge, x, y, label)
     or
     ExtractorCFG::qltestGraph(scopeElement, scopeString, isEdge, x, y, label)
+    or
+    UnmodifiedCFG::qltestGraph(scopeElement, scopeString, isEdge, x, y, label)
   }
 }
