@@ -1,9 +1,1 @@
-| ellipsisexceptionhandler__eehandler_f | ellipsisexceptionhandler.cpp:8:17:9:3 | <handler> | ellipsisexceptionhandler.cpp:7:19:8:3 | <handler> | Standard edge, only from QL |
-| ellipsisexceptionhandler__eehandler_f | ellipsisexceptionhandler.cpp:10:18:11:2 | <handler> | ellipsisexceptionhandler.cpp:3:6:3:6 | f | Standard edge, only from extractor |
-| ellipsisexceptionhandler__eehandler_f | ellipsisexceptionhandler.cpp:10:18:11:2 | <handler> | ellipsisexceptionhandler.cpp:10:18:11:2 | <handler> | Standard edge, only from QL |
-| ellipsisexceptionhandler__eehandler_g | ellipsisexceptionhandler.cpp:17:16:18:2 | <handler> | ellipsisexceptionhandler.cpp:17:16:18:2 | <handler> | Standard edge, only from QL |
-| exceptionhandler__ehandler_f | exceptionhandler.cpp:16:17:18:3 | <handler> | exceptionhandler.cpp:16:17:18:3 | <handler> | Standard edge, only from QL |
-| exceptionhandler__ehandler_f | exceptionhandler.cpp:16:17:18:3 | <handler> | exceptionhandler.cpp:19:14:21:2 | <handler> | Standard edge, only from extractor |
-| exceptionhandler__ehandler_f | exceptionhandler.cpp:21:14:23:2 | <handler> | exceptionhandler.cpp:10:6:10:6 | f | Standard edge, only from extractor |
-| exceptionhandler__ehandler_f | exceptionhandler.cpp:21:14:23:2 | <handler> | exceptionhandler.cpp:19:14:21:2 | <handler> | Standard edge, only from QL |
 | statements__gotos | statements.cpp:48:5:48:23 | declaration | statements.cpp:49:1:49:4 | label ...: | Standard edge, only from extractor |
