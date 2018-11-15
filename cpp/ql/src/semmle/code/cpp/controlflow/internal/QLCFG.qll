@@ -3,23 +3,19 @@ import cpp
 /*
 TODO: difficulties:
 - Particular AST nodes
-  - New-expressions
-  - throw -> handler
   - StmtExpr
+    - Interaction with throw-catch
   - CommaExpr
   - BlockExpr??? (clang extension)
+  - Microsoft __try
   - Unstructured switch statements
     - Variable init at start of switch block
   - VlaDeclStmt
   - Pointer-to-member call and access
-- The nodes that may or may not have children at all
-  - ReturnStmt, BlockStmt, ThrowStmt, PostOrderNode
-- Nodes with optional children
-  - IfStmt (else), ForStmt (all three)
-- lastControlFlowNodeBeforeDestructors and following_destructor
-  - Can we just construct the CFG and then inject these calls?
 - Synthetic destructor calls. I've taken them out of the reference in the
   comparisons until there is a solution.
+  - following_destructor extractor changes
+    - Can we just construct the CFG and then inject these calls?
  */
 
 private class Node = ControlFlowNodeBase;
