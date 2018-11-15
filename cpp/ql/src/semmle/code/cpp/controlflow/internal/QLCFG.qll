@@ -382,14 +382,19 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAt(n1, h) and
     p2.nodeBefore(n2, h.getBlock())
     or
-    exists(int i, TryStmt try |
-      h = try.getChild(i) and
+    // If this is not a catch-all handler, add an edge to the next handler in
+    // case it doesn't match.
+    exists(h.getParameter()) and
+    (
+      exists(int i, TryStmt try |
+        h = try.getChild(i) and
+        p1.nodeAt(n1, h) and
+        p2.nodeAt(n2, try.getChild(i+1))
+      )
+      or
       p1.nodeAt(n1, h) and
-      p2.nodeAt(n2, try.getChild(i+1))
+      p2.nodeAt(n2, h.(ExceptionSource).getExceptionTarget())
     )
-    or
-    p1.nodeAt(n1, h) and
-    p2.nodeAt(n2, h.(ExceptionSource).getExceptionTarget())
   )
   or exists(CatchBlock cb |
     p1.nodeAfter(n1, cb) and
@@ -411,8 +416,9 @@ private class ExceptionTarget extends ControlFlowNode {
   ExceptionTarget() { this instanceof Handler or this instanceof Function }
 }
 
-private class LastHandler extends Handler {
-  LastHandler() {
+private class PropagatingHandler extends Handler {
+  PropagatingHandler() {
+    exists(this.getParameter()) and
     exists(int i, TryStmt try |
       this = try.getChild(i) and
       i = max(int j | exists(try.getChild(j)))
@@ -421,21 +427,21 @@ private class LastHandler extends Handler {
 }
 
 private class ExceptionSource extends ControlFlowNode {
-  ExceptionSource() { this instanceof ThrowExpr or this instanceof LastHandler }
+  ExceptionSource() { this instanceof ThrowExpr or this instanceof PropagatingHandler }
 
-  // TODO: Performance: if there are multiple throws far down in the AST, this
+  // TODO: Performance: if there are multiple sources far down in the AST, this
   // will compute their parents separately without sharing. If that's a
   // performance problem, we can go up the tree first with a unary predicate
   // `isThrowParent` and then down along those edges only.
   private predicate reachesParent(Stmt parent) {
     parent = this.(ThrowExpr).getEnclosingStmt()
     or
-    parent = this.(LastHandler).getTryStmt().getEnclosingStmt()
+    parent = this.(PropagatingHandler).getTryStmt().getParentStmt()
     or
-    exists(Stmt e |
-      this.reachesParent(e) and
-      not e instanceof TryStmt and
-      parent = e.getParent()
+    exists(Stmt s |
+      this.reachesParent(s) and
+      not s instanceof TryStmt and
+      parent = s.getParentStmt()
     )
   }
 
