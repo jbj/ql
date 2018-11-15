@@ -34,7 +34,8 @@ private class SupportedNode extends Node {
     // expressions. Why?
     exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.(Expr).getParent+() instanceof SwitchCase and
-    not this.(Expr).getParent*() instanceof ConstructorInit
+    not this.(Expr).getParent*() instanceof ConstructorInit and
+    not this.(Expr).getParent+() instanceof ConditionDeclExpr
     // TODO: sizeof etc.?
   }
 }
@@ -62,7 +63,7 @@ private class PostOrderNode extends Node {
     // TODO: positive list instead of negative list
     this instanceof Expr and
     not this instanceof ShortCircuitOperator and
-    //not this instanceof ThrowExpr and // TODO
+    not this instanceof ThrowExpr and
     not this instanceof Conversion // not in CFG
   }
 }
@@ -95,13 +96,14 @@ private predicate isDeleteDestructorCall(DestructorCall c) {
 
 private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
-  not n instanceof Assignment and // they go from right to left
+  not n instanceof AssignExpr and // they go from right to left
   not n instanceof Call and // qualifier comes last
+  not n instanceof ConditionDeclExpr and
   not n instanceof DeleteExpr and
   not n instanceof DeleteArrayExpr and
   not isDeleteDestructorCall(n) // already evaluated
   or
-  n = any(Assignment a |
+  n = any(AssignExpr a |
     i = 0 and result = a.getRValue()
     or
     i = 1 and result = a.getLValue()
@@ -116,6 +118,11 @@ private Node controlOrderChildSparse(Node n, int i) {
       or
       i = c.getNumberOfArguments() and result = c.getQualifier()
     )
+  )
+  or
+  // TODO: this is compatible with the extractor but could be better
+  n = any(ConditionDeclExpr cd |
+    i = 0 and result = cd.getVariable().getInitializer().getExpr()
   )
   or
   n = any(DeleteExpr del |
@@ -134,7 +141,10 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 2 and result = del.getAllocatorCall()
   )
   or
-  i = 0 and result = n.(Initializer).getExpr()
+  n = any(Initializer init |
+    not exists(ConditionDeclExpr cd | init = cd.getVariable().getInitializer()) and
+    i = 0 and result = n.(Initializer).getExpr()
+  )
   or
   result = n.(PreOrderNode).(Stmt).getChild(i)
   or
@@ -212,6 +222,16 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     i = 0 and ni = op and spec.isAt()
     or
     i = 1 and ni = op.getChild(0) and spec.isBefore()
+  )
+  or
+  scope = any(ThrowExpr e |
+    i = -1 and ni = e and spec.isBefore()
+    or
+    i = 0 and ni = e.getExpr() and spec.isAround()
+    or
+    i = 1 and ni = e and spec.isAt()
+    or
+    i = 2 and ni = e.getEnclosingFunction() and spec.isAt()
   )
   or
   scope = any(ReturnStmt ret |

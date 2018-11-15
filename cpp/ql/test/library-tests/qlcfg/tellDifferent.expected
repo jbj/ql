@@ -1,3 +1,7 @@
-| void_bug__void_bug | void_bug.cpp:5:10:5:10 | 0 | void_bug.cpp:3:5:3:12 | void_bug | Standard edge, only from QL |
-| void_bug__void_bug | void_bug.cpp:5:10:5:10 | 0 | void_bug.cpp:6:1:6:1 | v | Standard edge, only from extractor |
-| void_bug__void_bug | void_bug.cpp:6:1:6:1 | call to v.~VoidBug | void_bug.cpp:3:5:3:12 | void_bug | Standard edge, only from extractor |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:27:48:41 | (condition decl) | condition_decls.cpp:50:3:50:3 | bi | False edge, only from extractor |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:27:48:41 | (condition decl) | condition_decls.cpp:51:3:51:6 | ExprStmt | False edge, only from QL |
+| condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:43:3:43:3 | bi | False edge, only from extractor |
+| condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:44:3:44:6 | ExprStmt | False edge, only from QL |
+| statements__for_loop_scope | statements.cpp:32:29:32:34 | ... < ... | statements.cpp:32:18:32:26 | for_scope | False edge, only from extractor |
+| statements__for_loop_scope | statements.cpp:32:29:32:34 | ... < ... | statements.cpp:36:1:36:1 | return ... | False edge, only from QL |
+| statements__gotos | statements.cpp:48:5:48:23 | declaration | statements.cpp:49:1:49:4 | label ...: | Standard edge, only from extractor |
