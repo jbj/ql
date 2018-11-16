@@ -1,1 +1,75 @@
+| array_delete__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| array_delete__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| assignexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| assignexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| constmemberaccess__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| constmemberaccess__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| constructorinitializer__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| constructorinitializer__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| defconstructornewexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| defconstructornewexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| defdestructordeleteexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| defdestructordeleteexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| deleteexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| deleteexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| duff2__duff2_2 | duff2.c:18:13:18:17 | ... % ... | duff2.c:18:20:21:22 | do (...) ... | Standard edge, only from QL |
+| duff2__duff2_2 | duff2.c:18:13:18:17 | ... % ... | duff2.c:19:5:19:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_2 | duff2.c:18:13:18:17 | ... % ... | duff2.c:20:5:20:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_2 | duff2.c:18:13:18:17 | ... % ... | duff2.c:22:1:22:1 | return ... | Standard edge, only from extractor |
+| duff2__duff2_2 | duff2.c:18:20:21:22 | do (...) ... | duff2.c:19:5:19:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_2 | duff2.c:18:20:21:22 | do (...) ... | duff2.c:20:5:20:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_2 | duff2.c:18:20:21:22 | do (...) ... | duff2.c:22:1:22:1 | return ... | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:4:20:13:22 | do (...) ... | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:5:5:5:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:6:5:6:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:7:5:7:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:8:5:8:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:9:5:9:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:10:5:10:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:11:5:11:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:12:5:12:11 | case ...: | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:13:4:17 | ... % ... | duff2.c:14:1:14:1 | return ... | Standard edge, only from extractor |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:5:5:5:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:6:5:6:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:7:5:7:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:8:5:8:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:9:5:9:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:10:5:10:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:11:5:11:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:12:5:12:11 | case ...: | Standard edge, only from QL |
+| duff2__duff2_8 | duff2.c:4:20:13:22 | do (...) ... | duff2.c:14:1:14:1 | return ... | Standard edge, only from QL |
+| fieldaccess__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| fieldaccess__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| membercallexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| membercallexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| membercallexpr_args__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| membercallexpr_args__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| newexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| newexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| parameterinitializer__f | stmt_expr.cpp:11:5:17:9 | if (...) ...  | stmt_expr.cpp:11:9:14:10 | (statement expression) | Standard edge, only from QL |
+| parameterinitializer__f | stmt_expr.cpp:11:5:17:9 | if (...) ...  | stmt_expr.cpp:11:10:14:9 | { ... } | Standard edge, only from extractor |
+| parameterinitializer__f | stmt_expr.cpp:13:14:13:14 | b | stmt_expr.cpp:11:9:14:10 | (statement expression) | Standard edge, only from extractor |
+| parameterinitializer__f | stmt_expr.cpp:13:14:13:14 | i | stmt_expr.cpp:11:9:14:10 | (statement expression) | Standard edge, only from extractor |
+| pmcallexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| pmcallexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
 | statements__gotos | statements.cpp:48:5:48:23 | declaration | statements.cpp:49:1:49:4 | label ...: | Standard edge, only from extractor |
+| staticlocals__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| staticlocals__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| staticmembercallexpr__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| staticmembercallexpr__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| staticmembercallexpr_args__f | staticlocals.cpp:10:5:10:32 | declaration | staticlocals.cpp:11:5:11:23 | declaration | Standard edge, only from extractor |
+| staticmembercallexpr_args__f | staticlocals.cpp:11:5:11:23 | declaration | staticlocals.cpp:12:5:12:5 | ; | Standard edge, only from extractor |
+| stmt_expr__f | stmt_expr.cpp:11:5:17:9 | if (...) ...  | stmt_expr.cpp:11:9:14:10 | (statement expression) | Standard edge, only from QL |
+| stmt_expr__f | stmt_expr.cpp:11:5:17:9 | if (...) ...  | stmt_expr.cpp:11:10:14:9 | { ... } | Standard edge, only from extractor |
+| stmt_expr__f | stmt_expr.cpp:13:14:13:14 | b | stmt_expr.cpp:11:9:14:10 | (statement expression) | Standard edge, only from extractor |
+| stmt_expr__f | stmt_expr.cpp:13:14:13:14 | i | stmt_expr.cpp:11:9:14:10 | (statement expression) | Standard edge, only from extractor |
+| stmt_expr__g | stmt_expr.cpp:28:5:31:12 | computed goto ... | stmt_expr.cpp:28:12:31:10 | { ... } | Standard edge, only from extractor |
+| stmt_expr__g | stmt_expr.cpp:30:16:30:18 | ptr | stmt_expr.cpp:28:11:31:11 | (statement expression) | Standard edge, only from extractor |
+| switchbody__switch_notblock | switchbody.c:28:19:28:20 | - ... | switchbody.c:29:5:34:5 | if (...) ...  | Standard edge, only from QL |
+| switchbody__switch_notblock | switchbody.c:28:19:28:20 | - ... | switchbody.c:30:7:30:13 | case ...: | Standard edge, only from extractor |
+| switchbody__switch_notblock | switchbody.c:28:19:28:20 | - ... | switchbody.c:32:7:32:14 | default:  | Standard edge, only from extractor |
+| switchbody__switch_notblock | switchbody.c:28:24:28:24 | i | switchbody.c:29:5:34:5 | if (...) ...  | Standard edge, only from QL |
+| switchbody__switch_notblock | switchbody.c:28:24:28:24 | i | switchbody.c:30:7:30:13 | case ...: | Standard edge, only from extractor |
+| switchbody__switch_notblock | switchbody.c:28:24:28:24 | i | switchbody.c:32:7:32:14 | default:  | Standard edge, only from extractor |
+| switchbody__switch_notblock | switchbody.c:29:5:34:5 | if (...) ...  | switchbody.c:30:7:30:13 | case ...: | Standard edge, only from QL |
+| switchbody__switch_notblock | switchbody.c:29:5:34:5 | if (...) ...  | switchbody.c:32:7:32:14 | default:  | Standard edge, only from QL |
