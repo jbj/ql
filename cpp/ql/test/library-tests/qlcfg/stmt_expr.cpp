@@ -1,3 +1,4 @@
+namespace stmtexpr {
 
 class C {
     public:
@@ -30,4 +31,4 @@ lab:
                ptr;
          });
 }
-
+}
