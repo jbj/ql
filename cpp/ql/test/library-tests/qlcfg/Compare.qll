@@ -122,14 +122,10 @@ string getScopeName(ControlFlowNode x) {
       scope.getQualifiedName().replaceAll("::", "_")
   )
   or
-  result = getScopeElement(x).(File).getBaseName()
-    //if exists(scope.(Function).getQualifiedName())
-    //then
-    //  result =
-    //    scope.getFile().getBaseName().splitAt(".", 0) + "__" +
-    //    scope.(Function).getQualifiedName().replaceAll("::", "_")
-    //else
-    //  result = scope.(File).getBaseName()
+  exists(File scope | scope = getScopeElement(x) |
+    differentScope(scope) and
+    result = scope.getBaseName()
+  )
 }
 
 module QLCFG {

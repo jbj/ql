@@ -167,9 +167,9 @@ void offsetof_test(void) {
 void vla(void) {
     int i;
     char str1[1 + 2 + 3 + 4];
-    char str2[i + 2 + 3 + 4 + 5]; // TODO: Missing edge from VLA dimension size -> i
+    char str2[i + 2 + 3 + 4 + 5];
 
-    //char buf[80 * getInt()], *ptr = buf; // TODO: Missing edge from VLA dimension size -> 80
+    char buf[80 * getInt()], *ptr = buf;
     char matrix[getInt()][2][getInt()][2], ****ptr2 = matrix;
 }
 
