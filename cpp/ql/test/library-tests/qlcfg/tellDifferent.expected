@@ -1,12 +1,6 @@
-| misc__vla | misc.c:169:15:169:23 | 6 | misc.c:169:27:169:27 | 4 | Standard edge, only from QL |
-| misc__vla | misc.c:169:27:169:27 | 4 | misc.c:169:15:169:27 | ... + ... | Standard edge, only from QL |
-| misc__vla | misc.c:170:10:170:10 | VLA declaration | misc.c:172:5:172:40 | declaration | Standard edge, only from extractor |
-| misc__vla | misc.c:170:14:170:14 | VLA dimension size | misc.c:170:15:170:15 | i | Standard edge, only from extractor |
-| misc__vla | misc.c:170:15:170:31 | ... + ... | misc.c:170:10:170:10 | VLA declaration | Standard edge, only from extractor |
-| misc__vla | misc.c:172:5:172:40 | declaration | misc.c:172:13:172:13 | VLA dimension size | Standard edge, only from extractor |
-| misc__vla | misc.c:172:5:172:40 | declaration | misc.c:172:36:172:39 | initializer for ptr | Standard edge, only from QL |
-| misc__vla | misc.c:172:10:172:10 | VLA declaration | misc.c:172:36:172:39 | initializer for ptr | Standard edge, only from extractor |
-| misc__vla | misc.c:172:13:172:13 | VLA dimension size | misc.c:172:14:172:15 | 80 | Standard edge, only from extractor |
-| misc__vla | misc.c:172:14:172:26 | ... * ... | misc.c:172:10:172:10 | VLA declaration | Standard edge, only from extractor |
-| misc__vla | misc.c:172:37:172:39 | buf | misc.c:172:13:172:13 | VLA dimension size | Standard edge, only from QL |
-| misc__vla | misc.c:172:37:172:39 | buf | misc.c:174:1:174:1 | return ... | Standard edge, only from extractor |
+| misc__vla | misc.c:173:5:173:61 | declaration | misc.c:173:16:173:16 | VLA dimension size | Standard edge, only from extractor |
+| misc__vla | misc.c:173:5:173:61 | declaration | misc.c:173:54:173:60 | initializer for ptr2 | Standard edge, only from QL |
+| misc__vla | misc.c:173:10:173:10 | VLA declaration | misc.c:173:54:173:60 | initializer for ptr2 | Standard edge, only from extractor |
+| misc__vla | misc.c:173:10:173:10 | VLA declaration | misc.c:174:1:174:1 | return ... | Standard edge, only from QL |
+| misc__vla | misc.c:173:55:173:60 | matrix | misc.c:173:16:173:16 | VLA dimension size | Standard edge, only from QL |
+| misc__vla | misc.c:173:55:173:60 | matrix | misc.c:174:1:174:1 | return ... | Standard edge, only from extractor |

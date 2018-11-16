@@ -169,8 +169,8 @@ void vla(void) {
     char str1[1 + 2 + 3 + 4];
     char str2[i + 2 + 3 + 4 + 5]; // TODO: Missing edge from VLA dimension size -> i
 
-    char buf[80 * getInt()], *ptr = buf; // TODO: Missing edge from VLA dimension size -> 80
-// TODO: edge from buf (above) to a VLA dimension size??
+    //char buf[80 * getInt()], *ptr = buf; // TODO: Missing edge from VLA dimension size -> 80
+    char matrix[getInt()][2][getInt()][2], ****ptr2 = matrix;
 }
 
 void magicvars(void) {
