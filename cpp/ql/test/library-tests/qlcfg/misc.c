@@ -90,7 +90,7 @@ LAB:
 
 void gnuConditionalOmittedOperand(void) {
     int i, j;
-    i = j ? : 2; // TODO
+    i = j ? : 2;
 }
 
 void misc3(void) {
@@ -143,7 +143,7 @@ void misc3(void) {
 void funptr(void) {
     int i, j;
     int (*intFun) (int, int);
-    i = intFun(i, j); // TODO: intFun should come last.
+    i = intFun(i, j);
 
     pfunvv();
 }
@@ -151,7 +151,7 @@ void funptr(void) {
 void aggInit(void) {
     int x;
     struct someStruct ss[] = {{1, 2}, {3, 4}};
-    static struct someStruct sssc[] = {{1, 2}, {3, 4}}; // TODO: extractor is wrong here
+    static struct someStruct sssc[] = {{1, 2}, {3, 4}};
     struct someStruct sInit1 = {
         .i = x + x,
         .j = x - x
@@ -161,7 +161,7 @@ void aggInit(void) {
 
 void offsetof_test(void) {
     int i, j;
-    i = __builtin_offsetof(struct someStruct, j); // TODO: extractor thinks "__offsetof" has no children
+    i = __builtin_offsetof(struct someStruct, j);
 }
 
 void vla(void) {

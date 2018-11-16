@@ -30,8 +30,26 @@ private class SupportedNode extends Node {
     exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.(Expr).getParent+() instanceof SwitchCase and
     not this.(Expr).getParent*() instanceof ConstructorInit and
-    not this.(Expr).getParent+() instanceof ConditionDeclExpr
-    // TODO: sizeof etc.?
+    not this.(Expr).getParent+() instanceof ConditionDeclExpr and
+    not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
+    not exists(LocalVariable staticLocal |
+      staticLocal.isStatic() and
+      staticLocal.getFile().compiledAsC() and
+      this.(Expr).getParent+() = staticLocal.getInitializer()
+    )
+  }
+}
+
+/**
+ * A node that is part of the CFG but whose arguments are not. That means the
+ * arguments should not be linked to the CFG and should not have internal
+ * control flow in them.
+ */
+private class ArgumentsUnevaluatedNode extends Node {
+  ArgumentsUnevaluatedNode() {
+    this instanceof BuiltInOperationOffsetOf
+    // TODO: others?
+    // TODO: sizeof belongs here, but the extractor pretends it doesn't.
   }
 }
 
@@ -96,6 +114,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   not n instanceof ConditionDeclExpr and
   not n instanceof DeleteExpr and
   not n instanceof DeleteArrayExpr and
+  not n instanceof ArgumentsUnevaluatedNode and
   not isDeleteDestructorCall(n) // already evaluated
   or
   n = any(AssignExpr a |
@@ -107,11 +126,11 @@ private Node controlOrderChildSparse(Node n, int i) {
   n = any(Call c |
     not isDeleteDestructorCall(c) and
     (
-      i = -1 and result = c.(ExprCall).getExpr()
-      or
       result = c.getArgument(i)
       or
-      i = c.getNumberOfArguments() and result = c.getQualifier()
+      i = c.getNumberOfArguments() and result = c.(ExprCall).getExpr()
+      or
+      i = c.getNumberOfArguments() + 1 and result = c.getQualifier()
     )
   )
   or
@@ -147,7 +166,16 @@ private Node controlOrderChildSparse(Node n, int i) {
   or
   result = n.(PreOrderNode).(Stmt).getChild(i)
   or
-  result = n.(DeclStmt).getDeclaration(i).(Variable).getInitializer()
+  n = any(DeclStmt s |
+    result = s.getDeclaration(i).(Variable).getInitializer() and
+    (
+      // Non-static locals always have control flow to their initializers
+      not s.getDeclaration(i).isStatic()
+      or
+      // In C++, static locals do too
+      n.(Element).getFile().compiledAsCpp()
+    )
+  )
 }
 
 private Node controlOrderChild(Node n, int i) {
@@ -378,10 +406,12 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   )
   or
   exists(DeclStmt s |
-    // For static locals, the declarations will be skipped after the first
-    // init. We only check whether the first declared variable is static since
-    // there is no syntax for declaring one variable static without all of them
-    // becoming static.
+    // For static locals in C++, the declarations will be skipped after the
+    // first init. We only check whether the first declared variable is static
+    // since there is no syntax for declaring one variable static without all
+    // of them becoming static.
+    // There is no CFG for initialization of static locals in C, so this edge
+    // is redundant there.
     s.getDeclaration(0).isStatic() and
     p1.nodeAt(n1, s) and
     p2.nodeAfter(n2, s)
@@ -499,14 +529,6 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     truth = false and
     targetPos.nodeAfter(targetNode, l)
   )
-  or
-  exists(ConditionalExpr e | test = e.getCondition() |
-    truth = true and
-    targetPos.nodeBefore(targetNode, e.getThen())
-    or
-    truth = false and
-    targetPos.nodeBefore(targetNode, e.getElse())
-  )
 }
 
 /**
@@ -524,8 +546,27 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   (truth = false or truth = true)
   or
   exists(ConditionalExpr e |
-    (test = e.getThen() or test = e.getElse()) and
+    (
+      test = e.getThen() and
+      test != e.getCondition() // GNU extension
+      or
+      test = e.getElse()
+    ) and
     conditionJumps(e, truth, targetNode, targetPos)
+  )
+  or
+  exists(ConditionalExpr e | test = e.getCondition() |
+    e.getThen() != e.getCondition() and // TODO: check for perf, here and below
+    truth = true and
+    targetPos.nodeBefore(targetNode, e.getThen())
+    or
+    truth = false and
+    targetPos.nodeBefore(targetNode, e.getElse())
+    or
+    // GNU extension for omitting the "then" case
+    e.getThen() = e.getCondition() and
+    truth = true and
+    conditionJumps(e, true, targetNode, targetPos)
   )
   // TODO: handle `!` better in the future. Like this?
   //or
