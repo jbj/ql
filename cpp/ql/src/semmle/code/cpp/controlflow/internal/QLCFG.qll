@@ -19,6 +19,13 @@ TODO: difficulties:
 
 private class Node = ControlFlowNodeBase;
 
+private class Orphan extends Expr {
+  Orphan() {
+    not exists(this.getParent()) and
+    not this instanceof DestructorCall
+  }
+}
+
 /**
  * For compatibility with the extractor-generated CFG, the QL-generated CFG
  * will only be produced for nodes in this class.
@@ -35,11 +42,7 @@ private class SupportedNode extends Node {
     // TODO: this can be improved.
     not this.(Expr).getParent+() instanceof ConditionDeclExpr and
     not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
-    not exists(Expr orphan |
-      not exists(orphan.getParent()) and
-      not orphan instanceof DestructorCall and
-      this.(Expr).getParent*() = orphan
-    ) and
+    not this.(Expr).getParent*() instanceof Orphan and
     // Initializers of static locals in C
     not exists(LocalVariable staticLocal |
       staticLocal.isStatic() and
@@ -97,6 +100,10 @@ private class PostOrderNode extends Node {
     not this instanceof ShortCircuitOperator and
     not this instanceof ThrowExpr and
     not this instanceof Conversion // not in CFG
+    or
+    // It's highly unusual for a statement not to start with itself. This type
+    // of statement is only found in `Block`s.
+    this instanceof VlaDeclStmt
   }
 }
 
@@ -107,7 +114,6 @@ private class PreOrderNode extends Node {
     or
     this instanceof DeclStmt
     or
-    // TODO: also for the block after a switch?
     this instanceof Block
     or
     this instanceof LabelStmt
@@ -119,13 +125,6 @@ private class PreOrderNode extends Node {
     this instanceof AsmStmt
     or
     this instanceof VlaDimensionStmt
-    or
-    this instanceof VlaDeclStmt
-    // TODO: Plan:
-    // - Block is no longer a PreOrderNode but a straightLine case. It skips
-    //   all the VlaDeclStmt and VlaDimensionStmt children.
-    // - VlaDeclStmt is inserted as a child of DeclStmt
-    // - VlaDimensionStmt is inserted as a child of VlaDeclStmt
   }
 }
 
@@ -193,18 +192,38 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 0 and result = n.(Initializer).getExpr()
   )
   or
-  result = n.(PreOrderNode).(Stmt).getChild(i)
+  result = n.(PreOrderNode).(Stmt).getChild(i) and
+  not n instanceof Block // handled below
+  // VLAs are special because of how their associated statements are added
+  // in-line in the block containing their corresponding DeclStmt but should
+  // not be evaluated in the order implied by their position in the block. We
+  // do the following.
+  // - Block skips all the VlaDeclStmt and VlaDimensionStmt children.
+  // - VlaDeclStmt is inserted as a child of DeclStmt
+  // - VlaDimensionStmt is inserted as a child of VlaDeclStmt
+  or
+  result = n.(Block).getChild(i) and
+  not result instanceof VlaDeclStmt and
+  not result instanceof VlaDimensionStmt
   or
   n = any(DeclStmt s |
-    result = s.getDeclaration(i).(Variable).getInitializer() and
-    (
-      // Non-static locals always have control flow to their initializers
-      not s.getDeclaration(i).isStatic()
+    exists(Variable var | var = s.getDeclaration(i) |
+      result = var.getInitializer() and
+      (
+        // Non-static locals always have control flow to their initializers
+        not s.getDeclaration(i).isStatic()
+        or
+        // In C++, static locals do too
+        fileUsedInCPP(n.(Element).getFile())
+      )
       or
-      // In C++, static locals do too
-      fileUsedInCPP(n.(Element).getFile())
+      // A VLA cannot have an initializer, so there is no conflict between this
+      // case and the above.
+      result.(VlaDeclStmt).getVariable() = var
     )
   )
+  or
+  result = n.(VlaDeclStmt).getVlaDimensionStmt(i)
 }
 
 private Node controlOrderChild(Node n, int i) {
@@ -380,11 +399,12 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2 = spec2.asRightPos()
   )
   or
-  // All statements start with themselves.
+  // ALmost all statements start with themselves.
   // TODO: does that mean we should never make edges to _before_ a statement
   // but always _at_ the statement? Or is that premature optimization?
   // To make this change, we'd need an `isAroundStmt` spec.
   n1.(Stmt) = n2 and
+  not n1 instanceof VlaDeclStmt and
   p1.isBefore() and
   p2.isAt()
   or
