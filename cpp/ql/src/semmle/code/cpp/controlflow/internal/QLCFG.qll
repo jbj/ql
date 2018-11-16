@@ -5,7 +5,6 @@ TODO: difficulties:
 - Particular AST nodes
   - StmtExpr
     - Interaction with throw-catch
-  - CommaExpr
   - BlockExpr??? (clang extension)
   - Microsoft __try
   - Unstructured switch statements
