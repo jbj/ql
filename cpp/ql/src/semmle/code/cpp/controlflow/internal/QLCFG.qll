@@ -28,7 +28,9 @@ private class Orphan extends Expr {
     // extracted and attached at position -1. We do not want this copy in the
     // CFG.
     exists(ConditionalExpr conditional |
-      this = conditional.getChild(-1)
+      this = conditional.getChild(-1) and
+      this != conditional.getChild(0) and
+      not this.getParent() != conditional
     )
   }
 }
