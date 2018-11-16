@@ -23,6 +23,13 @@ private class Orphan extends Expr {
   Orphan() {
     not exists(this.getParent()) and
     not this instanceof DestructorCall
+    or
+    // For the GNU binary `? :` operator, an extra copy of the condition is
+    // extracted and attached at position -1. We do not want this copy in the
+    // CFG.
+    exists(ConditionalExpr conditional |
+      this = conditional.getChild(-1)
+    )
   }
 }
 

@@ -88,9 +88,10 @@ LAB:
     i = j ? 1 : 2;
 }
 
-void gnuConditionalOmittedOperand(void) {
+void gnuConditionalOmittedOperand(struct someStruct *sp) {
     int i, j;
     i = j ? : 2;
+    i = sp->i ? : i;
 }
 
 void misc3(void) {
