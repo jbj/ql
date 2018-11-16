@@ -116,6 +116,7 @@ Element getScopeElement(ControlFlowNode x) {
 
 string getScopeName(ControlFlowNode x) {
   exists(Function scope | scope = getScopeElement(x) |
+    differentScope(scope) and
     result =
       scope.getFile().getBaseName().splitAt(".", 0) + "__" +
       scope.getQualifiedName().replaceAll("::", "_")

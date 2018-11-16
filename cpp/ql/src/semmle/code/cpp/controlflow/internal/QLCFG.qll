@@ -35,10 +35,15 @@ private class SupportedNode extends Node {
     // TODO: this can be improved.
     not this.(Expr).getParent+() instanceof ConditionDeclExpr and
     not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
+    not exists(Expr orphan |
+      not exists(orphan.getParent()) and
+      not orphan instanceof DestructorCall and
+      this.(Expr).getParent*() = orphan
+    ) and
     // Initializers of static locals in C
     not exists(LocalVariable staticLocal |
       staticLocal.isStatic() and
-      staticLocal.getFile().compiledAsC() and
+      not fileUsedInCPP(staticLocal.getFile()) and
       this.(Expr).getParent+() = staticLocal.getInitializer()
     )
   }
@@ -57,6 +62,14 @@ private class ArgumentsUnevaluatedNode extends Node {
     // TODO: others?
     // TODO: sizeof belongs here, but the extractor pretends it doesn't.
   }
+}
+
+// TODO: test what the extractor does for a `.h` file included from both `.c`
+// and `.cpp`, where the `.h` file contains a static local with initializer.
+private predicate fileUsedInCPP(File f) {
+  exists(File cppFile | cppFile.compiledAsCpp() |
+    f = cppFile.getAnIncludedFile*()
+  )
 }
 
 private class Pos extends int {
@@ -104,6 +117,15 @@ private class PreOrderNode extends Node {
     this instanceof EmptyStmt
     or
     this instanceof AsmStmt
+    or
+    this instanceof VlaDimensionStmt
+    or
+    this instanceof VlaDeclStmt
+    // TODO: Plan:
+    // - Block is no longer a PreOrderNode but a straightLine case. It skips
+    //   all the VlaDeclStmt and VlaDimensionStmt children.
+    // - VlaDeclStmt is inserted as a child of DeclStmt
+    // - VlaDimensionStmt is inserted as a child of VlaDeclStmt
   }
 }
 
@@ -180,7 +202,7 @@ private Node controlOrderChildSparse(Node n, int i) {
       not s.getDeclaration(i).isStatic()
       or
       // In C++, static locals do too
-      n.(Element).getFile().compiledAsCpp()
+      fileUsedInCPP(n.(Element).getFile())
     )
   )
 }
@@ -455,60 +477,63 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   )
 }
 
-private abstract class ShortCircuitOperator extends Expr {
-  final Expr getFirstChildNode() { result = this.getChild(0) }
-}
-
-private class LogicalAndLikeExpr extends ShortCircuitOperator, LogicalAndExpr { }
-
-private class LogicalOrLikeExpr extends ShortCircuitOperator {
-  Expr left;
-  Expr right;
-
-  LogicalOrLikeExpr() {
-    this = any(LogicalOrExpr e |
-      left = e.getLeftOperand() and
-      right = e.getRightOperand()
-    )
-    or
-    // GNU extension: the `? :` operator
-    this = any(ConditionalExpr e |
-      left = e.getCondition() and
-      right = e.getElse() and
-      left = e.getThen()
-    )
+private import ShortCircuit
+private module ShortCircuit {
+  abstract class ShortCircuitOperator extends Expr {
+    final Expr getFirstChildNode() { result = this.getChild(0) }
   }
 
-  Expr getLeftOperand() { result = left }
+  class LogicalAndLikeExpr extends ShortCircuitOperator, LogicalAndExpr { }
 
-  Expr getRightOperand() { result = right }
-}
+  class LogicalOrLikeExpr extends ShortCircuitOperator {
+    Expr left;
+    Expr right;
 
-private class ConditionalLikeExpr extends ShortCircuitOperator {
-  Expr condition;
-  Expr thenExpr;
-  Expr elseExpr;
+    LogicalOrLikeExpr() {
+      this = any(LogicalOrExpr e |
+        left = e.getLeftOperand() and
+        right = e.getRightOperand()
+      )
+      or
+      // GNU extension: the `? :` operator
+      this = any(ConditionalExpr e |
+        left = e.getCondition() and
+        right = e.getElse() and
+        left = e.getThen()
+      )
+    }
 
-  ConditionalLikeExpr() {
-    this = any(ConditionalExpr e |
-      condition = e.getCondition() and
-      thenExpr = e.getThen() and
-      elseExpr = e.getElse() and
-      thenExpr != condition
-    )
-    or
-    this = any(BuiltInChooseExpr e |
-      condition = e.getChild(0) and
-      thenExpr = e.getChild(1) and
-      elseExpr = e.getChild(2)
-    )
+    Expr getLeftOperand() { result = left }
+
+    Expr getRightOperand() { result = right }
   }
 
-  Expr getCondition() { result = condition }
+  class ConditionalLikeExpr extends ShortCircuitOperator {
+    Expr condition;
+    Expr thenExpr;
+    Expr elseExpr;
 
-  Expr getThen() { result = thenExpr }
+    ConditionalLikeExpr() {
+      this = any(ConditionalExpr e |
+        condition = e.getCondition() and
+        thenExpr = e.getThen() and
+        elseExpr = e.getElse() and
+        thenExpr != condition
+      )
+      or
+      this = any(BuiltInChooseExpr e |
+        condition = e.getChild(0) and
+        thenExpr = e.getChild(1) and
+        elseExpr = e.getChild(2)
+      )
+    }
 
-  Expr getElse() { result = elseExpr }
+    Expr getCondition() { result = condition }
+
+    Expr getThen() { result = thenExpr }
+
+    Expr getElse() { result = elseExpr }
+  }
 }
 
 private class ExceptionTarget extends ControlFlowNode {
