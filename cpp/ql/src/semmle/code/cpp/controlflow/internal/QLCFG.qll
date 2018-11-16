@@ -29,9 +29,13 @@ private class SupportedNode extends Node {
     // expressions. Why?
     exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.(Expr).getParent+() instanceof SwitchCase and
+    // Constructor init lists should be evaluated, but this will mean that a
+    // `Function` entry point is not always a `Block`.
     not this.(Expr).getParent*() instanceof ConstructorInit and
+    // TODO: this can be improved.
     not this.(Expr).getParent+() instanceof ConditionDeclExpr and
     not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
+    // Initializers of static locals in C
     not exists(LocalVariable staticLocal |
       staticLocal.isStatic() and
       staticLocal.getFile().compiledAsC() and
@@ -45,6 +49,8 @@ private class SupportedNode extends Node {
  * arguments should not be linked to the CFG and should not have internal
  * control flow in them.
  */
+// TODO: perhaps generalize to a predicate that specifies _which_ argument is
+// not evaluated.
 private class ArgumentsUnevaluatedNode extends Node {
   ArgumentsUnevaluatedNode() {
     this instanceof BuiltInOperationOffsetOf
@@ -115,6 +121,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   not n instanceof DeleteExpr and
   not n instanceof DeleteArrayExpr and
   not n instanceof ArgumentsUnevaluatedNode and
+  not result instanceof TypeName and // TODO: is this the right place?
   not isDeleteDestructorCall(n) // already evaluated
   or
   n = any(AssignExpr a |
@@ -248,7 +255,7 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 0 and ni = op and spec.isAt()
     or
-    i = 1 and ni = op.getChild(0) and spec.isBefore()
+    i = 1 and ni = op.getFirstChildNode() and spec.isBefore()
   )
   or
   scope = any(ThrowExpr e |
@@ -448,14 +455,60 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   )
 }
 
-private class ShortCircuitOperator extends Expr {
-  ShortCircuitOperator() {
-    this instanceof LogicalAndExpr
+private abstract class ShortCircuitOperator extends Expr {
+  final Expr getFirstChildNode() { result = this.getChild(0) }
+}
+
+private class LogicalAndLikeExpr extends ShortCircuitOperator, LogicalAndExpr { }
+
+private class LogicalOrLikeExpr extends ShortCircuitOperator {
+  Expr left;
+  Expr right;
+
+  LogicalOrLikeExpr() {
+    this = any(LogicalOrExpr e |
+      left = e.getLeftOperand() and
+      right = e.getRightOperand()
+    )
     or
-    this instanceof LogicalOrExpr
-    or
-    this instanceof ConditionalExpr
+    // GNU extension: the `? :` operator
+    this = any(ConditionalExpr e |
+      left = e.getCondition() and
+      right = e.getElse() and
+      left = e.getThen()
+    )
   }
+
+  Expr getLeftOperand() { result = left }
+
+  Expr getRightOperand() { result = right }
+}
+
+private class ConditionalLikeExpr extends ShortCircuitOperator {
+  Expr condition;
+  Expr thenExpr;
+  Expr elseExpr;
+
+  ConditionalLikeExpr() {
+    this = any(ConditionalExpr e |
+      condition = e.getCondition() and
+      thenExpr = e.getThen() and
+      elseExpr = e.getElse() and
+      thenExpr != condition
+    )
+    or
+    this = any(BuiltInChooseExpr e |
+      condition = e.getChild(0) and
+      thenExpr = e.getChild(1) and
+      elseExpr = e.getChild(2)
+    )
+  }
+
+  Expr getCondition() { result = condition }
+
+  Expr getThen() { result = thenExpr }
+
+  Expr getElse() { result = elseExpr }
 }
 
 private class ExceptionTarget extends ControlFlowNode {
@@ -545,28 +598,17 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   targetPos.nodeAfter(targetNode, test) and
   (truth = false or truth = true)
   or
-  exists(ConditionalExpr e |
-    (
-      test = e.getThen() and
-      test != e.getCondition() // GNU extension
-      or
-      test = e.getElse()
-    ) and
+  exists(ConditionalLikeExpr e |
+    (test = e.getThen() or test = e.getElse()) and
     conditionJumps(e, truth, targetNode, targetPos)
   )
   or
-  exists(ConditionalExpr e | test = e.getCondition() |
-    e.getThen() != e.getCondition() and // TODO: check for perf, here and below
+  exists(ConditionalLikeExpr e | test = e.getCondition() |
     truth = true and
     targetPos.nodeBefore(targetNode, e.getThen())
     or
     truth = false and
     targetPos.nodeBefore(targetNode, e.getElse())
-    or
-    // GNU extension for omitting the "then" case
-    e.getThen() = e.getCondition() and
-    truth = true and
-    conditionJumps(e, true, targetNode, targetPos)
   )
   // TODO: handle `!` better in the future. Like this?
   //or
@@ -575,7 +617,7 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   //  conditionJumps(e, truth.booleanNot(), targetNode, targetPos)
   //)
   or
-  exists(LogicalAndExpr e |
+  exists(LogicalAndLikeExpr e |
     test = e.getLeftOperand() and
     truth = true and
     targetPos.nodeBefore(targetNode, e.getRightOperand())
@@ -588,7 +630,7 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     conditionJumps(e, truth, targetNode, targetPos)
   )
   or
-  exists(LogicalOrExpr e |
+  exists(LogicalOrLikeExpr e |
     test = e.getLeftOperand() and
     truth = false and
     targetPos.nodeBefore(targetNode, e.getRightOperand())
