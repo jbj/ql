@@ -274,6 +274,29 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 1 and ni = s and spec.isAfter()
   )
+  or
+  scope = any(SwitchStmt s |
+    i = -1 and ni = s and spec.isAt()
+    or
+    i = 0 and ni = s.getExpr() and spec.isAround()
+    or
+    // If the switch body is not a block then this step is skipped, and the
+    // expression jumps directly to the cases.
+    i = 1 and ni = s.getStmt().(Block) and spec.isAt()
+    or
+    i = 2 and ni = s.getASwitchCase() and spec.isBefore()
+    or
+    // If there is no default case, we can jump to after the block. Note: `i`
+    // is same value as above.
+    not s.getASwitchCase() instanceof DefaultCase and
+    i = 2 and ni = s.getStmt() and spec.isAfter()
+    or
+    i = 3 and ni = s and spec.isBarrier()
+    or
+    i = 4 and ni = s.getStmt() and spec.isAfter()
+    or
+    i = 5 and ni = s and spec.isAfter()
+  )
 }
 
 private predicate straightLineRanked(Node scope, int rnk, Node nrnk, Spec spec) {
@@ -348,29 +371,6 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   // (note: doesn't evaluate its argument)
   exists(SwitchCase s |
     p1.nodeAt(n1, s) and
-    p2.nodeAfter(n2, s)
-  )
-  or
-  // SwitchStmt -> expr -> block -> { cases ; after block } ->
-  exists(SwitchStmt s |
-    p1.nodeAt(n1, s) and
-    p2.nodeBefore(n2, s.getExpr())
-    or
-    p1.nodeAfter(n1, s.getExpr()) and
-    p2.nodeBefore(n2, s.getStmt())
-    or
-    exists(SwitchCase case |
-      case.getSwitchStmt() = s and
-      p1.nodeAt(n1, s.getStmt()) and
-      p2.nodeBefore(n2, case)
-    )
-    or
-    // If there is no default case, we can jump to after the block
-    not exists(DefaultCase default | default.getSwitchStmt() = s) and
-    p1.nodeAt(n1, s.getStmt()) and
-    p2.nodeAfter(n2, s.getStmt())
-    or
-    p1.nodeAfter(n1, s.getStmt()) and
     p2.nodeAfter(n2, s)
   )
   or
