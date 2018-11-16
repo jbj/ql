@@ -1,0 +1,36 @@
+| misc__aggInit | misc.c:154:5:154:55 | declaration | misc.c:154:39:154:54 | initializer for sssc | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:39:154:54 | initializer for sssc | misc.c:154:41:154:41 | 1 | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:39:154:54 | {...} | misc.c:155:5:158:6 | declaration | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:40:154:45 | {...} | misc.c:154:49:154:49 | 3 | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:41:154:41 | 1 | misc.c:154:44:154:44 | 2 | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:44:154:44 | 2 | misc.c:154:40:154:45 | {...} | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:48:154:53 | {...} | misc.c:154:39:154:54 | {...} | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:49:154:49 | 3 | misc.c:154:52:154:52 | 4 | Standard edge, only from QL |
+| misc__aggInit | misc.c:154:52:154:52 | 4 | misc.c:154:48:154:53 | {...} | Standard edge, only from QL |
+| misc__funptr | misc.c:146:5:146:21 | ExprStmt | misc.c:146:9:146:14 | intFun | Standard edge, only from QL |
+| misc__funptr | misc.c:146:5:146:21 | ExprStmt | misc.c:146:16:146:16 | i | Standard edge, only from extractor |
+| misc__funptr | misc.c:146:9:146:14 | intFun | misc.c:146:9:146:20 | call to expression | Standard edge, only from extractor |
+| misc__funptr | misc.c:146:9:146:14 | intFun | misc.c:146:16:146:16 | i | Standard edge, only from QL |
+| misc__funptr | misc.c:146:19:146:19 | j | misc.c:146:9:146:14 | intFun | Standard edge, only from extractor |
+| misc__funptr | misc.c:146:19:146:19 | j | misc.c:146:9:146:20 | call to expression | Standard edge, only from QL |
+| misc__gnuConditionalOmittedOperand | misc.c:93:9:93:9 | j | misc.c:93:5:93:5 | i | True edge, only from extractor |
+| misc__gnuConditionalOmittedOperand | misc.c:93:9:93:9 | j | misc.c:93:9:93:9 | j | Standard edge, only from QL |
+| misc__gnuConditionalOmittedOperand | misc.c:93:9:93:9 | j | misc.c:93:9:93:9 | j | True edge, only from QL |
+| misc__offsetof_test | file://:0:0:0:0 | 0 | file://:0:0:0:0 | * ... | Standard edge, only from QL |
+| misc__offsetof_test | file://:0:0:0:0 | * ... | misc.c:164:47:164:47 | j | Standard edge, only from QL |
+| misc__offsetof_test | file://:0:0:0:0 | someStruct | file://:0:0:0:0 | 0 | Standard edge, only from QL |
+| misc__offsetof_test | misc.c:164:5:164:49 | ExprStmt | file://:0:0:0:0 | someStruct | Standard edge, only from QL |
+| misc__offsetof_test | misc.c:164:5:164:49 | ExprStmt | misc.c:164:9:164:48 | __offsetof | Standard edge, only from extractor |
+| misc__offsetof_test | misc.c:164:47:164:47 | j | misc.c:164:9:164:48 | __offsetof | Standard edge, only from QL |
+| misc__vla | misc.c:169:15:169:23 | 6 | misc.c:169:27:169:27 | 4 | Standard edge, only from QL |
+| misc__vla | misc.c:169:27:169:27 | 4 | misc.c:169:15:169:27 | ... + ... | Standard edge, only from QL |
+| misc__vla | misc.c:170:10:170:10 | VLA declaration | misc.c:172:5:172:40 | declaration | Standard edge, only from extractor |
+| misc__vla | misc.c:170:14:170:14 | VLA dimension size | misc.c:170:15:170:15 | i | Standard edge, only from extractor |
+| misc__vla | misc.c:170:15:170:31 | ... + ... | misc.c:170:10:170:10 | VLA declaration | Standard edge, only from extractor |
+| misc__vla | misc.c:172:5:172:40 | declaration | misc.c:172:13:172:13 | VLA dimension size | Standard edge, only from extractor |
+| misc__vla | misc.c:172:5:172:40 | declaration | misc.c:172:36:172:39 | initializer for ptr | Standard edge, only from QL |
+| misc__vla | misc.c:172:10:172:10 | VLA declaration | misc.c:172:36:172:39 | initializer for ptr | Standard edge, only from extractor |
+| misc__vla | misc.c:172:13:172:13 | VLA dimension size | misc.c:172:14:172:15 | 80 | Standard edge, only from extractor |
+| misc__vla | misc.c:172:14:172:26 | ... * ... | misc.c:172:10:172:10 | VLA declaration | Standard edge, only from extractor |
+| misc__vla | misc.c:172:37:172:39 | buf | misc.c:172:13:172:13 | VLA dimension size | Standard edge, only from QL |
+| misc__vla | misc.c:172:37:172:39 | buf | misc.c:174:1:174:1 | return ... | Standard edge, only from extractor |
