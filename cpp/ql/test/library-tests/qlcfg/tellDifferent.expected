@@ -1,3 +1,0 @@
-| statements__gotos | statements.cpp:48:5:48:23 | declaration | statements.cpp:49:1:49:4 | label ...: | Standard edge, only from extractor |
-| staticlocals__staticlocals_f | staticlocals.cpp:12:5:12:32 | declaration | staticlocals.cpp:13:5:13:23 | declaration | Standard edge, only from extractor |
-| staticlocals__staticlocals_f | staticlocals.cpp:13:5:13:23 | declaration | staticlocals.cpp:14:5:14:5 | ; | Standard edge, only from extractor |

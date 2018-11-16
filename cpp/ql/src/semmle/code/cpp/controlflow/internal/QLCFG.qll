@@ -378,6 +378,16 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeBefore(n2, s.getTarget())
   )
   or
+  exists(DeclStmt s |
+    // For static locals, the declarations will be skipped after the first
+    // init. We only check whether the first declared variable is static since
+    // there is no syntax for declaring one variable static without all of them
+    // becoming static.
+    s.getDeclaration(0).isStatic() and
+    p1.nodeAt(n1, s) and
+    p2.nodeAfter(n2, s)
+  )
+  or
   // SwitchCase ->
   // (note: doesn't evaluate its argument)
   exists(SwitchCase s |
