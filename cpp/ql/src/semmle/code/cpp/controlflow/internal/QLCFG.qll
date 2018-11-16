@@ -137,6 +137,10 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 2 and result = del.getAllocatorCall()
   )
   or
+  n = any(StmtExpr e |
+    i = 0 and result = e.getStmt()
+  )
+  or
   n = any(Initializer init |
     not exists(ConditionDeclExpr cd | init = cd.getVariable().getInitializer()) and
     i = 0 and result = n.(Initializer).getExpr()
@@ -297,6 +301,12 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 5 and ni = s and spec.isAfter()
   )
+  or
+  scope = any(ComputedGotoStmt s |
+    i = -1 and ni = s and spec.isAt()
+    or
+    i = 0 and ni = s.getExpr() and spec.isBefore()
+  )
 }
 
 private predicate straightLineRanked(Node scope, int rnk, Node nrnk, Spec spec) {
@@ -317,6 +327,7 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   // All statements start with themselves.
   // TODO: does that mean we should never make edges to _before_ a statement
   // but always _at_ the statement? Or is that premature optimization?
+  // To make this change, we'd need an `isAroundStmt` spec.
   n1.(Stmt) = n2 and
   p1.isBefore() and
   p2.isAt()
