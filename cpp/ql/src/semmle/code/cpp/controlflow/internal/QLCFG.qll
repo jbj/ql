@@ -11,10 +11,25 @@ TODO: difficulties:
     - Variable init at start of switch block
   - VlaDeclStmt
   - Pointer-to-member call and access
+- Is getEnclosingHandler from Ian's branch different from mine?
+- Take cases from Ian's orphanedExpr and orphanedInitializer.
+- getSwitchStmtEndLabel. What's going on there, and do I need it? Doesn't work
+  with macros and templates.
 - Synthetic destructor calls. I've taken them out of the reference in the
   comparisons until there is a solution.
   - following_destructor extractor changes
-    - Can we just construct the CFG and then inject these calls?
+    - Can we just construct the CFG and then inject these calls? It looks like
+      they should be injected After the marked node.
+    - For prototyping, I'd like to take this information from `successors`, but
+      I don't see how to reconstruct it. I'd have to splice them in based on
+      where `successors` tells me to add them, but that's cheating just as much
+      as the current workaround in Compare.
+    - index_destructor_call documentation mentions `\param following`, not
+      `\param label`.
+    - Why add both the var access and the call to following_destructor? I'd
+      just add the call.
+    - How does the size and contents of the `label` buffers match up?
+      (`char label[sizeof(unsigned long) + strlen(suffix)];`)
  */
 
 private class Node = ControlFlowNodeBase;
