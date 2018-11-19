@@ -112,6 +112,12 @@ Element getScopeElement(ControlFlowNode x) {
   or
   not exists(x.getControlFlowScope()) and
   result = x.getFile()
+  or
+  // CPP-298
+  exists(VacuousDestructorCall c |
+    x = getStrayVDCQualifier(c) and
+    result = c.getEnclosingFunction()
+  )
 }
 
 string getScopeName(ControlFlowNode x) {

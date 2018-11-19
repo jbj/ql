@@ -37,7 +37,8 @@ private class Node = ControlFlowNodeBase;
 private class Orphan extends Expr {
   Orphan() {
     not exists(this.getParent()) and
-    not this instanceof DestructorCall
+    not this instanceof DestructorCall and
+    not this = getStrayVDCQualifier(_)
     or
     // For the GNU binary `? :` operator, an extra copy of the condition is
     // extracted and attached at position -1. We do not want this copy in the
@@ -50,6 +51,13 @@ private class Orphan extends Expr {
   }
 }
 
+// TODO: this is a workaround for CPP-298
+Expr getStrayVDCQualifier(VacuousDestructorCall c) {
+  successors(unresolveElement(result), unresolveElement(c)) and
+  exists(c.getEnclosingFunction()) and
+  not exists(result.getEnclosingFunction())
+}
+
 /**
  * For compatibility with the extractor-generated CFG, the QL-generated CFG
  * will only be produced for nodes in this class.
@@ -58,7 +66,11 @@ private class SupportedNode extends Node {
   SupportedNode() {
     // TODO: It appears the extractor doesn't produce CFG for free-standing
     // expressions. Why?
-    exists(this.(ControlFlowNode).getControlFlowScope()) and
+    (
+      exists(this.(ControlFlowNode).getControlFlowScope())
+      or
+      this.(Expr).getParent*() = getStrayVDCQualifier(_)
+    ) and
     not this.(Expr).getParent+() instanceof SwitchCase and
     // Constructor init lists should be evaluated, and we can change this in
     // the future, but it would mean that a `Function` entry point is not
@@ -227,6 +239,8 @@ private Node controlOrderChildSparse(Node n, int i) {
     or
     i = 3 and result = new.getInitializer()
   )
+  or
+  i = 0 and result = getStrayVDCQualifier(n)
   or
   n = any(StmtExpr e |
     i = 0 and result = e.getStmt()
