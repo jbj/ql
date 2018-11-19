@@ -145,6 +145,8 @@ private class PostOrderNode extends Node {
     or
     // It's highly unusual for a statement not to start with itself. This type
     // of statement is only found in `Block`s.
+    // TODO: Turn this into a PreOrderNode when we're no longer comparing with
+    // the extractor CFG.
     this instanceof VlaDeclStmt
   }
 }
@@ -170,6 +172,7 @@ private class PreOrderNode extends Node {
   }
 }
 
+/** Holds if `c` is part of a `delete` or `delete[]` operation. */
 private predicate isDeleteDestructorCall(DestructorCall c) {
   exists(DeleteExpr del | c = del.getDestructorCall())
   or
@@ -229,7 +232,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   n = any(NewArrayExpr new |
     // If there is no custom allocator, the alignment argument comes first.
     // Otherwise it's an argument to the allocator call and therefore comes
-    // later.
+    // later as as subexpression of `getAllocatorCall`.
     not exists(new.getAllocatorCall()) and
     i = 0 and result = new.getAlignmentArgument()
     or
