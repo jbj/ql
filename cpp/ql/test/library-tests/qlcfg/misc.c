@@ -207,15 +207,13 @@ extern int fmac (void);
 #define MAC int fmac (void) { return 5; }
 MAC
 
-int extern_int = 0;
+int global_with_init = 0;
 
-// TODO: this is an attempt to reproduce a problem seen in bloomberg/comdb2.
-// It doesn't work.
 int extern_local() {
   // The variable declared here has an initializer, but it's not one that gets
   // control flow in this function.
-  extern int extern_int;
-  return extern_int;
+  extern int global_with_init;
+  return global_with_init;
 }
 
 int assign_designated_init(struct someStruct *sp) {
