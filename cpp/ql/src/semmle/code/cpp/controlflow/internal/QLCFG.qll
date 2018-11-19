@@ -275,8 +275,10 @@ private Node controlOrderChildSparse(Node n, int i) {
         // Non-static locals always have control flow to their initializers
         not s.getDeclaration(i).isStatic()
         or
-        // In C++, static locals do too
-        fileUsedInCPP(n.(Element).getFile())
+        // In C++, static locals do too, with some exceptions
+        // TODO: see build_dynamic_init_cfg in the extractor code.
+        fileUsedInCPP(n.(Element).getFile()) and
+        not result.(Initializer).getExpr().getValue() = "0"
       )
       or
       // A VLA cannot have an initializer, so there is no conflict between this
