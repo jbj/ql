@@ -3,13 +3,9 @@ import cpp
 /*
 TODO: difficulties:
 - Particular AST nodes
-  - StmtExpr
-    - Interaction with throw-catch
+  - StmtExpr interaction with throw-catch
   - BlockExpr??? (clang extension)
   - Microsoft __try
-  - Unstructured switch statements
-    - Variable init at start of switch block
-  - VlaDeclStmt
   - Pointer-to-member call and access
 - Is getEnclosingHandler from Ian's branch different from mine?
 - Take cases from Ian's orphanedExpr and orphanedInitializer.
@@ -271,6 +267,10 @@ private Node controlOrderChildSparse(Node n, int i) {
   n = any(DeclStmt s |
     exists(Variable var | var = s.getDeclaration(i) |
       result = var.getInitializer() and
+      // For an `extern` declaration inside a function, the underlying variable
+      // might have an initializer, but it'll be outside the function and has
+      // nothing to do with the control flow of the function.
+      not s.getDeclarationEntry(i).hasSpecifier("extern") and
       (
         // Non-static locals always have control flow to their initializers
         not s.getDeclaration(i).isStatic()
