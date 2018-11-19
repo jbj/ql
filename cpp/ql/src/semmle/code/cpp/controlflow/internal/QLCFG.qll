@@ -60,9 +60,15 @@ private class SupportedNode extends Node {
     // expressions. Why?
     exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.(Expr).getParent+() instanceof SwitchCase and
-    // Constructor init lists should be evaluated, but this will mean that a
-    // `Function` entry point is not always a `Block`.
+    // Constructor init lists should be evaluated, and we can change this in
+    // the future, but it would mean that a `Function` entry point is not
+    // always a `Block`.
+    // TODO: Ian's prototype built CFG for ConstructorBaseInit. Was that
+    // deliberate?
     not this.(Expr).getParent*() instanceof ConstructorInit and
+    // Destructor field destructions should also be hooked into the CFG
+    // properly in the future.
+    not this.(Expr).getParent*() instanceof DestructorFieldDestruction and
     // TODO: this can be improved.
     not this.(Expr).getParent+() instanceof ConditionDeclExpr and
     not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
@@ -165,6 +171,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   not n instanceof ConditionDeclExpr and
   not n instanceof DeleteExpr and
   not n instanceof DeleteArrayExpr and
+  not n instanceof NewArrayExpr and
   not n instanceof ArgumentsUnevaluatedNode and
   not result instanceof TypeName and // TODO: is this the right place?
   not isDeleteDestructorCall(n) // already evaluated
@@ -205,6 +212,20 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 1 and result = del.getDestructorCall()
     or
     i = 2 and result = del.getAllocatorCall()
+  )
+  or
+  n = any(NewArrayExpr new |
+    // If there is no custom allocator, the alignment argument comes first.
+    // Otherwise it's an argument to the allocator call and therefore comes
+    // later.
+    not exists(new.getAllocatorCall()) and
+    i = 0 and result = new.getAlignmentArgument()
+    or
+    i = 1 and result = new.getExtent()
+    or
+    i = 2 and result = new.getAllocatorCall()
+    or
+    i = 3 and result = new.getInitializer()
   )
   or
   n = any(StmtExpr e |
@@ -594,6 +615,12 @@ private class PropagatingHandler extends Handler {
   }
 }
 
+private Stmt getParentStmtSkippingHandlerTry(Stmt s) {
+  if s instanceof Handler
+  then result = s.getParentStmt().getParentStmt()
+  else result = s.getParentStmt()
+}
+
 private class ExceptionSource extends ControlFlowNode {
   ExceptionSource() { this instanceof ThrowExpr or this instanceof PropagatingHandler }
 
@@ -601,21 +628,21 @@ private class ExceptionSource extends ControlFlowNode {
   // will compute their parents separately without sharing. If that's a
   // performance problem, we can go up the tree first with a unary predicate
   // `isThrowParent` and then down along those edges only.
-  private predicate reachesParent(Stmt parent) {
-    parent = this.(ThrowExpr).getEnclosingStmt()
+  private predicate reachesStmt(Stmt parent) {
+    parent = this.(Expr).getEnclosingStmt()
     or
-    parent = this.(PropagatingHandler).getTryStmt().getParentStmt()
+    parent = this
     or
     exists(Stmt s |
-      this.reachesParent(s) and
+      this.reachesStmt(s) and
       not s instanceof TryStmt and
-      parent = s.getParentStmt()
+      parent = getParentStmtSkippingHandlerTry(s)
     )
   }
 
   ExceptionTarget getExceptionTarget() {
     exists(Stmt parent |
-      this.reachesParent(parent)
+      this.reachesStmt(parent)
     |
       result.(Function).getBlock() = parent
       or
@@ -718,6 +745,8 @@ private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode)
   memberPos.isAt() and
   // We check for SupportedNode here as it's slower to check in all the leaf
   // cases during construction of the half-graph.
+  // TODO: we could check at lower levels than this without going all the way
+  // to the leaves.
   atNode instanceof SupportedNode
   or
   // TODO: this is a transitive closure. If it's slow, we can speed it up with
