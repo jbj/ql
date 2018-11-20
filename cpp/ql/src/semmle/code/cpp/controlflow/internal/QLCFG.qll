@@ -183,6 +183,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   not n instanceof DeleteExpr and
   not n instanceof DeleteArrayExpr and
   not n instanceof NewArrayExpr and
+  not n instanceof NewExpr and
   not n instanceof ArgumentsUnevaluatedNode and
   not result instanceof TypeName and // TODO: is this the right place?
   not isDeleteDestructorCall(n) // already evaluated
@@ -226,17 +227,27 @@ private Node controlOrderChildSparse(Node n, int i) {
   )
   or
   n = any(NewArrayExpr new |
-    // If there is no custom allocator, the alignment argument comes first.
-    // Otherwise it's an argument to the allocator call and therefore comes
-    // later as as subexpression of `getAllocatorCall`.
-    not exists(new.getAllocatorCall()) and
-    i = 0 and result = new.getAlignmentArgument()
+    // An extra argument to a built-in allocator, such as alignment or pointer
+    // address, is found at child position 3. Extra arguments to custom
+    // allocators are instead placed as subexpressions of `getAllocatorCall`.
+    i = 0 and result = new.getChild(3)
     or
     i = 1 and result = new.getExtent()
     or
     i = 2 and result = new.getAllocatorCall()
     or
     i = 3 and result = new.getInitializer()
+  )
+  or
+  n = any(NewExpr new |
+    // An extra argument to a built-in allocator, such as alignment or pointer
+    // address, is found at child position 3. Extra arguments to custom
+    // allocators are instead placed as subexpressions of `getAllocatorCall`.
+    i = 0 and result = new.getChild(3)
+    or
+    i = 1 and result = new.getAllocatorCall()
+    or
+    i = 2 and result = new.getInitializer()
   )
   or
   i = 0 and result = getStrayVDCQualifier(n)
