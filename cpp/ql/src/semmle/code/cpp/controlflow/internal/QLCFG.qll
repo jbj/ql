@@ -433,7 +433,6 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     )
   )
   or
-  // TODO: Add a C++11 test and an OO test.
   scope = any(RangeBasedForStmt for |
     i = -1 and ni = for and spec.isAt()
     or
