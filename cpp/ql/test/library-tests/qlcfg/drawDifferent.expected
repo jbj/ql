@@ -1,0 +1,76 @@
+| cpp11__static_init_extractor | false | 3859 | 3859 | static_init |
+| cpp11__static_init_extractor | false | 3865 | 3865 | 0 |
+| cpp11__static_init_extractor | false | 3866 | 3866 | initializer for x1 |
+| cpp11__static_init_extractor | false | 3872 | 3872 | 1 |
+| cpp11__static_init_extractor | false | 3873 | 3873 | initializer for x2 |
+| cpp11__static_init_extractor | false | 3879 | 3879 | declaration |
+| cpp11__static_init_extractor | false | 3881 | 3881 | ; |
+| cpp11__static_init_extractor | false | 3883 | 3883 | declaration |
+| cpp11__static_init_extractor | false | 3885 | 3885 | ; |
+| cpp11__static_init_extractor | false | 3887 | 3887 | declaration |
+| cpp11__static_init_extractor | false | 3889 | 3889 | return ... |
+| cpp11__static_init_extractor | false | 3891 | 3891 | { ... } |
+| cpp11__static_init_extractor | false | 3895 | 3895 | 0 |
+| cpp11__static_init_extractor | false | 3898 | 3898 | 0 |
+| cpp11__static_init_extractor | false | 3899 | 3899 | ... + ... |
+| cpp11__static_init_extractor | false | 3903 | 3903 | initializer for x3 |
+| cpp11__static_init_extractor | true | 3879 | 3881 |  |
+| cpp11__static_init_extractor | true | 3881 | 3883 |  |
+| cpp11__static_init_extractor | true | 3883 | 3885 |  |
+| cpp11__static_init_extractor | true | 3885 | 3887 |  |
+| cpp11__static_init_extractor | true | 3887 | 3889 |  |
+| cpp11__static_init_extractor | true | 3889 | 3859 |  |
+| cpp11__static_init_extractor | true | 3891 | 3879 |  |
+| cpp11__static_init_ql | false | 3859 | 3859 | static_init |
+| cpp11__static_init_ql | false | 3865 | 3865 | 0 |
+| cpp11__static_init_ql | false | 3866 | 3866 | initializer for x1 |
+| cpp11__static_init_ql | false | 3872 | 3872 | 1 |
+| cpp11__static_init_ql | false | 3873 | 3873 | initializer for x2 |
+| cpp11__static_init_ql | false | 3879 | 3879 | declaration |
+| cpp11__static_init_ql | false | 3881 | 3881 | ; |
+| cpp11__static_init_ql | false | 3883 | 3883 | declaration |
+| cpp11__static_init_ql | false | 3885 | 3885 | ; |
+| cpp11__static_init_ql | false | 3887 | 3887 | declaration |
+| cpp11__static_init_ql | false | 3889 | 3889 | return ... |
+| cpp11__static_init_ql | false | 3891 | 3891 | { ... } |
+| cpp11__static_init_ql | false | 3895 | 3895 | 0 |
+| cpp11__static_init_ql | false | 3898 | 3898 | 0 |
+| cpp11__static_init_ql | false | 3899 | 3899 | ... + ... |
+| cpp11__static_init_ql | false | 3903 | 3903 | initializer for x3 |
+| cpp11__static_init_ql | true | 3866 | 3865 |  |
+| cpp11__static_init_ql | true | 3872 | 3885 |  |
+| cpp11__static_init_ql | true | 3873 | 3872 |  |
+| cpp11__static_init_ql | true | 3879 | 3881 |  |
+| cpp11__static_init_ql | true | 3881 | 3883 |  |
+| cpp11__static_init_ql | true | 3883 | 3873 |  |
+| cpp11__static_init_ql | true | 3883 | 3885 |  |
+| cpp11__static_init_ql | true | 3885 | 3887 |  |
+| cpp11__static_init_ql | true | 3887 | 3889 |  |
+| cpp11__static_init_ql | true | 3889 | 3859 |  |
+| cpp11__static_init_ql | true | 3891 | 3879 |  |
+| cpp11__static_init_ql | true | 3895 | 3898 |  |
+| cpp11__static_init_ql | true | 3898 | 3899 |  |
+| cpp11__static_init_ql | true | 3903 | 3895 |  |
+| cpp11__static_init_unmodified | false | 3859 | 3859 | static_init |
+| cpp11__static_init_unmodified | false | 3865 | 3865 | 0 |
+| cpp11__static_init_unmodified | false | 3866 | 3866 | initializer for x1 |
+| cpp11__static_init_unmodified | false | 3872 | 3872 | 1 |
+| cpp11__static_init_unmodified | false | 3873 | 3873 | initializer for x2 |
+| cpp11__static_init_unmodified | false | 3879 | 3879 | declaration |
+| cpp11__static_init_unmodified | false | 3881 | 3881 | ; |
+| cpp11__static_init_unmodified | false | 3883 | 3883 | declaration |
+| cpp11__static_init_unmodified | false | 3885 | 3885 | ; |
+| cpp11__static_init_unmodified | false | 3887 | 3887 | declaration |
+| cpp11__static_init_unmodified | false | 3889 | 3889 | return ... |
+| cpp11__static_init_unmodified | false | 3891 | 3891 | { ... } |
+| cpp11__static_init_unmodified | false | 3895 | 3895 | 0 |
+| cpp11__static_init_unmodified | false | 3898 | 3898 | 0 |
+| cpp11__static_init_unmodified | false | 3899 | 3899 | ... + ... |
+| cpp11__static_init_unmodified | false | 3903 | 3903 | initializer for x3 |
+| cpp11__static_init_unmodified | true | 3879 | 3881 |  |
+| cpp11__static_init_unmodified | true | 3881 | 3883 |  |
+| cpp11__static_init_unmodified | true | 3883 | 3885 |  |
+| cpp11__static_init_unmodified | true | 3885 | 3887 |  |
+| cpp11__static_init_unmodified | true | 3887 | 3889 |  |
+| cpp11__static_init_unmodified | true | 3889 | 3859 |  |
+| cpp11__static_init_unmodified | true | 3891 | 3879 |  |

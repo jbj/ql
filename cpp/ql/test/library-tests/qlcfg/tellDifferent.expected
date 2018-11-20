@@ -1,0 +1,7 @@
+| cpp11__static_init | cpp11.cpp:35:19:35:19 | initializer for x1 | cpp11.cpp:35:19:35:19 | 0 | Standard edge, only from QL |
+| cpp11__static_init | cpp11.cpp:37:3:37:20 | declaration | cpp11.cpp:37:19:37:19 | initializer for x2 | Standard edge, only from QL |
+| cpp11__static_init | cpp11.cpp:37:19:37:19 | 1 | cpp11.cpp:38:3:38:3 | ; | Standard edge, only from QL |
+| cpp11__static_init | cpp11.cpp:37:19:37:19 | initializer for x2 | cpp11.cpp:37:19:37:19 | 1 | Standard edge, only from QL |
+| cpp11__static_init | cpp11.cpp:39:19:39:19 | 0 | cpp11.cpp:39:23:39:23 | 0 | Standard edge, only from QL |
+| cpp11__static_init | cpp11.cpp:39:19:39:23 | initializer for x3 | cpp11.cpp:39:19:39:19 | 0 | Standard edge, only from QL |
+| cpp11__static_init | cpp11.cpp:39:23:39:23 | 0 | cpp11.cpp:39:19:39:23 | ... + ... | Standard edge, only from QL |
