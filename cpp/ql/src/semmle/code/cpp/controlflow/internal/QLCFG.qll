@@ -131,6 +131,19 @@ private class Pos extends int {
   predicate nodeAfter(Node n, Node nEq) { this.isAfter() and n = nEq }
 }
 
+// TODO: remove this class when we don't need extractor compatibility
+private class PostOrderInitializer extends Initializer {
+  PostOrderInitializer() {
+    exists(RangeBasedForStmt for |
+      this.getDeclaration() = for.getVariable()
+      or
+      this.getDeclaration() = for.getRangeVariable()
+      or
+      this.getDeclaration() = for.getBeginEndDeclaration().(DeclStmt).getADeclaration()
+    )
+  }
+}
+
 private class PostOrderNode extends Node {
   PostOrderNode() {
     // TODO: positive list instead of negative list
@@ -144,13 +157,16 @@ private class PostOrderNode extends Node {
     // TODO: Turn this into a PreOrderNode when we're no longer comparing with
     // the extractor CFG.
     this instanceof VlaDeclStmt
+    or
+    this instanceof PostOrderInitializer
   }
 }
 
 private class PreOrderNode extends Node {
   PreOrderNode() {
     // TODO: this is to mimic the extractor. Why not extend to all initializers?
-    this.(Initializer).getDeclaration() instanceof LocalVariable
+    this.(Initializer).getDeclaration() instanceof LocalVariable and
+    not this instanceof PostOrderInitializer
     or
     this instanceof DeclStmt
     or
@@ -415,6 +431,33 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
       or
       i = 3 and ni = s.getStmt() and spec.isBefore()
     )
+  )
+  or
+  // TODO: Add a C++11 test and an OO test.
+  scope = any(RangeBasedForStmt for |
+    i = -1 and ni = for and spec.isAt()
+    or
+    exists(DeclStmt s |
+      s.getADeclaration() = for.getRangeVariable() and
+      i = 0 and ni = s and spec.isAround()
+    )
+    or
+    i = 1 and ni = for.getBeginEndDeclaration() and spec.isAround()
+    or
+    i = 2 and ni = for.getCondition() and spec.isBefore()
+    or
+    i = 3 and ni = for and spec.isBarrier()
+    or
+    exists(DeclStmt declStmt |
+      declStmt.getADeclaration() = for.getVariable() and
+      i = 4 and ni = declStmt and spec.isAfter()
+    )
+    or
+    i = 5 and ni = for.getStmt() and spec.isAround()
+    or
+    i = 6 and ni = for.getUpdate() and spec.isAround()
+    or
+    i = 7 and ni = for.getCondition() and spec.isBefore()
   )
   or
   scope = any(TryStmt s |
@@ -695,14 +738,32 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     targetPos.nodeAfter(targetNode, s)
   )
   or
-  // TODO: Is it slow to use the abstract class `Loop`? It gets compiled to a
-  // join with `stmts`.
-  exists(Loop l | test = l.getCondition() |
+  exists(Loop l |
+    (
+      l instanceof WhileStmt
+      or
+      l instanceof DoStmt
+      or
+      l instanceof ForStmt
+    ) and
+    test = l.getCondition()
+  |
     truth = true and
     targetPos.nodeBefore(targetNode, l.getStmt())
     or
     truth = false and
     targetPos.nodeAfter(targetNode, l)
+  )
+  or
+  exists(RangeBasedForStmt for | test = for.getCondition() |
+    truth = true and
+    exists(DeclStmt declStmt |
+      declStmt.getADeclaration() = for.getVariable() and
+      targetPos.nodeBefore(targetNode, declStmt)
+    )
+    or
+    truth = false and
+    targetPos.nodeAfter(targetNode, for)
   )
 }
 
