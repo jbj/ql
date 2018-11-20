@@ -28,9 +28,11 @@ namespace range_based_for_17 {
     }
   }
 
+  struct EndMarker { };
+
   struct Iterator {
     void *pos_data;
-    bool operator!=(const Iterator &other);
+    bool operator!=(const EndMarker &endMarker);
     Iterator &operator++();
     int &operator*();
   };
@@ -38,7 +40,7 @@ namespace range_based_for_17 {
   struct Iterable {
     void *container_data;
     Iterator begin();
-    Iterator end();
+    EndMarker end();
   };
 
   Iterable getContainer();
