@@ -265,12 +265,8 @@ private Node controlOrderChildSparse(Node n, int i) {
   not result instanceof VlaDimensionStmt
   or
   n = any(DeclStmt s |
-    exists(Variable var | var = s.getDeclaration(i) |
+    exists(LocalVariable var | var = s.getDeclaration(i) |
       result = var.getInitializer() and
-      // For an `extern` declaration inside a function, the underlying variable
-      // might have an initializer, but it'll be outside the function and has
-      // nothing to do with the control flow of the function.
-      not s.getDeclarationEntry(i).hasSpecifier("extern") and
       (
         // Non-static locals always have control flow to their initializers
         not s.getDeclaration(i).isStatic()
