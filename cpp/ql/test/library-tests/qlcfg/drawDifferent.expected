@@ -1,0 +1,51 @@
+| misc__make_extractor | false | 11998 | 11998 | make |
+| misc__make_extractor | false | 12004 | 12004 | call to unknown function |
+| misc__make_extractor | false | 12006 | 12006 | args |
+| misc__make_extractor | false | 12008 | 12008 | (reference dereference) |
+| misc__make_extractor | false | 12010 | 12010 | ptr |
+| misc__make_extractor | false | 12012 | 12012 | (void *)... |
+| misc__make_extractor | false | 12014 | 12014 | new |
+| misc__make_extractor | false | 12016 | 12016 | ExprStmt |
+| misc__make_extractor | false | 12018 | 12018 | return ... |
+| misc__make_extractor | false | 12020 | 12020 | { ... } |
+| misc__make_extractor | true | 12004 | 12014 |  |
+| misc__make_extractor | true | 12006 | 12004 |  |
+| misc__make_extractor | true | 12010 | 12006 |  |
+| misc__make_extractor | true | 12014 | 12018 |  |
+| misc__make_extractor | true | 12016 | 12010 |  |
+| misc__make_extractor | true | 12018 | 11998 |  |
+| misc__make_extractor | true | 12020 | 12016 |  |
+| misc__make_ql | false | 11998 | 11998 | make |
+| misc__make_ql | false | 12004 | 12004 | call to unknown function |
+| misc__make_ql | false | 12006 | 12006 | args |
+| misc__make_ql | false | 12008 | 12008 | (reference dereference) |
+| misc__make_ql | false | 12010 | 12010 | ptr |
+| misc__make_ql | false | 12012 | 12012 | (void *)... |
+| misc__make_ql | false | 12014 | 12014 | new |
+| misc__make_ql | false | 12016 | 12016 | ExprStmt |
+| misc__make_ql | false | 12018 | 12018 | return ... |
+| misc__make_ql | false | 12020 | 12020 | { ... } |
+| misc__make_ql | true | 12004 | 12010 |  |
+| misc__make_ql | true | 12006 | 12004 |  |
+| misc__make_ql | true | 12010 | 12014 |  |
+| misc__make_ql | true | 12014 | 12018 |  |
+| misc__make_ql | true | 12016 | 12006 |  |
+| misc__make_ql | true | 12018 | 11998 |  |
+| misc__make_ql | true | 12020 | 12016 |  |
+| misc__make_unmodified | false | 11998 | 11998 | make |
+| misc__make_unmodified | false | 12004 | 12004 | call to unknown function |
+| misc__make_unmodified | false | 12006 | 12006 | args |
+| misc__make_unmodified | false | 12008 | 12008 | (reference dereference) |
+| misc__make_unmodified | false | 12010 | 12010 | ptr |
+| misc__make_unmodified | false | 12012 | 12012 | (void *)... |
+| misc__make_unmodified | false | 12014 | 12014 | new |
+| misc__make_unmodified | false | 12016 | 12016 | ExprStmt |
+| misc__make_unmodified | false | 12018 | 12018 | return ... |
+| misc__make_unmodified | false | 12020 | 12020 | { ... } |
+| misc__make_unmodified | true | 12004 | 12014 |  |
+| misc__make_unmodified | true | 12006 | 12004 |  |
+| misc__make_unmodified | true | 12010 | 12006 |  |
+| misc__make_unmodified | true | 12014 | 12018 |  |
+| misc__make_unmodified | true | 12016 | 12010 |  |
+| misc__make_unmodified | true | 12018 | 11998 |  |
+| misc__make_unmodified | true | 12020 | 12016 |  |
