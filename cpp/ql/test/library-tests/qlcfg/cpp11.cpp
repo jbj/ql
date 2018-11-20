@@ -30,3 +30,11 @@ namespace range_based_for_11 {
     return 0;
   }
 }
+
+void static_init() {
+  static int x1 = 0;
+  ;
+  static int x2 = 1;
+  ;
+  static int x3 = 0 + 0;
+}
