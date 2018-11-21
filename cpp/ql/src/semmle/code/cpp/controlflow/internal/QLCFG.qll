@@ -81,12 +81,7 @@ private class SupportedNode extends Node {
     not this.(Expr).getParent+() instanceof ConditionDeclExpr and
     not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
     not this.(Expr).getParent*() instanceof Orphan and
-    // Initializers of static locals in C
-    not exists(LocalVariable staticLocal |
-      staticLocal.isStatic() and
-      not fileUsedInCPP(staticLocal.getFile()) and
-      this.(Expr).getParent+() = staticLocal.getInitializer()
-    )
+    not skipInitializer(this.(Expr).getParent+())
   }
 }
 
@@ -273,6 +268,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   )
   or
   n = any(Initializer init |
+    not skipInitializer(init) and
     not exists(ConditionDeclExpr cd | init = cd.getVariable().getInitializer()) and
     i = 0 and result = n.(Initializer).getExpr()
   )
@@ -294,15 +290,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   n = any(DeclStmt s |
     exists(LocalVariable var | var = s.getDeclaration(i) |
       result = var.getInitializer() and
-      (
-        // Non-static locals always have control flow to their initializers
-        not s.getDeclaration(i).isStatic()
-        or
-        // In C++, static locals do too, with some exceptions
-        // TODO: see build_dynamic_init_cfg in the extractor code.
-        fileUsedInCPP(n.(Element).getFile()) and
-        not result.(Initializer).getExpr().getValue() = "0"
-      )
+      not skipInitializer(result)
       or
       // A VLA cannot have an initializer, so there is no conflict between this
       // case and the above.
@@ -311,6 +299,19 @@ private Node controlOrderChildSparse(Node n, int i) {
   )
   or
   result = n.(VlaDeclStmt).getVlaDimensionStmt(i)
+}
+
+private predicate skipInitializer(Initializer init) {
+  exists(LocalVariable local |
+    init = local.getInitializer() and
+    local.isStatic() and
+    (
+      // In C, there is never control flow through static initializers
+      not fileUsedInCPP(local.getFile())
+      or
+      init.getExpr().isConstant()
+    )
+  )
 }
 
 private Node controlOrderChild(Node n, int i) {
