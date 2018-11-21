@@ -38,3 +38,32 @@ void static_init() {
   ;
   static int x3 = 0 + 0;
 }
+
+namespace lambda {
+  void simple(int x) {
+    auto closure = [=]() -> int { return x; };
+  }
+
+  class Val {
+    void *m_data;
+  public:
+    Val(int);
+    Val(const Val &);
+  };
+
+  template<typename Fn>
+  void apply(Val arg, Fn unaryFunction) {
+    unaryFunction(arg);
+  }
+
+  template <typename Fn>
+  void apply2(Fn binaryFunction, Val arg1, Val arg2) {
+    apply(arg2, [=](Val x) { binaryFunction(arg1, x); });
+  }
+
+  int doSomething(Val arg1, Val arg2);
+
+  void main() {
+    apply2(doSomething, Val(1), Val(2));
+  }
+}
