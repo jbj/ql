@@ -95,6 +95,8 @@ private class SupportedNode extends Node {
 private class ArgumentsUnevaluatedNode extends Node {
   ArgumentsUnevaluatedNode() {
     this instanceof BuiltInOperationOffsetOf
+    or
+    this instanceof BuiltInOperationBuiltInShuffleVector
     // TODO: others?
     // TODO: sizeof belongs here, but the extractor pretends it doesn't.
   }
