@@ -222,3 +222,11 @@ int assign_designated_init(struct someStruct *sp) {
     .j = 2,
   };
 }
+
+static int global_int;
+void *builtin_addressof_test() {
+	int *p = __builtin_addressof(global_int);
+	int *p1 = __builtin_addressof(global_int) + 1;
+	p1 = __builtin_addressof(global_int) + 1;
+	return __builtin_addressof(global_int);
+}
