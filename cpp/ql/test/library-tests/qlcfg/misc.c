@@ -207,7 +207,7 @@ extern int fmac (void);
 #define MAC int fmac (void) { return 5; }
 MAC
 
-int global_with_init = 0;
+int global_with_init = 0 + 1;
 
 int extern_local() {
   // The variable declared here has an initializer, but it's not one that gets
