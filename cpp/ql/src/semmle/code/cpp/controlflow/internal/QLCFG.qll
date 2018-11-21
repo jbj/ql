@@ -314,6 +314,8 @@ private predicate skipInitializer(Initializer init) {
   )
 }
 
+// TODO: Call this from `normalEdge` instead of `straightLine`. It's a waste of
+// time to go through a middle layer of abstraction.
 private Node controlOrderChild(Node n, int i) {
   exists(int sparseIndex |
     result = controlOrderChildSparse(n, sparseIndex) and

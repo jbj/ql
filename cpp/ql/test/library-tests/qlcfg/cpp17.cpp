@@ -1,4 +1,4 @@
-// semmle-extractor-options: -std=c++17
+// semmle-extractor-options: --c++17
 
 namespace std { typedef unsigned long size_t; }
 
@@ -17,38 +17,5 @@ namespace placement_new {
 
   void make_HasTwoArgCtor(HasTwoArgCtor *p) {
     make(p, 1, 2);
-  }
-}
-
-namespace range_based_for_17 {
-  void array() {
-    int arr[4];
-    for (auto &el : arr) {
-      el = 0;
-    }
-  }
-
-  struct EndMarker { };
-
-  struct Iterator {
-    void *pos_data;
-    bool operator!=(const EndMarker &endMarker);
-    Iterator &operator++();
-    int &operator*();
-  };
-
-  struct Iterable {
-    void *container_data;
-    Iterator begin();
-    EndMarker end();
-  };
-
-  Iterable getContainer();
-
-  int getFirst() {
-    for (auto& el : getContainer()) {
-      return el;
-    }
-    return 0;
   }
 }
