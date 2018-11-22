@@ -99,7 +99,6 @@ predicate differentEdge(ControlFlowNode n1, ControlFlowNode n2, string msg) {
   msg = "False edge, only from QL"
 }
 
-// TODO: account for nodes that are not in functions
 predicate differentScope(Element e) {
   exists(ControlFlowNode n1 |
     getScopeElement(n1) = e and
@@ -107,10 +106,22 @@ predicate differentScope(Element e) {
   )
 }
 
-Element getScopeElement(ControlFlowNode x) {
-  result = x.getControlFlowScope()
+private predicate isInFunction(ControlFlowNode x, Function f) {
+  f = x.getControlFlowScope()
   or
-  not exists(x.getControlFlowScope()) and
+  exists(ControlFlowNode y |
+    successors(unresolveElement(x), unresolveElement(y))
+    or
+    successors(unresolveElement(y), unresolveElement(x))
+  |
+    isInFunction(y, f)
+  )
+}
+
+Element getScopeElement(ControlFlowNode x) {
+  isInFunction(x, result)
+  or
+  not isInFunction(x, _) and
   result = x.getFile()
   or
   // CPP-298
