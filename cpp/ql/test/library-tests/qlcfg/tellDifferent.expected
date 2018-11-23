@@ -41,8 +41,6 @@
 | 81__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from extractor |
 | 81__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:12:20:12 | 0 | Standard edge, only from QL |
 | 81__main | 321.cpp:20:12:20:12 | 0 | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from QL |
-| 139__foo | 324.cpp:5:3:5:7 | re-throw exception  | 139.cpp:17:6:17:8 | foo | Standard edge, only from extractor |
-| 139__foo | 324.cpp:5:3:5:7 | re-throw exception  | 324.cpp:1:5:1:7 | foo | Standard edge, only from extractor |
 | 143__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from extractor |
 | 143__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:12:20:12 | 0 | Standard edge, only from QL |
 | 143__main | 321.cpp:20:12:20:12 | 0 | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from QL |
@@ -257,9 +255,6 @@
 | 321__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from extractor |
 | 321__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:12:20:12 | 0 | Standard edge, only from QL |
 | 321__main | 321.cpp:20:12:20:12 | 0 | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from QL |
-| 324__Bar_Bar | 324.cpp:14:5:14:9 | re-throw exception  | 324.cpp:10:3:10:5 | Bar | Standard edge, only from extractor |
-| 324__foo | 324.cpp:5:3:5:7 | re-throw exception  | 139.cpp:17:6:17:8 | foo | Standard edge, only from extractor |
-| 324__foo | 324.cpp:5:3:5:7 | re-throw exception  | 324.cpp:1:5:1:7 | foo | Standard edge, only from extractor |
 | 348__f | 261.cpp:13:5:19:5 | __try { ... } __except( ... ) { ... } | 261.cpp:13:11:19:5 | { ... } | Standard edge, only from extractor |
 | 348__f | 261.cpp:16:13:16:19 | throw ... | 228.cpp:8:6:8:6 | f | Standard edge, only from QL |
 | 348__f | 261.cpp:16:13:16:19 | throw ... | 244.cpp:2:6:2:6 | f | Standard edge, only from QL |

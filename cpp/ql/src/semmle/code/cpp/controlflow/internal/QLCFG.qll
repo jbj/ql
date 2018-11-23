@@ -678,6 +678,11 @@ private class ExceptionTarget extends ControlFlowNode {
   ExceptionTarget() { this instanceof Handler or this instanceof Function }
 }
 
+/**
+ * A `Handler` that might fail to match its exception and instead propagate it
+ * further up the AST. This can happen in the last `Handler` of a `TryStmt` if
+ * it's not a catch-all handler.
+ */
 private class PropagatingHandler extends Handler {
   PropagatingHandler() {
     exists(this.getParameter()) and
@@ -688,12 +693,7 @@ private class PropagatingHandler extends Handler {
   }
 }
 
-private Stmt getParentStmtSkippingHandlerTry(Stmt s) {
-  if s instanceof Handler
-  then result = s.getParentStmt().getParentStmt()
-  else result = s.getParentStmt()
-}
-
+/** A control-flow node that might pass an exception up in the AST. */
 private class ExceptionSource extends ControlFlowNode {
   ExceptionSource() { this instanceof ThrowExpr or this instanceof PropagatingHandler }
 
@@ -708,8 +708,8 @@ private class ExceptionSource extends ControlFlowNode {
     or
     exists(Stmt s |
       this.reachesStmt(s) and
-      not s instanceof TryStmt and
-      parent = getParentStmtSkippingHandlerTry(s)
+      not s = any(TryStmt try).getStmt() and
+      parent = s.getParentStmt()
     )
   }
 
@@ -717,9 +717,12 @@ private class ExceptionSource extends ControlFlowNode {
     exists(Stmt parent |
       this.reachesStmt(parent)
     |
-      result.(Function).getBlock() = parent
+      result.(Function).getEntryPoint() = parent
       or
-      result = parent.(TryStmt).getChild(1)
+      exists(TryStmt try |
+        parent = try.getStmt() and
+        result = try.getChild(1)
+      )
     )
   }
 }
