@@ -319,7 +319,8 @@ private predicate skipInitializer(Initializer init) {
 }
 
 // TODO: Call this from `normalEdge` instead of `straightLine`. It's a waste of
-// time to go through a middle layer of abstraction.
+// time to go through a middle layer of abstraction. But then we have to apply
+// `rank` here, not just `min`.
 private Node controlOrderChild(Node n, int i) {
   exists(int sparseIndex |
     result = controlOrderChildSparse(n, sparseIndex) and
@@ -536,11 +537,19 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   // ALmost all statements start with themselves.
   // TODO: does that mean we should never make edges to _before_ a statement
   // but always _at_ the statement? Or is that premature optimization?
-  // To make this change, we'd need an `isAroundStmt` spec.
-  n1.(Stmt) = n2 and
-  not n1 instanceof VlaDeclStmt and
-  p1.isBefore() and
-  p2.isAt()
+  // To make this change, we'd need an `isAroundStmt` spec. We also need to do
+  // something about exception targets, Microsoft `__try`-exceptions can either
+  // propagate to an expression (`__except(e)`) or a statement (`__finally`).
+  exists(Stmt s |
+    not s instanceof VlaDeclStmt and
+    p1.nodeBefore(n1, s) and
+    p2.nodeAt(n2, s)
+  )
+  or
+  exists(Function f |
+    p1.nodeBefore(n1, f) and
+    p2.nodeAt(n2, f)
+  )
   or
   // entry point -> Function
   // TODO: delete this later. Only for compatibility with extractor quirks. It
@@ -633,9 +642,10 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   // Additional edge for `MicrosoftTryFinallyStmt` for the case where an
   // exception is propagated. It gets its other edges from being a
   // `PreOrderNode` and a `Stmt`.
-  exists(MicrosoftTryFinallyStmt s |
-    p1.nodeAfter(n1, s.getFinally()) and
-    p2.nodeAt(n2, s.getEnclosingFunction())
+  exists(MicrosoftTryFinallyStmt s, Stmt finally |
+    finally = s.getFinally() and
+    p1.nodeAfter(n1, finally) and
+    p2.nodeBefore(n2, finally.(ExceptionSource).getExceptionTarget())
   )
 }
 
@@ -698,10 +708,6 @@ private module ShortCircuit {
   }
 }
 
-private class ExceptionTarget extends ControlFlowNode {
-  ExceptionTarget() { this instanceof Handler or this instanceof Function }
-}
-
 /**
  * A `Handler` that might fail to match its exception and instead propagate it
  * further up the AST. This can happen in the last `Handler` of a `TryStmt` if
@@ -718,8 +724,19 @@ private class PropagatingHandler extends Handler {
 }
 
 /** A control-flow node that might pass an exception up in the AST. */
-private class ExceptionSource extends ControlFlowNode {
-  ExceptionSource() { this instanceof ThrowExpr or this instanceof PropagatingHandler }
+private class ExceptionSource extends Node {
+  ExceptionSource() {
+    this instanceof ThrowExpr
+    or
+    this instanceof PropagatingHandler
+    or
+    // By reusing the same set of predicates for Microsoft exceptions and C++
+    // exceptions, we're pretending that their handlers can catch each other.
+    // This may or may not be true depending on compiler options.
+    exists(MicrosoftTryExceptStmt try | this = try.getCondition())
+    or
+    exists(MicrosoftTryFinallyStmt try | this = try.getFinally())
+  }
 
   // TODO: Performance: if there are multiple sources far down in the AST, this
   // will compute their parents separately without sharing. If that's a
@@ -733,11 +750,12 @@ private class ExceptionSource extends ControlFlowNode {
     exists(Stmt s |
       this.reachesStmt(s) and
       not s = any(TryStmt try).getStmt() and
+      not s = any(MicrosoftTryStmt try).getStmt() and
       parent = s.getParentStmt()
     )
   }
 
-  ExceptionTarget getExceptionTarget() {
+  Node getExceptionTarget() {
     exists(Stmt parent |
       this.reachesStmt(parent)
     |
@@ -746,6 +764,16 @@ private class ExceptionSource extends ControlFlowNode {
       exists(TryStmt try |
         parent = try.getStmt() and
         result = try.getChild(1)
+      )
+      or
+      exists(MicrosoftTryExceptStmt try |
+        parent = try.getStmt() and
+        result = try.getCondition()
+      )
+      or
+      exists(MicrosoftTryFinallyStmt try |
+        parent = try.getStmt() and
+        result = try.getFinally()
       )
     )
   }
@@ -801,9 +829,9 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     truth = true and
     targetPos.nodeBefore(targetNode, try.getExcept())
     or
-    // TODO: should instead propagate. Actually, this test is ternary.
+    // TODO: Actually, this test is ternary.
     truth = false and
-    targetPos.nodeAt(targetNode, try.getEnclosingFunction())
+    targetPos.nodeBefore(targetNode, test.(ExceptionSource).getExceptionTarget())
   )
 }
 
