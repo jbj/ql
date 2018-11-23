@@ -178,6 +178,8 @@ private class PreOrderNode extends Node {
     this instanceof AsmStmt
     or
     this instanceof VlaDimensionStmt
+    or
+    this instanceof MicrosoftTryFinallyStmt
   }
 }
 
@@ -472,6 +474,20 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     i = 1 and ni = s and spec.isAfter()
   )
   or
+  scope = any(MicrosoftTryExceptStmt s |
+    i = -1 and ni = s and spec.isAt()
+    or
+    i = 0 and ni = s.getStmt() and spec.isAround()
+    or
+    i = 1 and ni = s and spec.isAfter()
+    or
+    i = 2 and ni = s and spec.isBarrier()
+    or
+    i = 3 and ni = s.getExcept() and spec.isAfter()
+    or
+    i = 4 and ni = s and spec.isAfter()
+  )
+  or
   scope = any(SwitchStmt s |
     i = -1 and ni = s and spec.isAt()
     or
@@ -612,6 +628,14 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
   or exists(CatchBlock cb |
     p1.nodeAfter(n1, cb) and
     p2.nodeAfter(n2, cb.getTryStmt())
+  )
+  or
+  // Additional edge for `MicrosoftTryFinallyStmt` for the case where an
+  // exception is propagated. It gets its other edges from being a
+  // `PreOrderNode` and a `Stmt`.
+  exists(MicrosoftTryFinallyStmt s |
+    p1.nodeAfter(n1, s.getFinally()) and
+    p2.nodeAt(n2, s.getEnclosingFunction())
   )
 }
 
@@ -771,6 +795,15 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     or
     truth = false and
     targetPos.nodeAfter(targetNode, for)
+  )
+  or
+  exists(MicrosoftTryExceptStmt try | test = try.getCondition() |
+    truth = true and
+    targetPos.nodeBefore(targetNode, try.getExcept())
+    or
+    // TODO: should instead propagate. Actually, this test is ternary.
+    truth = false and
+    targetPos.nodeAt(targetNode, try.getEnclosingFunction())
   )
 }
 
