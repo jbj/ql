@@ -320,21 +320,17 @@ private predicate skipInitializer(Initializer init) {
   )
 }
 
-// TODO: Call this from `normalEdge` instead of `straightLine`. It's a waste of
-// time to go through a middle layer of abstraction. But then we have to apply
-// `rank` here, not just `min`.
 private Node controlOrderChild(Node n, int i) {
-  exists(int sparseIndex |
-    result = controlOrderChildSparse(n, sparseIndex) and
-    i = sparseIndex - min(int j | exists(controlOrderChildSparse(n, j)))
+  result = rank[i + 1](Node child, int childIdx |
+    child = controlOrderChildSparse(n, childIdx)
+  |
+    child
+    order by childIdx
   )
 }
 
-private int controlOrderChildMax(Node n) {
-  result = max(int i | exists(controlOrderChild(n, i)))
-  or
-  not exists(controlOrderChild(n, _)) and
-  result = -1
+private Node lastControlOrderChild(Node n) {
+  result = controlOrderChild(n, max(int i | exists(controlOrderChild(n, i))))
 }
 
 private class Spec extends int {
@@ -365,29 +361,6 @@ private class Spec extends int {
 }
 
 private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
-  scope = any(PostOrderNode n |
-    i = -1 and ni = n and spec.isBefore()
-    or
-    // TODO: here we can use the raw one if we also have a min instead of
-    // hard-coding -1. Alternatively, just use min instead of rank to make
-    // numbering start at 0.
-    ni = controlOrderChild(scope, i) and spec.isAround()
-    or
-    i = controlOrderChildMax(scope) + 1 and ni = n and spec.isAt()
-    or
-    i = controlOrderChildMax(scope) + 2 and ni = n and spec.isAfter()
-  )
-  or
-  scope = any(PreOrderNode n |
-    i = -1 and ni = n and spec.isBefore()
-    or
-    i = 0 and ni = n and spec.isAt()
-    or
-    ni = controlOrderChild(scope, i - 1) and spec.isAround()
-    or
-    i = controlOrderChildMax(scope) + 2 and ni = n and spec.isAfter()
-  )
-  or
   scope = any(ShortCircuitOperator op |
     i = -1 and ni = op and spec.isBefore()
     or
@@ -534,6 +507,46 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     straightLineRanked(scope, rnk + 1, n2, spec2) and
     p1 = spec1.asLeftPos() and
     p2 = spec2.asRightPos()
+  )
+  or
+  // child1 -> ... -> childn
+  exists(Node n, int childIdx |
+    p1.nodeAfter(n1, controlOrderChild(n, childIdx)) and
+    p2.nodeBefore(n2, controlOrderChild(n, childIdx+1))
+  )
+  or
+  // -> [children ->] PostOrderNode ->
+  exists(PostOrderNode n |
+    p1.nodeBefore(n1, n) and
+    p2.nodeBefore(n2, controlOrderChild(n, 0))
+    or
+    p1.nodeAfter(n1, lastControlOrderChild(n)) and
+    p2.nodeAt(n2, n)
+    or
+    // Short circuit if there are no children.
+    not exists(lastControlOrderChild(n)) and
+    p1.nodeBefore(n1, n) and
+    p2.nodeAt(n2, n)
+    or
+    p1.nodeAt(n1, n) and
+    p2.nodeAfter(n2, n)
+  )
+  or
+  // -> PreOrderNode -> [children ->]
+  exists(PreOrderNode n |
+    p1.nodeBefore(n1, n) and
+    p2.nodeAt(n2, n)
+    or
+    p1.nodeAt(n1, n) and
+    p2.nodeBefore(n2, controlOrderChild(n, 0))
+    or
+    p1.nodeAfter(n1, lastControlOrderChild(n)) and
+    p2.nodeAfter(n2, n)
+    or
+    // Short circuit if there are no children
+    not exists(lastControlOrderChild(n)) and
+    p1.nodeAt(n1, n) and
+    p2.nodeAfter(n2, n)
   )
   or
   // ALmost all statements start with themselves.
