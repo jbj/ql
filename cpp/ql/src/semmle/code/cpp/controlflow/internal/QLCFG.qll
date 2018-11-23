@@ -330,6 +330,10 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
     else (
       // Not constant
       not e.isConstant() and
+      // Not a function address
+      not e instanceof FunctionAccess and
+      // Not a function address-of (same as above)
+      not e.(AddressOfExpr).getOperand() instanceof FunctionAccess and
       // Not the address of a global variable
       not exists(Variable v |
         v.isStatic()
