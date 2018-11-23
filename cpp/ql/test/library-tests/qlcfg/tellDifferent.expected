@@ -5,10 +5,6 @@
 | 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:14:1:14:1 | return ... | Standard edge, only from extractor |
 | 312__stream_it | file://:0:0:0:0 | initializer for (__range) | 312.cpp:11:3:13:3 | declaration | Standard edge, only from QL |
 | 312__stream_it | file://:0:0:0:0 | initializer for (__range) | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
-| 371__cpp_fun | 371.cpp:5:16:5:56 | { ... } | 371.cpp:5:17:5:36 | declaration | Standard edge, only from QL |
-| 371__cpp_fun | 371.cpp:5:17:5:36 | declaration | 371.cpp:5:38:5:51 | declaration | Standard edge, only from QL |
-| 371__cpp_fun | 371.cpp:5:38:5:51 | declaration | 371.cpp:5:53:5:54 | ExprStmt | Standard edge, only from QL |
-| 371__cpp_fun | 371.cpp:5:53:5:54 | ExprStmt | 371.cpp:5:53:5:53 | 1 | Standard edge, only from QL |
 | 376__ConditionDecl | 376.cpp:3:3:4:3 | while (...) ... | 376.cpp:3:17:3:17 | j | Standard edge, only from extractor |
 | 376__ConditionDecl | 376.cpp:3:17:3:17 | j | 376.cpp:3:21:3:21 | 5 | Standard edge, only from extractor |
 | 376__ConditionDecl | 376.cpp:3:21:3:21 | 5 | 376.cpp:3:17:3:21 | ... < ... | Standard edge, only from extractor |
