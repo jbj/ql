@@ -321,28 +321,24 @@ private predicate skipInitializer(Initializer init) {
 }
 
 private predicate runtimeExprInStaticInitializer(Expr e) {
-  inStaticInitializer(e) and // optimization
-  // Not constant
-  not e.isConstant() and
-  // Not the address of a global variable
-  not exists(Variable v |
-    v.isStatic()
-    or
-    v instanceof GlobalOrNamespaceVariable
-  |
-    e.(AddressOfExpr).getOperand() = v.getAnAccess()
-  ) and
-  // Not an expression that will be handled in the recursive case
-  not e instanceof AggregateLiteral and
-  not e instanceof PointerArithmeticOperation
-  or
-  e = any(AggregateLiteral aggr |
-    runtimeExprInStaticInitializer(aggr.getAChild())
-  )
-  or
-  e = any(PointerArithmeticOperation op |
-    runtimeExprInStaticInitializer(op)
-  )
+  inStaticInitializer(e) and
+  if e instanceof AggregateLiteral
+  then runtimeExprInStaticInitializer(e.(AggregateLiteral).getAChild())
+  else
+    if e instanceof PointerArithmeticOperation
+    then runtimeExprInStaticInitializer(e.(PointerArithmeticOperation).getAnOperand())
+    else (
+      // Not constant
+      not e.isConstant() and
+      // Not the address of a global variable
+      not exists(Variable v |
+        v.isStatic()
+        or
+        v instanceof GlobalOrNamespaceVariable
+      |
+        e.(AddressOfExpr).getOperand() = v.getAnAccess()
+      )
+    )
 }
 
 private predicate inStaticInitializer(Expr e) {
