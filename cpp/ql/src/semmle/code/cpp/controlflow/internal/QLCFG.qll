@@ -97,6 +97,8 @@ private class ArgumentsUnevaluatedNode extends Node {
     this instanceof BuiltInOperationOffsetOf
     or
     this instanceof BuiltInOperationBuiltInShuffleVector
+    or
+    this instanceof AssumeExpr
     // TODO: others?
     // TODO: sizeof belongs here, but the extractor pretends it doesn't.
   }
@@ -622,17 +624,14 @@ private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
     or
     // If this is not a catch-all handler, add an edge to the next handler in
     // case it doesn't match.
-    exists(h.getParameter()) and
-    (
-      exists(int i, TryStmt try |
-        h = try.getChild(i) and
-        p1.nodeAt(n1, h) and
-        p2.nodeAt(n2, try.getChild(i+1))
-      )
-      or
+    exists(int i, TryStmt try |
+      h = try.getChild(i) and
       p1.nodeAt(n1, h) and
-      p2.nodeAt(n2, h.(ExceptionSource).getExceptionTarget())
+      p2.nodeAt(n2, try.getChild(i+1))
     )
+    or
+    p1.nodeAt(n1, h) and
+    p2.nodeAt(n2, h.(ExceptionSource).getExceptionTarget())
   )
   or exists(CatchBlock cb |
     p1.nodeAfter(n1, cb) and

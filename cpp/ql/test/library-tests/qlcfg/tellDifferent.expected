@@ -38,13 +38,6 @@
 | 38__nonTemplateFunction | 38.cpp:125:27:125:36 | & ... | 38.cpp:126:5:126:18 | return ... | Standard edge, only from QL |
 | 38__nonTemplateFunction | 38.cpp:125:27:125:36 | initializer for my_ptr | 38.cpp:125:28:125:36 | my_static | Standard edge, only from QL |
 | 38__nonTemplateFunction | 38.cpp:125:28:125:36 | my_static | 38.cpp:125:27:125:36 | & ... | Standard edge, only from QL |
-| 81__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from extractor |
-| 81__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:12:20:12 | 0 | Standard edge, only from QL |
-| 81__main | 321.cpp:20:12:20:12 | 0 | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from QL |
-| 143__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from extractor |
-| 143__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:12:20:12 | 0 | Standard edge, only from QL |
-| 143__main | 321.cpp:20:12:20:12 | 0 | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from QL |
-| 260__fun2 | 260.cpp:11:18:13:3 | <handler> | 260.cpp:14:15:16:3 | <handler> | Standard edge, only from extractor |
 | 312__stream_it | 312.cpp:12:3:13:3 | { ... } | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
 | 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:11:3:13:3 | declaration | Standard edge, only from extractor |
 | 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:11:3:13:3 | declaration | True edge, only from extractor |
@@ -52,15 +45,6 @@
 | 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:14:1:14:1 | return ... | Standard edge, only from extractor |
 | 312__stream_it | file://:0:0:0:0 | initializer for (__range) | 312.cpp:11:3:13:3 | declaration | Standard edge, only from QL |
 | 312__stream_it | file://:0:0:0:0 | initializer for (__range) | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
-| 321__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from extractor |
-| 321__main | 321.cpp:20:3:20:14 | ExprStmt | 321.cpp:20:12:20:12 | 0 | Standard edge, only from QL |
-| 321__main | 321.cpp:20:12:20:12 | 0 | 321.cpp:20:3:20:13 | __assume(...) | Standard edge, only from QL |
-| 354__h | 354.cpp:9:2:9:13 | ExprStmt | 354.cpp:9:2:9:12 | __assume(...) | Standard edge, only from extractor |
-| 354__h | 354.cpp:9:2:9:13 | ExprStmt | 354.cpp:9:11:9:11 | 0 | Standard edge, only from QL |
-| 354__h | 354.cpp:9:11:9:11 | 0 | 354.cpp:9:2:9:12 | __assume(...) | Standard edge, only from QL |
-| 355__switchTest1 | 355.cpp:22:4:22:15 | ExprStmt | 355.cpp:22:4:22:14 | __assume(...) | Standard edge, only from extractor |
-| 355__switchTest1 | 355.cpp:22:4:22:15 | ExprStmt | 355.cpp:22:13:22:13 | 0 | Standard edge, only from QL |
-| 355__switchTest1 | 355.cpp:22:13:22:13 | 0 | 355.cpp:22:4:22:14 | __assume(...) | Standard edge, only from QL |
 | 371__cpp_fun | 371.cpp:5:16:5:56 | { ... } | 371.cpp:5:17:5:36 | declaration | Standard edge, only from QL |
 | 371__cpp_fun | 371.cpp:5:17:5:36 | declaration | 371.cpp:5:38:5:51 | declaration | Standard edge, only from QL |
 | 371__cpp_fun | 371.cpp:5:38:5:51 | declaration | 371.cpp:5:53:5:54 | ExprStmt | Standard edge, only from QL |
