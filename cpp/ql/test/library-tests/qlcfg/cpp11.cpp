@@ -31,12 +31,29 @@ namespace range_based_for_11 {
   }
 }
 
-void static_init() {
+const int global_const = 5;
+int global_int = 5;
+
+void skip_init() {
   static int x1 = 0;
-  ;
   static int x2 = 1;
-  ;
   static int x3 = 0 + 0;
+  static int *x4 = 0;
+  static int *x5 = &x3;
+  static int *x6 = (&x3 + 1) - 1;
+  static int x7[] = { 0, 1 };
+  static int *x8[] = { &x1, &global_int };
+  static struct { int x; } x9[] = { { 1 } };
+
+  static const char *s1 = "Hello";
+  static char s2[] = "World";
+  // TODO: non-POD types that may have constructors and such
+}
+
+void run_init() {
+  int nonstatic;
+  static int x1 = global_int;
+  static int *x2 = &nonstatic;
 }
 
 namespace lambda {
