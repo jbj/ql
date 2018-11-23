@@ -64,55 +64,6 @@
 | 312__stream_it_unmodified | true | 56677 | 56673 |  |
 | 312__stream_it_unmodified | true | 56679 | 56670 | T |
 | 312__stream_it_unmodified | true | 56679 | 56675 | F |
-| 371__cpp_fun_extractor | false | 72078 | 72078 | cpp_fun |
-| 371__cpp_fun_extractor | false | 72089 | 72089 | declaration |
-| 371__cpp_fun_extractor | false | 72094 | 72094 | declaration |
-| 371__cpp_fun_extractor | false | 72096 | 72096 | declaration |
-| 371__cpp_fun_extractor | false | 72100 | 72100 | 1 |
-| 371__cpp_fun_extractor | false | 72101 | 72101 | ExprStmt |
-| 371__cpp_fun_extractor | false | 72103 | 72103 | { ... } |
-| 371__cpp_fun_extractor | false | 72105 | 72105 | (statement expression) |
-| 371__cpp_fun_extractor | false | 72110 | 72110 | declaration |
-| 371__cpp_fun_extractor | false | 72112 | 72112 | return ... |
-| 371__cpp_fun_extractor | false | 72114 | 72114 | { ... } |
-| 371__cpp_fun_extractor | true | 72089 | 72110 |  |
-| 371__cpp_fun_extractor | true | 72110 | 72112 |  |
-| 371__cpp_fun_extractor | true | 72112 | 72078 |  |
-| 371__cpp_fun_extractor | true | 72114 | 72089 |  |
-| 371__cpp_fun_ql | false | 72078 | 72078 | cpp_fun |
-| 371__cpp_fun_ql | false | 72089 | 72089 | declaration |
-| 371__cpp_fun_ql | false | 72094 | 72094 | declaration |
-| 371__cpp_fun_ql | false | 72096 | 72096 | declaration |
-| 371__cpp_fun_ql | false | 72100 | 72100 | 1 |
-| 371__cpp_fun_ql | false | 72101 | 72101 | ExprStmt |
-| 371__cpp_fun_ql | false | 72103 | 72103 | { ... } |
-| 371__cpp_fun_ql | false | 72105 | 72105 | (statement expression) |
-| 371__cpp_fun_ql | false | 72110 | 72110 | declaration |
-| 371__cpp_fun_ql | false | 72112 | 72112 | return ... |
-| 371__cpp_fun_ql | false | 72114 | 72114 | { ... } |
-| 371__cpp_fun_ql | true | 72089 | 72110 |  |
-| 371__cpp_fun_ql | true | 72094 | 72096 |  |
-| 371__cpp_fun_ql | true | 72096 | 72101 |  |
-| 371__cpp_fun_ql | true | 72101 | 72100 |  |
-| 371__cpp_fun_ql | true | 72103 | 72094 |  |
-| 371__cpp_fun_ql | true | 72110 | 72112 |  |
-| 371__cpp_fun_ql | true | 72112 | 72078 |  |
-| 371__cpp_fun_ql | true | 72114 | 72089 |  |
-| 371__cpp_fun_unmodified | false | 72078 | 72078 | cpp_fun |
-| 371__cpp_fun_unmodified | false | 72089 | 72089 | declaration |
-| 371__cpp_fun_unmodified | false | 72094 | 72094 | declaration |
-| 371__cpp_fun_unmodified | false | 72096 | 72096 | declaration |
-| 371__cpp_fun_unmodified | false | 72100 | 72100 | 1 |
-| 371__cpp_fun_unmodified | false | 72101 | 72101 | ExprStmt |
-| 371__cpp_fun_unmodified | false | 72103 | 72103 | { ... } |
-| 371__cpp_fun_unmodified | false | 72105 | 72105 | (statement expression) |
-| 371__cpp_fun_unmodified | false | 72110 | 72110 | declaration |
-| 371__cpp_fun_unmodified | false | 72112 | 72112 | return ... |
-| 371__cpp_fun_unmodified | false | 72114 | 72114 | { ... } |
-| 371__cpp_fun_unmodified | true | 72089 | 72110 |  |
-| 371__cpp_fun_unmodified | true | 72110 | 72112 |  |
-| 371__cpp_fun_unmodified | true | 72112 | 72078 |  |
-| 371__cpp_fun_unmodified | true | 72114 | 72089 |  |
 | 376__ConditionDecl_extractor | false | 72607 | 72607 | ConditionDecl |
 | 376__ConditionDecl_extractor | false | 72613 | 72613 | 0 |
 | 376__ConditionDecl_extractor | false | 72614 | 72614 | initializer for j |

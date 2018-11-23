@@ -4,10 +4,8 @@ import cpp
 TODO: difficulties:
 - Particular AST nodes
   - StmtExpr interaction with throw-catch
-  - BlockExpr??? (clang extension)
-  - Microsoft __try
+    - Use the new Node.getParent
   - Pointer-to-member call and access
-- Is getEnclosingHandler from Ian's branch different from mine?
 - Take cases from Ian's orphanedExpr and orphanedInitializer.
 - getSwitchStmtEndLabel. What's going on there, and do I need it? Doesn't work
   with macros and templates.
@@ -28,7 +26,20 @@ TODO: difficulties:
       (`char label[sizeof(unsigned long) + strlen(suffix)];`)
  */
 
-private class Node = ControlFlowNodeBase;
+private class Node extends ControlFlowNodeBase {
+  /**
+   * Gets the nearest control-flow node that's a parent of this one, never
+   * crossing function boundaries.
+   */
+  final Node getParent() {
+    result = this.(Expr).getParent()
+    or
+    result = this.(Stmt).getParent()
+    or
+    // ConditionDeclExpr not supported yet.
+    result.(DeclStmt).getADeclaration().(LocalVariable) = this.(Initializer).getDeclaration()
+  }
+}
 
 private class Orphan extends Expr {
   Orphan() {
@@ -65,23 +76,23 @@ private class SupportedNode extends Node {
     (
       exists(this.(ControlFlowNode).getControlFlowScope())
       or
-      this.(Expr).getParent*() = getStrayVDCQualifier(_)
+      this.getParent*() = getStrayVDCQualifier(_)
     ) and
-    not this.(Expr).getParent+() instanceof SwitchCase and
+    not this.getParent+() instanceof SwitchCase and
     // Constructor init lists should be evaluated, and we can change this in
     // the future, but it would mean that a `Function` entry point is not
     // always a `Block`.
     // TODO: Ian's prototype built CFG for ConstructorBaseInit. Was that
     // deliberate?
-    not this.(Expr).getParent*() instanceof ConstructorInit and
+    not this.getParent*() instanceof ConstructorInit and
     // Destructor field destructions should also be hooked into the CFG
     // properly in the future.
-    not this.(Expr).getParent*() instanceof DestructorFieldDestruction and
+    not this.getParent*() instanceof DestructorFieldDestruction and
     // TODO: this can be improved.
-    not this.(Expr).getParent+() instanceof ConditionDeclExpr and
-    not this.(Expr).getParent+() instanceof ArgumentsUnevaluatedNode and
-    not this.(Expr).getParent*() instanceof Orphan and
-    not skipInitializer(this.(Expr).getParent+())
+    not this.getParent+() instanceof ConditionDeclExpr and
+    not this.getParent+() instanceof ArgumentsUnevaluatedNode and
+    not this.getParent*() instanceof Orphan and
+    not skipInitializer(this.getParent+())
   }
 }
 
@@ -348,7 +359,7 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
 private predicate inStaticInitializer(Expr e) {
   exists(LocalVariable local |
     local.isStatic() and
-    e.getParent*() = local.getInitializer()
+    e.(Node).getParent*() = local.getInitializer()
   )
 }
 
