@@ -36,7 +36,7 @@ private class Node extends ControlFlowNodeBase {
     or
     result = this.(Stmt).getParent()
     or
-    // ConditionDeclExpr not supported yet.
+    // An Initializer under a ConditionDeclExpr is not part of the CFG.
     result.(DeclStmt).getADeclaration().(LocalVariable) = this.(Initializer).getDeclaration()
   }
 }
@@ -65,6 +65,10 @@ Expr getStrayVDCQualifier(VacuousDestructorCall c) {
   not exists(result.getEnclosingFunction())
 }
 
+Expr getConditionDeclContents(ConditionDeclExpr cd) {
+  result = cd.getVariable().getInitializer().getExpr()
+}
+
 /**
  * For compatibility with the extractor-generated CFG, the QL-generated CFG
  * will only be produced for nodes in this class.
@@ -76,7 +80,11 @@ private class SupportedNode extends Node {
     (
       exists(this.(ControlFlowNode).getControlFlowScope())
       or
+      // TODO: workaround for CPP-298
       this.getParentNode*() = getStrayVDCQualifier(_)
+      or
+      // TODO: workaround for CPP-307
+      this.getParentNode*() = getConditionDeclContents(_)
     ) and
     not this.getParentNode+() instanceof SwitchCase and
     // Constructor init lists should be evaluated, and we can change this in
@@ -88,7 +96,10 @@ private class SupportedNode extends Node {
     // Destructor field destructions should also be hooked into the CFG
     // properly in the future.
     not this.getParentNode*() instanceof DestructorFieldDestruction and
-    // TODO: this can be improved.
+    // TODO: This excludes the synthetic VariableAccess that ought to be the
+    // result of the ConditionalExpr after the variable has been initialized.
+    // It would be more correct to include this VariableAccess in the CFG, but
+    // for now we omit it for compatibility with the extractor CFG.
     not this.getParentNode+() instanceof ConditionDeclExpr and
     not this.getParentNode+() instanceof ArgumentsUnevaluatedNode and
     not this.getParentNode*() instanceof Orphan and
@@ -235,7 +246,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   or
   // TODO: this is compatible with the extractor but could be better
   n = any(ConditionDeclExpr cd |
-    i = 0 and result = cd.getVariable().getInitializer().getExpr()
+    i = 0 and result = getConditionDeclContents(cd)
   )
   or
   n = any(DeleteExpr del |
@@ -286,7 +297,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   or
   n = any(Initializer init |
     not skipInitializer(init) and
-    not exists(ConditionDeclExpr cd | init = cd.getVariable().getInitializer()) and
+    not result = getConditionDeclContents(_) and
     i = 0 and result = n.(Initializer).getExpr()
   )
   or
