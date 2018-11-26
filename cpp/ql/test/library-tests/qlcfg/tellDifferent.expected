@@ -1,7 +1,7 @@
-| 312__stream_it | 312.cpp:12:3:13:3 | { ... } | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
-| 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:11:3:13:3 | declaration | Standard edge, only from extractor |
-| 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:11:3:13:3 | declaration | True edge, only from extractor |
-| 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:14:1:14:1 | return ... | False edge, only from extractor |
-| 312__stream_it | file://:0:0:0:0 | <error expr> | 312.cpp:14:1:14:1 | return ... | Standard edge, only from extractor |
-| 312__stream_it | file://:0:0:0:0 | initializer for (__range) | 312.cpp:11:3:13:3 | declaration | Standard edge, only from QL |
-| 312__stream_it | file://:0:0:0:0 | initializer for (__range) | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
+| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:11:3:13:3 | declaration | Standard edge, only from extractor |
+| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:11:3:13:3 | declaration | True edge, only from extractor |
+| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:14:1:14:1 | return ... | False edge, only from extractor |
+| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:14:1:14:1 | return ... | Standard edge, only from extractor |
+| stream_it__stream_it | file://:0:0:0:0 | initializer for (__range) | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
+| stream_it__stream_it | file://:0:0:0:0 | initializer for (__range) | stream_it.cpp:11:3:13:3 | declaration | Standard edge, only from QL |
+| stream_it__stream_it | stream_it.cpp:12:3:13:3 | { ... } | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
