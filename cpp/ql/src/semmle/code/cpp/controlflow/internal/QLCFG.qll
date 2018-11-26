@@ -31,7 +31,7 @@ private class Node extends ControlFlowNodeBase {
    * Gets the nearest control-flow node that's a parent of this one, never
    * crossing function boundaries.
    */
-  final Node getParent() {
+  final Node getParentNode() {
     result = this.(Expr).getParent()
     or
     result = this.(Stmt).getParent()
@@ -76,23 +76,23 @@ private class SupportedNode extends Node {
     (
       exists(this.(ControlFlowNode).getControlFlowScope())
       or
-      this.getParent*() = getStrayVDCQualifier(_)
+      this.getParentNode*() = getStrayVDCQualifier(_)
     ) and
-    not this.getParent+() instanceof SwitchCase and
+    not this.getParentNode+() instanceof SwitchCase and
     // Constructor init lists should be evaluated, and we can change this in
     // the future, but it would mean that a `Function` entry point is not
     // always a `Block`.
     // TODO: Ian's prototype built CFG for ConstructorBaseInit. Was that
     // deliberate?
-    not this.getParent*() instanceof ConstructorInit and
+    not this.getParentNode*() instanceof ConstructorInit and
     // Destructor field destructions should also be hooked into the CFG
     // properly in the future.
-    not this.getParent*() instanceof DestructorFieldDestruction and
+    not this.getParentNode*() instanceof DestructorFieldDestruction and
     // TODO: this can be improved.
-    not this.getParent+() instanceof ConditionDeclExpr and
-    not this.getParent+() instanceof ArgumentsUnevaluatedNode and
-    not this.getParent*() instanceof Orphan and
-    not skipInitializer(this.getParent+())
+    not this.getParentNode+() instanceof ConditionDeclExpr and
+    not this.getParentNode+() instanceof ArgumentsUnevaluatedNode and
+    not this.getParentNode*() instanceof Orphan and
+    not skipInitializer(this.getParentNode+())
   }
 }
 
@@ -359,7 +359,7 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
 private predicate inStaticInitializer(Expr e) {
   exists(LocalVariable local |
     local.isStatic() and
-    e.(Node).getParent*() = local.getInitializer()
+    e.(Node).getParentNode*() = local.getInitializer()
   )
 }
 
