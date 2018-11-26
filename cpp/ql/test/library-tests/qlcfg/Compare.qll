@@ -129,6 +129,12 @@ Element getScopeElement(ControlFlowNode x) {
     x = getStrayVDCQualifier(c) and
     result = c.getEnclosingFunction()
   )
+  or
+  // CPP-307
+  exists(ConditionDeclExpr cd |
+    x = getConditionDeclContents(cd) and
+    result = cd.getEnclosingFunction()
+  )
 }
 
 string getScopeName(ControlFlowNode x) {
