@@ -1,44 +1,44 @@
-| alloc_2arg__callNew_extractor | false | 534 | 534 | callNew |
-| alloc_2arg__callNew_extractor | false | 541 | 541 | 5 |
-| alloc_2arg__callNew_extractor | false | 544 | 544 | 2 |
-| alloc_2arg__callNew_extractor | false | 547 | 547 | 3 |
-| alloc_2arg__callNew_extractor | false | 548 | 548 | new[] |
-| alloc_2arg__callNew_extractor | false | 550 | 550 | ExprStmt |
-| alloc_2arg__callNew_extractor | false | 552 | 552 | return ... |
-| alloc_2arg__callNew_extractor | false | 554 | 554 | { ... } |
-| alloc_2arg__callNew_extractor | true | 544 | 547 |  |
-| alloc_2arg__callNew_extractor | true | 547 | 548 |  |
-| alloc_2arg__callNew_extractor | true | 548 | 552 |  |
-| alloc_2arg__callNew_extractor | true | 550 | 544 |  |
-| alloc_2arg__callNew_extractor | true | 552 | 534 |  |
-| alloc_2arg__callNew_extractor | true | 554 | 550 |  |
-| alloc_2arg__callNew_ql | false | 534 | 534 | callNew |
-| alloc_2arg__callNew_ql | false | 541 | 541 | 5 |
-| alloc_2arg__callNew_ql | false | 544 | 544 | 2 |
-| alloc_2arg__callNew_ql | false | 547 | 547 | 3 |
-| alloc_2arg__callNew_ql | false | 548 | 548 | new[] |
-| alloc_2arg__callNew_ql | false | 550 | 550 | ExprStmt |
-| alloc_2arg__callNew_ql | false | 552 | 552 | return ... |
-| alloc_2arg__callNew_ql | false | 554 | 554 | { ... } |
-| alloc_2arg__callNew_ql | true | 544 | 548 |  |
-| alloc_2arg__callNew_ql | true | 548 | 552 |  |
-| alloc_2arg__callNew_ql | true | 550 | 544 |  |
-| alloc_2arg__callNew_ql | true | 552 | 534 |  |
-| alloc_2arg__callNew_ql | true | 554 | 550 |  |
-| alloc_2arg__callNew_unmodified | false | 534 | 534 | callNew |
-| alloc_2arg__callNew_unmodified | false | 541 | 541 | 5 |
-| alloc_2arg__callNew_unmodified | false | 544 | 544 | 2 |
-| alloc_2arg__callNew_unmodified | false | 547 | 547 | 3 |
-| alloc_2arg__callNew_unmodified | false | 548 | 548 | new[] |
-| alloc_2arg__callNew_unmodified | false | 550 | 550 | ExprStmt |
-| alloc_2arg__callNew_unmodified | false | 552 | 552 | return ... |
-| alloc_2arg__callNew_unmodified | false | 554 | 554 | { ... } |
-| alloc_2arg__callNew_unmodified | true | 544 | 547 |  |
-| alloc_2arg__callNew_unmodified | true | 547 | 548 |  |
-| alloc_2arg__callNew_unmodified | true | 548 | 552 |  |
-| alloc_2arg__callNew_unmodified | true | 550 | 544 |  |
-| alloc_2arg__callNew_unmodified | true | 552 | 534 |  |
-| alloc_2arg__callNew_unmodified | true | 554 | 550 |  |
+| CPP-309__callNew_extractor | false | 88 | 88 | callNew |
+| CPP-309__callNew_extractor | false | 96 | 96 | 5 |
+| CPP-309__callNew_extractor | false | 99 | 99 | 2 |
+| CPP-309__callNew_extractor | false | 102 | 102 | 3 |
+| CPP-309__callNew_extractor | false | 103 | 103 | new[] |
+| CPP-309__callNew_extractor | false | 105 | 105 | ExprStmt |
+| CPP-309__callNew_extractor | false | 107 | 107 | return ... |
+| CPP-309__callNew_extractor | false | 109 | 109 | { ... } |
+| CPP-309__callNew_extractor | true | 99 | 102 |  |
+| CPP-309__callNew_extractor | true | 102 | 103 |  |
+| CPP-309__callNew_extractor | true | 103 | 107 |  |
+| CPP-309__callNew_extractor | true | 105 | 99 |  |
+| CPP-309__callNew_extractor | true | 107 | 88 |  |
+| CPP-309__callNew_extractor | true | 109 | 105 |  |
+| CPP-309__callNew_ql | false | 88 | 88 | callNew |
+| CPP-309__callNew_ql | false | 96 | 96 | 5 |
+| CPP-309__callNew_ql | false | 99 | 99 | 2 |
+| CPP-309__callNew_ql | false | 102 | 102 | 3 |
+| CPP-309__callNew_ql | false | 103 | 103 | new[] |
+| CPP-309__callNew_ql | false | 105 | 105 | ExprStmt |
+| CPP-309__callNew_ql | false | 107 | 107 | return ... |
+| CPP-309__callNew_ql | false | 109 | 109 | { ... } |
+| CPP-309__callNew_ql | true | 99 | 103 |  |
+| CPP-309__callNew_ql | true | 103 | 107 |  |
+| CPP-309__callNew_ql | true | 105 | 99 |  |
+| CPP-309__callNew_ql | true | 107 | 88 |  |
+| CPP-309__callNew_ql | true | 109 | 105 |  |
+| CPP-309__callNew_unmodified | false | 88 | 88 | callNew |
+| CPP-309__callNew_unmodified | false | 96 | 96 | 5 |
+| CPP-309__callNew_unmodified | false | 99 | 99 | 2 |
+| CPP-309__callNew_unmodified | false | 102 | 102 | 3 |
+| CPP-309__callNew_unmodified | false | 103 | 103 | new[] |
+| CPP-309__callNew_unmodified | false | 105 | 105 | ExprStmt |
+| CPP-309__callNew_unmodified | false | 107 | 107 | return ... |
+| CPP-309__callNew_unmodified | false | 109 | 109 | { ... } |
+| CPP-309__callNew_unmodified | true | 99 | 102 |  |
+| CPP-309__callNew_unmodified | true | 102 | 103 |  |
+| CPP-309__callNew_unmodified | true | 103 | 107 |  |
+| CPP-309__callNew_unmodified | true | 105 | 99 |  |
+| CPP-309__callNew_unmodified | true | 107 | 88 |  |
+| CPP-309__callNew_unmodified | true | 109 | 105 |  |
 | stream_it__stream_it_extractor | false | 17688 | 17688 | stream_it |
 | stream_it__stream_it_extractor | false | 17693 | 17693 | t |
 | stream_it__stream_it_extractor | false | 17695 | 17695 | (reference dereference) |

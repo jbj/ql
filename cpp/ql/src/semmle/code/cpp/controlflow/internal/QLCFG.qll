@@ -6,6 +6,8 @@ TODO: difficulties:
   - StmtExpr interaction with throw-catch
     - Use the new Node.getParent
   - Pointer-to-member call and access
+  - Test all builtins
+  - There's something wrong with lambdas in ChakraCore
 - Take cases from Ian's orphanedExpr and orphanedInitializer.
 - getSwitchStmtEndLabel. What's going on there, and do I need it? Doesn't work
   with macros and templates.
