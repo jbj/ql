@@ -1,6 +1,6 @@
-| alloc_2arg__callNew | alloc_2arg.cpp:7:9:7:9 | 2 | alloc_2arg.cpp:7:5:7:20 | new[] | Standard edge, only from QL |
-| alloc_2arg__callNew | alloc_2arg.cpp:7:9:7:9 | 2 | alloc_2arg.cpp:7:12:7:12 | 3 | Standard edge, only from extractor |
-| alloc_2arg__callNew | alloc_2arg.cpp:7:12:7:12 | 3 | alloc_2arg.cpp:7:5:7:20 | new[] | Standard edge, only from extractor |
+| CPP-309__callNew | CPP-309.cpp:7:9:7:9 | 2 | CPP-309.cpp:7:5:7:20 | new[] | Standard edge, only from QL |
+| CPP-309__callNew | CPP-309.cpp:7:9:7:9 | 2 | CPP-309.cpp:7:12:7:12 | 3 | Standard edge, only from extractor |
+| CPP-309__callNew | CPP-309.cpp:7:12:7:12 | 3 | CPP-309.cpp:7:5:7:20 | new[] | Standard edge, only from extractor |
 | stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:11:3:13:3 | declaration | Standard edge, only from extractor |
 | stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:11:3:13:3 | declaration | True edge, only from extractor |
 | stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:14:1:14:1 | return ... | False edge, only from extractor |
