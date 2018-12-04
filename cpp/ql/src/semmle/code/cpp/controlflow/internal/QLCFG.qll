@@ -6,8 +6,6 @@ import cpp
 /*
 TODO: difficulties:
 - Particular AST nodes
-  - StmtExpr interaction with throw-catch
-    - Use the new Node.getParent
   - Pointer-to-member call and access
   - Test all builtins
   - There's something wrong with lambdas in ChakraCore
@@ -809,26 +807,22 @@ private class ExceptionSource extends Node {
     exists(MicrosoftTryFinallyStmt try | this = try.getFinally())
   }
 
-  // TODO: Performance: if there are multiple sources far down in the AST, this
-  // will compute their parents separately without sharing. If that's a
-  // performance problem, we can go up the tree first with a unary predicate
-  // `isThrowParent` and then down along those edges only.
-  private predicate reachesStmt(Stmt parent) {
+  private predicate reachesParent(Node parent) {
     parent = this.(Expr).getEnclosingStmt()
     or
     parent = this
     or
-    exists(Stmt s |
-      this.reachesStmt(s) and
-      not s = any(TryStmt try).getStmt() and
-      not s = any(MicrosoftTryStmt try).getStmt() and
-      parent = s.getParentStmt()
+    exists(Node mid |
+      this.reachesParent(mid) and
+      not mid = any(TryStmt try).getStmt() and
+      not mid = any(MicrosoftTryStmt try).getStmt() and
+      parent = mid.(Node).getParentNode()
     )
   }
 
   Node getExceptionTarget() {
     exists(Stmt parent |
-      this.reachesStmt(parent)
+      this.reachesParent(parent)
     |
       result.(Function).getEntryPoint() = parent
       or
