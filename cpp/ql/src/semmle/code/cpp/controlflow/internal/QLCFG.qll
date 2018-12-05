@@ -114,17 +114,17 @@ private class SupportedNode extends Node {
  * arguments should not be linked to the CFG and should not have internal
  * control flow in them.
  */
-// TODO: perhaps generalize to a predicate that specifies _which_ argument is
-// not evaluated.
 private class ArgumentsUnevaluatedNode extends Node {
   ArgumentsUnevaluatedNode() {
     this instanceof BuiltInOperationOffsetOf
     or
     this instanceof BuiltInOperationBuiltInShuffleVector
     or
+    this instanceof BuiltInOperationBuiltInAddressOf
+    or
+    this instanceof BuiltInOperationBuiltInConvertVector
+    or
     this instanceof AssumeExpr
-    // TODO: others?
-    // TODO: sizeof belongs here, but the extractor pretends it doesn't.
   }
 }
 
