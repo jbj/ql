@@ -344,29 +344,37 @@ private predicate skipInitializer(Initializer init) {
   )
 }
 
+/**
+ * Holds if `e` is an expression in a static initializer that must be evaluated
+ * at run time. This predicate computes "is non-const" instead of "is const" in
+ * order to avoid recursion through forall.
+ */
 private predicate runtimeExprInStaticInitializer(Expr e) {
   inStaticInitializer(e) and
-  if e instanceof AggregateLiteral
-  then runtimeExprInStaticInitializer(e.(AggregateLiteral).getAChild())
-  else
-    if e instanceof PointerArithmeticOperation
-    then runtimeExprInStaticInitializer(e.(PointerArithmeticOperation).getAnOperand())
-    else (
-      // Not constant
-      not e.isConstant() and
-      // Not a function address
-      not e instanceof FunctionAccess and
-      // Not a function address-of (same as above)
-      not e.(AddressOfExpr).getOperand() instanceof FunctionAccess and
-      // Not the address of a global variable
-      not exists(Variable v |
-        v.isStatic()
-        or
-        v instanceof GlobalOrNamespaceVariable
-      |
-        e.(AddressOfExpr).getOperand() = v.getAnAccess()
-      )
+  if
+    e instanceof AggregateLiteral
+    or
+    e instanceof PointerArithmeticOperation
+    or
+    // TODO: extractor doesn't populate this specifier. See CPP-314.
+    e.(FunctionCall).getTarget().hasSpecifier("constexpr")
+  then runtimeExprInStaticInitializer(e.getAChild())
+  else (
+    // Not constant
+    not e.isConstant() and
+    // Not a function address
+    not e instanceof FunctionAccess and
+    // Not a function address-of (same as above)
+    not e.(AddressOfExpr).getOperand() instanceof FunctionAccess and
+    // Not the address of a global variable
+    not exists(Variable v |
+      v.isStatic()
+      or
+      v instanceof GlobalOrNamespaceVariable
+    |
+      e.(AddressOfExpr).getOperand() = v.getAnAccess()
     )
+  )
 }
 
 private predicate inStaticInitializer(Expr e) {
