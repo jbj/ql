@@ -15,7 +15,7 @@ int builtin(int x, int y) {
   vector(4, int) vec2 = __builtin_shufflevector(vec, vec, 3+0, 2, 1, 0);
 
   // Clang extension causes trap import errors, at least in 1.18
-  //(void)__builtin_convertvector(vec, short __attribute__((__vector_size__(8))));
+  (void)__builtin_convertvector(vec, short __attribute__((__vector_size__(8))));
 
   acc += __builtin_bitreverse32(x+0);
   acc += __builtin_rotateleft32(x+1, y);

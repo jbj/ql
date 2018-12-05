@@ -7,7 +7,7 @@ T *addressof(T &x) noexcept {
 
 void call_addressof() {
     int i;
-    // int *p = addressof(i); // Doesn't work in 1.18 extractor
+    int *p = addressof(i); // Doesn't work in 1.18 extractor
 }
 
 void builtin_cpp(int x, int y) {
