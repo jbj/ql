@@ -1,107 +1,66 @@
-| CPP-309__callNew_extractor | false | 88 | 88 | callNew |
-| CPP-309__callNew_extractor | false | 96 | 96 | 5 |
-| CPP-309__callNew_extractor | false | 99 | 99 | 2 |
-| CPP-309__callNew_extractor | false | 102 | 102 | 3 |
-| CPP-309__callNew_extractor | false | 103 | 103 | new[] |
-| CPP-309__callNew_extractor | false | 105 | 105 | ExprStmt |
-| CPP-309__callNew_extractor | false | 107 | 107 | return ... |
-| CPP-309__callNew_extractor | false | 109 | 109 | { ... } |
-| CPP-309__callNew_extractor | true | 99 | 102 |  |
-| CPP-309__callNew_extractor | true | 102 | 103 |  |
-| CPP-309__callNew_extractor | true | 103 | 107 |  |
-| CPP-309__callNew_extractor | true | 105 | 99 |  |
-| CPP-309__callNew_extractor | true | 107 | 88 |  |
-| CPP-309__callNew_extractor | true | 109 | 105 |  |
-| CPP-309__callNew_ql | false | 88 | 88 | callNew |
-| CPP-309__callNew_ql | false | 96 | 96 | 5 |
-| CPP-309__callNew_ql | false | 99 | 99 | 2 |
-| CPP-309__callNew_ql | false | 102 | 102 | 3 |
-| CPP-309__callNew_ql | false | 103 | 103 | new[] |
-| CPP-309__callNew_ql | false | 105 | 105 | ExprStmt |
-| CPP-309__callNew_ql | false | 107 | 107 | return ... |
-| CPP-309__callNew_ql | false | 109 | 109 | { ... } |
-| CPP-309__callNew_ql | true | 99 | 103 |  |
-| CPP-309__callNew_ql | true | 103 | 107 |  |
-| CPP-309__callNew_ql | true | 105 | 99 |  |
-| CPP-309__callNew_ql | true | 107 | 88 |  |
-| CPP-309__callNew_ql | true | 109 | 105 |  |
-| CPP-309__callNew_unmodified | false | 88 | 88 | callNew |
-| CPP-309__callNew_unmodified | false | 96 | 96 | 5 |
-| CPP-309__callNew_unmodified | false | 99 | 99 | 2 |
-| CPP-309__callNew_unmodified | false | 102 | 102 | 3 |
-| CPP-309__callNew_unmodified | false | 103 | 103 | new[] |
-| CPP-309__callNew_unmodified | false | 105 | 105 | ExprStmt |
-| CPP-309__callNew_unmodified | false | 107 | 107 | return ... |
-| CPP-309__callNew_unmodified | false | 109 | 109 | { ... } |
-| CPP-309__callNew_unmodified | true | 99 | 102 |  |
-| CPP-309__callNew_unmodified | true | 102 | 103 |  |
-| CPP-309__callNew_unmodified | true | 103 | 107 |  |
-| CPP-309__callNew_unmodified | true | 105 | 99 |  |
-| CPP-309__callNew_unmodified | true | 107 | 88 |  |
-| CPP-309__callNew_unmodified | true | 109 | 105 |  |
-| stream_it__stream_it_extractor | false | 18187 | 18187 | stream_it |
-| stream_it__stream_it_extractor | false | 18192 | 18192 | t |
-| stream_it__stream_it_extractor | false | 18194 | 18194 | (reference dereference) |
-| stream_it__stream_it_extractor | false | 18196 | 18196 | (reference to) |
-| stream_it__stream_it_extractor | false | 18198 | 18198 | initializer for (__range) |
-| stream_it__stream_it_extractor | false | 18203 | 18203 | declaration |
-| stream_it__stream_it_extractor | false | 18205 | 18205 | declaration |
-| stream_it__stream_it_extractor | false | 18206 | 18206 | declaration |
-| stream_it__stream_it_extractor | false | 18207 | 18207 | { ... } |
-| stream_it__stream_it_extractor | false | 18209 | 18209 | for(...:...) ... |
-| stream_it__stream_it_extractor | false | 18211 | 18211 | return ... |
-| stream_it__stream_it_extractor | false | 18213 | 18213 | { ... } |
-| stream_it__stream_it_extractor | false | 18215 | 18215 | <error expr> |
-| stream_it__stream_it_extractor | true | 18192 | 18198 |  |
-| stream_it__stream_it_extractor | true | 18198 | 18215 |  |
-| stream_it__stream_it_extractor | true | 18203 | 18192 |  |
-| stream_it__stream_it_extractor | true | 18206 | 18207 |  |
-| stream_it__stream_it_extractor | true | 18207 | 18215 |  |
-| stream_it__stream_it_extractor | true | 18209 | 18203 |  |
-| stream_it__stream_it_extractor | true | 18211 | 18187 |  |
-| stream_it__stream_it_extractor | true | 18213 | 18209 |  |
-| stream_it__stream_it_extractor | true | 18215 | 18206 | T |
-| stream_it__stream_it_extractor | true | 18215 | 18211 | F |
-| stream_it__stream_it_ql | false | 18187 | 18187 | stream_it |
-| stream_it__stream_it_ql | false | 18192 | 18192 | t |
-| stream_it__stream_it_ql | false | 18194 | 18194 | (reference dereference) |
-| stream_it__stream_it_ql | false | 18196 | 18196 | (reference to) |
-| stream_it__stream_it_ql | false | 18198 | 18198 | initializer for (__range) |
-| stream_it__stream_it_ql | false | 18203 | 18203 | declaration |
-| stream_it__stream_it_ql | false | 18205 | 18205 | declaration |
-| stream_it__stream_it_ql | false | 18206 | 18206 | declaration |
-| stream_it__stream_it_ql | false | 18207 | 18207 | { ... } |
-| stream_it__stream_it_ql | false | 18209 | 18209 | for(...:...) ... |
-| stream_it__stream_it_ql | false | 18211 | 18211 | return ... |
-| stream_it__stream_it_ql | false | 18213 | 18213 | { ... } |
-| stream_it__stream_it_ql | false | 18215 | 18215 | <error expr> |
-| stream_it__stream_it_ql | true | 18192 | 18198 |  |
-| stream_it__stream_it_ql | true | 18198 | 18205 |  |
-| stream_it__stream_it_ql | true | 18203 | 18192 |  |
-| stream_it__stream_it_ql | true | 18206 | 18207 |  |
-| stream_it__stream_it_ql | true | 18209 | 18203 |  |
-| stream_it__stream_it_ql | true | 18211 | 18187 |  |
-| stream_it__stream_it_ql | true | 18213 | 18209 |  |
-| stream_it__stream_it_unmodified | false | 18187 | 18187 | stream_it |
-| stream_it__stream_it_unmodified | false | 18192 | 18192 | t |
-| stream_it__stream_it_unmodified | false | 18194 | 18194 | (reference dereference) |
-| stream_it__stream_it_unmodified | false | 18196 | 18196 | (reference to) |
-| stream_it__stream_it_unmodified | false | 18198 | 18198 | initializer for (__range) |
-| stream_it__stream_it_unmodified | false | 18203 | 18203 | declaration |
-| stream_it__stream_it_unmodified | false | 18205 | 18205 | declaration |
-| stream_it__stream_it_unmodified | false | 18206 | 18206 | declaration |
-| stream_it__stream_it_unmodified | false | 18207 | 18207 | { ... } |
-| stream_it__stream_it_unmodified | false | 18209 | 18209 | for(...:...) ... |
-| stream_it__stream_it_unmodified | false | 18211 | 18211 | return ... |
-| stream_it__stream_it_unmodified | false | 18213 | 18213 | { ... } |
-| stream_it__stream_it_unmodified | false | 18215 | 18215 | <error expr> |
-| stream_it__stream_it_unmodified | true | 18192 | 18198 |  |
-| stream_it__stream_it_unmodified | true | 18198 | 18215 |  |
-| stream_it__stream_it_unmodified | true | 18203 | 18192 |  |
-| stream_it__stream_it_unmodified | true | 18206 | 18207 |  |
-| stream_it__stream_it_unmodified | true | 18207 | 18215 |  |
-| stream_it__stream_it_unmodified | true | 18209 | 18203 |  |
-| stream_it__stream_it_unmodified | true | 18211 | 18187 |  |
-| stream_it__stream_it_unmodified | true | 18213 | 18209 |  |
-| stream_it__stream_it_unmodified | true | 18215 | 18206 | T |
-| stream_it__stream_it_unmodified | true | 18215 | 18211 | F |
+| stream_it__stream_it_extractor | false | 17346 | 17346 | stream_it |
+| stream_it__stream_it_extractor | false | 17350 | 17350 | t |
+| stream_it__stream_it_extractor | false | 17352 | 17352 | (reference dereference) |
+| stream_it__stream_it_extractor | false | 17353 | 17353 | (reference to) |
+| stream_it__stream_it_extractor | false | 17354 | 17354 | initializer for (__range) |
+| stream_it__stream_it_extractor | false | 17359 | 17359 | declaration |
+| stream_it__stream_it_extractor | false | 17361 | 17361 | declaration |
+| stream_it__stream_it_extractor | false | 17362 | 17362 | declaration |
+| stream_it__stream_it_extractor | false | 17363 | 17363 | { ... } |
+| stream_it__stream_it_extractor | false | 17365 | 17365 | for(...:...) ... |
+| stream_it__stream_it_extractor | false | 17367 | 17367 | return ... |
+| stream_it__stream_it_extractor | false | 17369 | 17369 | { ... } |
+| stream_it__stream_it_extractor | false | 17371 | 17371 | <error expr> |
+| stream_it__stream_it_extractor | true | 17350 | 17354 |  |
+| stream_it__stream_it_extractor | true | 17354 | 17371 |  |
+| stream_it__stream_it_extractor | true | 17359 | 17350 |  |
+| stream_it__stream_it_extractor | true | 17362 | 17363 |  |
+| stream_it__stream_it_extractor | true | 17363 | 17371 |  |
+| stream_it__stream_it_extractor | true | 17365 | 17359 |  |
+| stream_it__stream_it_extractor | true | 17367 | 17346 |  |
+| stream_it__stream_it_extractor | true | 17369 | 17365 |  |
+| stream_it__stream_it_extractor | true | 17371 | 17362 | T |
+| stream_it__stream_it_extractor | true | 17371 | 17367 | F |
+| stream_it__stream_it_ql | false | 17346 | 17346 | stream_it |
+| stream_it__stream_it_ql | false | 17350 | 17350 | t |
+| stream_it__stream_it_ql | false | 17352 | 17352 | (reference dereference) |
+| stream_it__stream_it_ql | false | 17353 | 17353 | (reference to) |
+| stream_it__stream_it_ql | false | 17354 | 17354 | initializer for (__range) |
+| stream_it__stream_it_ql | false | 17359 | 17359 | declaration |
+| stream_it__stream_it_ql | false | 17361 | 17361 | declaration |
+| stream_it__stream_it_ql | false | 17362 | 17362 | declaration |
+| stream_it__stream_it_ql | false | 17363 | 17363 | { ... } |
+| stream_it__stream_it_ql | false | 17365 | 17365 | for(...:...) ... |
+| stream_it__stream_it_ql | false | 17367 | 17367 | return ... |
+| stream_it__stream_it_ql | false | 17369 | 17369 | { ... } |
+| stream_it__stream_it_ql | false | 17371 | 17371 | <error expr> |
+| stream_it__stream_it_ql | true | 17350 | 17354 |  |
+| stream_it__stream_it_ql | true | 17354 | 17361 |  |
+| stream_it__stream_it_ql | true | 17359 | 17350 |  |
+| stream_it__stream_it_ql | true | 17362 | 17363 |  |
+| stream_it__stream_it_ql | true | 17365 | 17359 |  |
+| stream_it__stream_it_ql | true | 17367 | 17346 |  |
+| stream_it__stream_it_ql | true | 17369 | 17365 |  |
+| stream_it__stream_it_unmodified | false | 17346 | 17346 | stream_it |
+| stream_it__stream_it_unmodified | false | 17350 | 17350 | t |
+| stream_it__stream_it_unmodified | false | 17352 | 17352 | (reference dereference) |
+| stream_it__stream_it_unmodified | false | 17353 | 17353 | (reference to) |
+| stream_it__stream_it_unmodified | false | 17354 | 17354 | initializer for (__range) |
+| stream_it__stream_it_unmodified | false | 17359 | 17359 | declaration |
+| stream_it__stream_it_unmodified | false | 17361 | 17361 | declaration |
+| stream_it__stream_it_unmodified | false | 17362 | 17362 | declaration |
+| stream_it__stream_it_unmodified | false | 17363 | 17363 | { ... } |
+| stream_it__stream_it_unmodified | false | 17365 | 17365 | for(...:...) ... |
+| stream_it__stream_it_unmodified | false | 17367 | 17367 | return ... |
+| stream_it__stream_it_unmodified | false | 17369 | 17369 | { ... } |
+| stream_it__stream_it_unmodified | false | 17371 | 17371 | <error expr> |
+| stream_it__stream_it_unmodified | true | 17350 | 17354 |  |
+| stream_it__stream_it_unmodified | true | 17354 | 17371 |  |
+| stream_it__stream_it_unmodified | true | 17359 | 17350 |  |
+| stream_it__stream_it_unmodified | true | 17362 | 17363 |  |
+| stream_it__stream_it_unmodified | true | 17363 | 17371 |  |
+| stream_it__stream_it_unmodified | true | 17365 | 17359 |  |
+| stream_it__stream_it_unmodified | true | 17367 | 17346 |  |
+| stream_it__stream_it_unmodified | true | 17369 | 17365 |  |
+| stream_it__stream_it_unmodified | true | 17371 | 17362 | T |
+| stream_it__stream_it_unmodified | true | 17371 | 17367 | F |
