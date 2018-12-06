@@ -488,7 +488,15 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
       i = 0 and ni = s and spec.isAround()
     )
     or
-    i = 1 and ni = for.getBeginEndDeclaration() and spec.isAround()
+    exists(DeclStmt s |
+      s = for.getBeginEndDeclaration() and
+      // A DeclStmt with no declarations can arise here in an uninstantiated
+      // template, where the calls to `begin` and `end` cannot be resolved. For
+      // compatibility with the extractor, we omit the CFG node for the
+      // DeclStmt in that case.
+      exists(s.getADeclaration()) and
+      i = 1 and ni = s and spec.isAround()
+    )
     or
     i = 2 and ni = for.getCondition() and spec.isBefore()
     or

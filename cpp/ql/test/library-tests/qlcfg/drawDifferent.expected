@@ -1,66 +1,78 @@
-| stream_it__stream_it_extractor | false | 17346 | 17346 | stream_it |
-| stream_it__stream_it_extractor | false | 17350 | 17350 | t |
-| stream_it__stream_it_extractor | false | 17352 | 17352 | (reference dereference) |
-| stream_it__stream_it_extractor | false | 17353 | 17353 | (reference to) |
-| stream_it__stream_it_extractor | false | 17354 | 17354 | initializer for (__range) |
-| stream_it__stream_it_extractor | false | 17359 | 17359 | declaration |
-| stream_it__stream_it_extractor | false | 17361 | 17361 | declaration |
-| stream_it__stream_it_extractor | false | 17362 | 17362 | declaration |
-| stream_it__stream_it_extractor | false | 17363 | 17363 | { ... } |
-| stream_it__stream_it_extractor | false | 17365 | 17365 | for(...:...) ... |
-| stream_it__stream_it_extractor | false | 17367 | 17367 | return ... |
-| stream_it__stream_it_extractor | false | 17369 | 17369 | { ... } |
-| stream_it__stream_it_extractor | false | 17371 | 17371 | <error expr> |
-| stream_it__stream_it_extractor | true | 17350 | 17354 |  |
-| stream_it__stream_it_extractor | true | 17354 | 17371 |  |
-| stream_it__stream_it_extractor | true | 17359 | 17350 |  |
-| stream_it__stream_it_extractor | true | 17362 | 17363 |  |
-| stream_it__stream_it_extractor | true | 17363 | 17371 |  |
-| stream_it__stream_it_extractor | true | 17365 | 17359 |  |
-| stream_it__stream_it_extractor | true | 17367 | 17346 |  |
-| stream_it__stream_it_extractor | true | 17369 | 17365 |  |
-| stream_it__stream_it_extractor | true | 17371 | 17362 | T |
-| stream_it__stream_it_extractor | true | 17371 | 17367 | F |
-| stream_it__stream_it_ql | false | 17346 | 17346 | stream_it |
-| stream_it__stream_it_ql | false | 17350 | 17350 | t |
-| stream_it__stream_it_ql | false | 17352 | 17352 | (reference dereference) |
-| stream_it__stream_it_ql | false | 17353 | 17353 | (reference to) |
-| stream_it__stream_it_ql | false | 17354 | 17354 | initializer for (__range) |
-| stream_it__stream_it_ql | false | 17359 | 17359 | declaration |
-| stream_it__stream_it_ql | false | 17361 | 17361 | declaration |
-| stream_it__stream_it_ql | false | 17362 | 17362 | declaration |
-| stream_it__stream_it_ql | false | 17363 | 17363 | { ... } |
-| stream_it__stream_it_ql | false | 17365 | 17365 | for(...:...) ... |
-| stream_it__stream_it_ql | false | 17367 | 17367 | return ... |
-| stream_it__stream_it_ql | false | 17369 | 17369 | { ... } |
-| stream_it__stream_it_ql | false | 17371 | 17371 | <error expr> |
-| stream_it__stream_it_ql | true | 17350 | 17354 |  |
-| stream_it__stream_it_ql | true | 17354 | 17361 |  |
-| stream_it__stream_it_ql | true | 17359 | 17350 |  |
-| stream_it__stream_it_ql | true | 17362 | 17363 |  |
-| stream_it__stream_it_ql | true | 17365 | 17359 |  |
-| stream_it__stream_it_ql | true | 17367 | 17346 |  |
-| stream_it__stream_it_ql | true | 17369 | 17365 |  |
-| stream_it__stream_it_unmodified | false | 17346 | 17346 | stream_it |
-| stream_it__stream_it_unmodified | false | 17350 | 17350 | t |
-| stream_it__stream_it_unmodified | false | 17352 | 17352 | (reference dereference) |
-| stream_it__stream_it_unmodified | false | 17353 | 17353 | (reference to) |
-| stream_it__stream_it_unmodified | false | 17354 | 17354 | initializer for (__range) |
-| stream_it__stream_it_unmodified | false | 17359 | 17359 | declaration |
-| stream_it__stream_it_unmodified | false | 17361 | 17361 | declaration |
-| stream_it__stream_it_unmodified | false | 17362 | 17362 | declaration |
-| stream_it__stream_it_unmodified | false | 17363 | 17363 | { ... } |
-| stream_it__stream_it_unmodified | false | 17365 | 17365 | for(...:...) ... |
-| stream_it__stream_it_unmodified | false | 17367 | 17367 | return ... |
-| stream_it__stream_it_unmodified | false | 17369 | 17369 | { ... } |
-| stream_it__stream_it_unmodified | false | 17371 | 17371 | <error expr> |
-| stream_it__stream_it_unmodified | true | 17350 | 17354 |  |
-| stream_it__stream_it_unmodified | true | 17354 | 17371 |  |
-| stream_it__stream_it_unmodified | true | 17359 | 17350 |  |
-| stream_it__stream_it_unmodified | true | 17362 | 17363 |  |
-| stream_it__stream_it_unmodified | true | 17363 | 17371 |  |
-| stream_it__stream_it_unmodified | true | 17365 | 17359 |  |
-| stream_it__stream_it_unmodified | true | 17367 | 17346 |  |
-| stream_it__stream_it_unmodified | true | 17369 | 17365 |  |
-| stream_it__stream_it_unmodified | true | 17371 | 17362 | T |
-| stream_it__stream_it_unmodified | true | 17371 | 17367 | F |
+| staticlocals__staticlocals_f2_extractor | false | 17134 | 17134 | f2 |
+| staticlocals__staticlocals_f2_extractor | false | 17139 | 17139 | declaration |
+| staticlocals__staticlocals_f2_extractor | false | 17141 | 17141 | declaration |
+| staticlocals__staticlocals_f2_extractor | false | 17143 | 17143 | declaration |
+| staticlocals__staticlocals_f2_extractor | false | 17145 | 17145 | declaration |
+| staticlocals__staticlocals_f2_extractor | false | 17147 | 17147 | return ... |
+| staticlocals__staticlocals_f2_extractor | false | 17149 | 17149 | { ... } |
+| staticlocals__staticlocals_f2_extractor | false | 17151 | 17151 | call to C |
+| staticlocals__staticlocals_f2_extractor | false | 17153 | 17153 | initializer for c |
+| staticlocals__staticlocals_f2_extractor | false | 17155 | 17155 | call to addOne |
+| staticlocals__staticlocals_f2_extractor | false | 17159 | 17159 | 2 |
+| staticlocals__staticlocals_f2_extractor | false | 17162 | 17162 | initializer for j |
+| staticlocals__staticlocals_f2_extractor | false | 17163 | 17163 | call to addOne |
+| staticlocals__staticlocals_f2_extractor | false | 17168 | 17168 | 2 |
+| staticlocals__staticlocals_f2_extractor | false | 17169 | 17169 | initializer for two |
+| staticlocals__staticlocals_f2_extractor | false | 17172 | 17172 | two |
+| staticlocals__staticlocals_f2_extractor | false | 17177 | 17177 | initializer for i |
+| staticlocals__staticlocals_f2_extractor | true | 17139 | 17169 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17141 | 17143 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17143 | 17145 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17145 | 17147 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17147 | 17134 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17149 | 17139 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17168 | 17141 |  |
+| staticlocals__staticlocals_f2_extractor | true | 17169 | 17168 |  |
+| staticlocals__staticlocals_f2_ql | false | 17134 | 17134 | f2 |
+| staticlocals__staticlocals_f2_ql | false | 17139 | 17139 | declaration |
+| staticlocals__staticlocals_f2_ql | false | 17141 | 17141 | declaration |
+| staticlocals__staticlocals_f2_ql | false | 17143 | 17143 | declaration |
+| staticlocals__staticlocals_f2_ql | false | 17145 | 17145 | declaration |
+| staticlocals__staticlocals_f2_ql | false | 17147 | 17147 | return ... |
+| staticlocals__staticlocals_f2_ql | false | 17149 | 17149 | { ... } |
+| staticlocals__staticlocals_f2_ql | false | 17151 | 17151 | call to C |
+| staticlocals__staticlocals_f2_ql | false | 17153 | 17153 | initializer for c |
+| staticlocals__staticlocals_f2_ql | false | 17155 | 17155 | call to addOne |
+| staticlocals__staticlocals_f2_ql | false | 17159 | 17159 | 2 |
+| staticlocals__staticlocals_f2_ql | false | 17162 | 17162 | initializer for j |
+| staticlocals__staticlocals_f2_ql | false | 17163 | 17163 | call to addOne |
+| staticlocals__staticlocals_f2_ql | false | 17168 | 17168 | 2 |
+| staticlocals__staticlocals_f2_ql | false | 17169 | 17169 | initializer for two |
+| staticlocals__staticlocals_f2_ql | false | 17172 | 17172 | two |
+| staticlocals__staticlocals_f2_ql | false | 17177 | 17177 | initializer for i |
+| staticlocals__staticlocals_f2_ql | true | 17139 | 17169 |  |
+| staticlocals__staticlocals_f2_ql | true | 17141 | 17143 |  |
+| staticlocals__staticlocals_f2_ql | true | 17143 | 17145 |  |
+| staticlocals__staticlocals_f2_ql | true | 17145 | 17147 |  |
+| staticlocals__staticlocals_f2_ql | true | 17145 | 17153 |  |
+| staticlocals__staticlocals_f2_ql | true | 17147 | 17134 |  |
+| staticlocals__staticlocals_f2_ql | true | 17149 | 17139 |  |
+| staticlocals__staticlocals_f2_ql | true | 17151 | 17147 |  |
+| staticlocals__staticlocals_f2_ql | true | 17153 | 17151 |  |
+| staticlocals__staticlocals_f2_ql | true | 17168 | 17141 |  |
+| staticlocals__staticlocals_f2_ql | true | 17169 | 17168 |  |
+| staticlocals__staticlocals_f2_unmodified | false | 17134 | 17134 | f2 |
+| staticlocals__staticlocals_f2_unmodified | false | 17139 | 17139 | declaration |
+| staticlocals__staticlocals_f2_unmodified | false | 17141 | 17141 | declaration |
+| staticlocals__staticlocals_f2_unmodified | false | 17143 | 17143 | declaration |
+| staticlocals__staticlocals_f2_unmodified | false | 17145 | 17145 | declaration |
+| staticlocals__staticlocals_f2_unmodified | false | 17147 | 17147 | return ... |
+| staticlocals__staticlocals_f2_unmodified | false | 17149 | 17149 | { ... } |
+| staticlocals__staticlocals_f2_unmodified | false | 17151 | 17151 | call to C |
+| staticlocals__staticlocals_f2_unmodified | false | 17153 | 17153 | initializer for c |
+| staticlocals__staticlocals_f2_unmodified | false | 17155 | 17155 | call to addOne |
+| staticlocals__staticlocals_f2_unmodified | false | 17159 | 17159 | 2 |
+| staticlocals__staticlocals_f2_unmodified | false | 17162 | 17162 | initializer for j |
+| staticlocals__staticlocals_f2_unmodified | false | 17163 | 17163 | call to addOne |
+| staticlocals__staticlocals_f2_unmodified | false | 17168 | 17168 | 2 |
+| staticlocals__staticlocals_f2_unmodified | false | 17169 | 17169 | initializer for two |
+| staticlocals__staticlocals_f2_unmodified | false | 17172 | 17172 | two |
+| staticlocals__staticlocals_f2_unmodified | false | 17177 | 17177 | initializer for i |
+| staticlocals__staticlocals_f2_unmodified | true | 17139 | 17169 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17141 | 17143 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17143 | 17145 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17145 | 17147 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17147 | 17134 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17149 | 17139 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17168 | 17141 |  |
+| staticlocals__staticlocals_f2_unmodified | true | 17169 | 17168 |  |

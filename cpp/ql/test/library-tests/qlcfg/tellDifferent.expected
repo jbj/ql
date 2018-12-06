@@ -1,7 +1,3 @@
-| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:11:3:13:3 | declaration | Standard edge, only from extractor |
-| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:11:3:13:3 | declaration | True edge, only from extractor |
-| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:14:1:14:1 | return ... | False edge, only from extractor |
-| stream_it__stream_it | file://:0:0:0:0 | <error expr> | stream_it.cpp:14:1:14:1 | return ... | Standard edge, only from extractor |
-| stream_it__stream_it | file://:0:0:0:0 | initializer for (__range) | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
-| stream_it__stream_it | file://:0:0:0:0 | initializer for (__range) | stream_it.cpp:11:3:13:3 | declaration | Standard edge, only from QL |
-| stream_it__stream_it | stream_it.cpp:12:3:13:3 | { ... } | file://:0:0:0:0 | <error expr> | Standard edge, only from extractor |
+| staticlocals__staticlocals_f2 | file://:0:0:0:0 | call to C | staticlocals.cpp:30:1:30:1 | return ... | Standard edge, only from QL |
+| staticlocals__staticlocals_f2 | file://:0:0:0:0 | initializer for c | file://:0:0:0:0 | call to C | Standard edge, only from QL |
+| staticlocals__staticlocals_f2 | staticlocals.cpp:29:5:29:17 | declaration | file://:0:0:0:0 | initializer for c | Standard edge, only from QL |
