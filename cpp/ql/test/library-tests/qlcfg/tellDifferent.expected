@@ -1,3 +1,6 @@
+| CPP-309__callNew | CPP-309.cpp:7:9:7:9 | 2 | CPP-309.cpp:7:5:7:20 | new[] | Standard edge, only from QL |
+| CPP-309__callNew | CPP-309.cpp:7:9:7:9 | 2 | CPP-309.cpp:7:12:7:12 | 3 | Standard edge, only from extractor |
+| CPP-309__callNew | CPP-309.cpp:7:12:7:12 | 3 | CPP-309.cpp:7:5:7:20 | new[] | Standard edge, only from extractor |
 | staticlocals__staticlocals_f2 | file://:0:0:0:0 | call to C | staticlocals.cpp:30:1:30:1 | return ... | Standard edge, only from QL |
 | staticlocals__staticlocals_f2 | file://:0:0:0:0 | initializer for c | file://:0:0:0:0 | call to C | Standard edge, only from QL |
 | staticlocals__staticlocals_f2 | staticlocals.cpp:29:5:29:17 | declaration | file://:0:0:0:0 | initializer for c | Standard edge, only from QL |
