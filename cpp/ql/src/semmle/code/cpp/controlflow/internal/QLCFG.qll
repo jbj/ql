@@ -269,10 +269,14 @@ private Node controlOrderChildSparse(Node n, int i) {
   )
   or
   n = any(NewArrayExpr new |
-    // An extra argument to a built-in allocator, such as alignment or pointer
-    // address, is found at child position 3. Extra arguments to custom
+    // Extra arguments to a built-in allocator, such as alignment or pointer
+    // address, are found at child positions >= 3. Extra arguments to custom
     // allocators are instead placed as subexpressions of `getAllocatorCall`.
-    i = 0 and result = new.getChild(3)
+    exists(int extraArgPos |
+      extraArgPos >= 3 and
+      result = new.getChild(extraArgPos) and
+      i = extraArgPos - max(int iMax | exists(new.getChild(iMax)))
+    )
     or
     i = 1 and result = new.getExtent()
     or
@@ -282,10 +286,14 @@ private Node controlOrderChildSparse(Node n, int i) {
   )
   or
   n = any(NewExpr new |
-    // An extra argument to a built-in allocator, such as alignment or pointer
-    // address, is found at child position 3. Extra arguments to custom
+    // Extra arguments to a built-in allocator, such as alignment or pointer
+    // address, are found at child positions >= 3. Extra arguments to custom
     // allocators are instead placed as subexpressions of `getAllocatorCall`.
-    i = 0 and result = new.getChild(3)
+    exists(int extraArgPos |
+      extraArgPos >= 3 and
+      result = new.getChild(extraArgPos) and
+      i = extraArgPos - max(int iMax | exists(new.getChild(iMax)))
+    )
     or
     i = 1 and result = new.getAllocatorCall()
     or
