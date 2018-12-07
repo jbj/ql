@@ -226,6 +226,7 @@ private Node controlOrderChildSparse(Node n, int i) {
   not n instanceof NewArrayExpr and
   not n instanceof NewExpr and
   not n instanceof ArgumentsUnevaluatedNode and
+  not n.(Expr).getParent() instanceof LambdaExpression and
   not result instanceof TypeName and // TODO: is this the right place?
   not isDeleteDestructorCall(n) // already evaluated
   or
@@ -289,6 +290,14 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 1 and result = new.getAllocatorCall()
     or
     i = 2 and result = new.getInitializer()
+  )
+  or
+  // The extractor sometimes emits literals with no value for captures and
+  // routes control flow around them.
+  exists(LambdaExpression lambda |
+    n = lambda.getAChild() and
+    result = n.(Expr).getChild(i) and
+    forall(Literal lit | result = lit | exists(lit.getValue()))
   )
   or
   i = 0 and result = getStrayVDCQualifier(n)
