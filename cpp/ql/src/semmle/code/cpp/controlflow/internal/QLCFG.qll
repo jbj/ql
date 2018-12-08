@@ -71,12 +71,7 @@ private class SupportedNode extends Node {
   SupportedNode() {
     // TODO: It appears the extractor doesn't produce CFG for free-standing
     // expressions. Why?
-    (
-      exists(this.(ControlFlowNode).getControlFlowScope())
-      or
-      // TODO: workaround for CPP-307
-      this.getParentNode*() = getConditionDeclContents(_)
-    ) and
+    exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.getParentNode+() instanceof SwitchCase and
     // Constructor init lists should be evaluated, and we can change this in
     // the future, but it would mean that a `Function` entry point is not
