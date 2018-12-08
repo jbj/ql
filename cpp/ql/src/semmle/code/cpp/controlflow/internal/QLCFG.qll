@@ -46,8 +46,7 @@ private class Node extends ControlFlowNodeBase {
 private class Orphan extends Expr {
   Orphan() {
     not exists(this.getParent()) and
-    not this instanceof DestructorCall and
-    not this = getStrayVDCQualifier(_)
+    not this instanceof DestructorCall
     or
     // For the GNU binary `? :` operator, an extra copy of the condition is
     // extracted and attached at position -1. We do not want this copy in the
@@ -58,13 +57,6 @@ private class Orphan extends Expr {
       not this.getParent() != conditional
     )
   }
-}
-
-// TODO: this is a workaround for CPP-298
-Expr getStrayVDCQualifier(VacuousDestructorCall c) {
-  successors(unresolveElement(result), unresolveElement(c)) and
-  exists(c.getEnclosingFunction()) and
-  not exists(result.getEnclosingFunction())
 }
 
 Expr getConditionDeclContents(ConditionDeclExpr cd) {
@@ -81,9 +73,6 @@ private class SupportedNode extends Node {
     // expressions. Why?
     (
       exists(this.(ControlFlowNode).getControlFlowScope())
-      or
-      // TODO: workaround for CPP-298
-      this.getParentNode*() = getStrayVDCQualifier(_)
       or
       // TODO: workaround for CPP-307
       this.getParentNode*() = getConditionDeclContents(_)
@@ -307,8 +296,6 @@ private Node controlOrderChildSparse(Node n, int i) {
     result = n.(Expr).getChild(i) and
     forall(Literal lit | result = lit | exists(lit.getValue()))
   )
-  or
-  i = 0 and result = getStrayVDCQualifier(n)
   or
   n = any(StmtExpr e |
     i = 0 and result = e.getStmt()

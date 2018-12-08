@@ -124,12 +124,6 @@ Element getScopeElement(ControlFlowNode x) {
   not isInFunction(x, _) and
   result = x.getFile()
   or
-  // CPP-298
-  exists(VacuousDestructorCall c |
-    x = getStrayVDCQualifier(c) and
-    result = c.getEnclosingFunction()
-  )
-  or
   // CPP-307
   exists(ConditionDeclExpr cd |
     x = getConditionDeclContents(cd) and
