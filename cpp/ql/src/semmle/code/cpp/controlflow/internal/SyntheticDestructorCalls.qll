@@ -15,6 +15,8 @@ private predicate isDeleteDestructorCall(DestructorCall c) {
 // - After subtracting all the jumpy dtor calls for a particular variable
 //   (PrematureScopeExitNode), there's at most one call left, and that will be
 //   the ordinary one.
+//   - TODO: Not true for ConditionDeclExpr! One chain should be directly
+//     connected to the false edge out of the parent, and the other should not.
 class SyntheticDestructorCall extends DestructorCall {
   SyntheticDestructorCall() {
     not exists(this.getParent()) and
@@ -62,8 +64,8 @@ class PrematureScopeExitNode extends ControlFlowNodeBase {
     or
     this instanceof ThrowExpr
     or
-    this instanceof ReturnStmt/* and
-    not this.(ReturnStmt).isCompilerGenerated()*/ // TODO: correct?
+    this instanceof ReturnStmt
+    // TODO: check this against the list of nodes that can throw in QLCFG
   }
 
   // TODO: is this always a straight line, or might the tail be shared? Does that matter?
@@ -89,6 +91,14 @@ class DestructedVariable extends LocalScopeVariable {
       block.getCall(_) = result and
       not exists(PrematureScopeExitNode exit | exit.getSyntheticDestructorBlock() = block) and
       result.getAccess().getTarget() = this
+    |
+      // TODO: this is a mess. The requirement for the parent to be a loop is
+      // fragile, and there's repetition.
+      exists(ConditionDeclExpr decl | this = decl.getVariable() |
+        falsecond_base(decl.getParent().(Loop), block.getCall(0).getAccess())
+      )
+      or
+      not exists(ConditionDeclExpr decl | this = decl.getVariable() | decl.getParent() instanceof Loop)
     )
   }
 
@@ -97,7 +107,27 @@ class DestructedVariable extends LocalScopeVariable {
       this = declStmt.getDeclaration(y) and
       declStmt = parent.getChild(x)
     )
+    or
+    exists(ConditionDeclExpr decl |
+      this = decl.getVariable() and
+      y = -1 and
+      x = -1 and
+      parent = getConditionDeclExprScope(decl)
+    )
   }
+}
+
+Stmt getConditionDeclExprScope(ConditionDeclExpr decl) {
+  exists(IfStmt s |
+    decl = s.getCondition() and
+    result = s
+  )
+  or
+  exists(SwitchStmt s |
+    decl = s.getExpr() and
+    result = s.getStmt() // could just be `s`? Does that make a difference?
+  )
+  // TODO: cases for loops -- at least the outside cases
 }
 
 SyntheticDestructorCall getDestructorCallAfterNode(ControlFlowNodeBase node, int index) {

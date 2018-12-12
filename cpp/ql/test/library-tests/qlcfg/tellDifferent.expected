@@ -6,14 +6,6 @@
 | condition_decls__for_decl_bind | condition_decls.cpp:48:44:48:49 | ... *= ... | condition_decls.cpp:50:3:50:3 | bi | Standard edge, only from extractor |
 | condition_decls__for_decl_bind | condition_decls.cpp:50:3:50:3 | call to bi.~BoxedInt | condition_decls.cpp:48:16:48:19 | init | Standard edge, only from extractor |
 | condition_decls__for_decl_bind | condition_decls.cpp:50:3:50:3 | call to bi.~BoxedInt | condition_decls.cpp:48:41:48:41 | x | Standard edge, only from extractor |
-| condition_decls__if_decl_bind | condition_decls.cpp:17:5:17:15 | ++ ... | condition_decls.cpp:21:3:21:3 | bi | Standard edge, only from extractor |
-| condition_decls__if_decl_bind | condition_decls.cpp:17:5:17:15 | ++ ... | condition_decls.cpp:22:3:22:8 | ExprStmt | Standard edge, only from QL |
-| condition_decls__if_decl_bind | condition_decls.cpp:20:5:20:15 | -- ... | condition_decls.cpp:21:3:21:3 | bi | Standard edge, only from extractor |
-| condition_decls__if_decl_bind | condition_decls.cpp:20:5:20:15 | -- ... | condition_decls.cpp:22:3:22:8 | ExprStmt | Standard edge, only from QL |
-| condition_decls__if_decl_bind | condition_decls.cpp:21:3:21:3 | call to bi.~BoxedInt | condition_decls.cpp:22:3:22:8 | ExprStmt | Standard edge, only from extractor |
-| condition_decls__switch_decl_bind | condition_decls.cpp:34:5:34:18 | ... /= ... | condition_decls.cpp:36:3:36:3 | bi | Standard edge, only from extractor |
-| condition_decls__switch_decl_bind | condition_decls.cpp:34:5:34:18 | ... /= ... | condition_decls.cpp:36:3:36:3 | label ...: | Standard edge, only from QL |
-| condition_decls__switch_decl_bind | condition_decls.cpp:36:3:36:3 | call to bi.~BoxedInt | condition_decls.cpp:36:3:36:3 | label ...: | Standard edge, only from extractor |
 | condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:43:3:43:3 | bi | False edge, only from extractor |
 | condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:43:3:43:3 | bi | Standard edge, only from extractor |
 | condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:44:3:44:6 | ExprStmt | False edge, only from QL |
