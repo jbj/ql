@@ -569,7 +569,7 @@ private predicate straightLineRanked(Node scope, int rnk, Node nrnk, Spec spec) 
   )
 }
 
-private predicate normalEdge(Node n1, Pos p1, Node n2, Pos p2) {
+private predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
   exists(Node scope, int rnk, Spec spec1, Spec spec2 |
     straightLineRanked(scope, rnk, n1, spec1) and
     straightLineRanked(scope, rnk + 1, n2, spec2) and
@@ -985,7 +985,7 @@ private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode)
   exists(Node succNode, Pos succPos |
     normalGroupMember(succNode, succPos, atNode) and
     not memberPos.isAt() and
-    normalEdge(memberNode, memberPos, succNode, succPos)
+    nonBranchEdge(memberNode, memberPos, succNode, succPos)
   )
 }
 
@@ -997,7 +997,7 @@ private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
   // FastTC (and IPA).
   exists(Node succNode, Pos succPos |
     precedesCondition(succNode, succPos, test) and
-    normalEdge(memberNode, memberPos, succNode, succPos) and
+    nonBranchEdge(memberNode, memberPos, succNode, succPos) and
     // Unlike the similar TC in normalGroupMember we're here including the
     // At-node in the group. This should generalize better to the case where
     // the base case isn't always an After-node.
@@ -1021,7 +1021,7 @@ private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
 
 predicate qlCFGSuccessor(Node n1, Node n2) {
   exists(Node memberNode, Pos memberPos |
-    normalEdge(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
+    nonBranchEdge(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
     normalGroupMember(memberNode, memberPos, n2)
   )
   or
