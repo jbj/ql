@@ -84,3 +84,85 @@ namespace lambda {
     apply2(doSomething, Val(1), Val(2));
   }
 }
+
+namespace synthetic_dtor_calls {
+  struct C {
+    ~C();
+  };
+
+  void thrw() {
+    C c1, c2;
+    throw 1;
+  }
+
+  void fallthrough() {
+    C c1, c2;
+  }
+
+  int ret() {
+    C c1, c2;
+    return 2 + 2;
+  }
+
+  void leavescope() {
+    {
+      C c1, c2;
+    }
+  }
+
+  void f(int x) {
+    while (x > 0) {
+      C c;
+      if (x == 1) {
+        0;
+      } else if (x == 2) {
+        1;
+      } else if (x == 4) {
+        goto end;
+      } else if (x == 5) {
+        goto end;
+      } else if (x == 3) {
+        break;
+      } else {
+        break;
+      }
+    }
+  end:
+    ;
+  }
+
+  // This function is interesting because its extractor CFG has unreachable
+  // calls to `c2.~C()` and `c3.~C()`. It's the calls that would have come from
+  // leaving the block of `c2` by falling off the end, but no path does that.
+  int g(int x) {
+    do {
+      C c1;
+      if (x > 0) {
+        if (x < 10) {
+          C c2;
+          if (x == 1) {
+            return 0;
+          } else {
+            return 1;
+          }
+        } else {
+          C c3;
+          if (x == 11) {
+            break;
+          } else {
+            break;
+          }
+        }
+      }
+    } while (0);
+  }
+
+  void localClass(int x) {
+    struct L {
+      ~L() { }
+    } l;
+    if (x) {
+      throw 1;
+    }
+  }
+}

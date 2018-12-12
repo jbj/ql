@@ -1,3 +1,37 @@
+| condition_decls__for_decl_bind | condition_decls.cpp:48:27:48:41 | (condition decl) | condition_decls.cpp:48:16:48:19 | init | False edge, only from QL |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:27:48:41 | (condition decl) | condition_decls.cpp:48:16:48:19 | init | Standard edge, only from QL |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:27:48:41 | (condition decl) | condition_decls.cpp:50:3:50:3 | bi | False edge, only from extractor |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:27:48:41 | (condition decl) | condition_decls.cpp:50:3:50:3 | bi | Standard edge, only from extractor |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:44:48:49 | ... *= ... | condition_decls.cpp:48:41:48:41 | x | Standard edge, only from QL |
+| condition_decls__for_decl_bind | condition_decls.cpp:48:44:48:49 | ... *= ... | condition_decls.cpp:50:3:50:3 | bi | Standard edge, only from extractor |
+| condition_decls__for_decl_bind | condition_decls.cpp:50:3:50:3 | call to bi.~BoxedInt | condition_decls.cpp:48:16:48:19 | init | Standard edge, only from extractor |
+| condition_decls__for_decl_bind | condition_decls.cpp:50:3:50:3 | call to bi.~BoxedInt | condition_decls.cpp:48:41:48:41 | x | Standard edge, only from extractor |
+| condition_decls__if_decl_bind | condition_decls.cpp:17:5:17:15 | ++ ... | condition_decls.cpp:21:3:21:3 | bi | Standard edge, only from extractor |
+| condition_decls__if_decl_bind | condition_decls.cpp:17:5:17:15 | ++ ... | condition_decls.cpp:22:3:22:8 | ExprStmt | Standard edge, only from QL |
+| condition_decls__if_decl_bind | condition_decls.cpp:20:5:20:15 | -- ... | condition_decls.cpp:21:3:21:3 | bi | Standard edge, only from extractor |
+| condition_decls__if_decl_bind | condition_decls.cpp:20:5:20:15 | -- ... | condition_decls.cpp:22:3:22:8 | ExprStmt | Standard edge, only from QL |
+| condition_decls__if_decl_bind | condition_decls.cpp:21:3:21:3 | call to bi.~BoxedInt | condition_decls.cpp:22:3:22:8 | ExprStmt | Standard edge, only from extractor |
+| condition_decls__switch_decl_bind | condition_decls.cpp:34:5:34:18 | ... /= ... | condition_decls.cpp:36:3:36:3 | bi | Standard edge, only from extractor |
+| condition_decls__switch_decl_bind | condition_decls.cpp:34:5:34:18 | ... /= ... | condition_decls.cpp:36:3:36:3 | label ...: | Standard edge, only from QL |
+| condition_decls__switch_decl_bind | condition_decls.cpp:36:3:36:3 | call to bi.~BoxedInt | condition_decls.cpp:36:3:36:3 | label ...: | Standard edge, only from extractor |
+| condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:43:3:43:3 | bi | False edge, only from extractor |
+| condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:43:3:43:3 | bi | Standard edge, only from extractor |
+| condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:44:3:44:6 | ExprStmt | False edge, only from QL |
+| condition_decls__while_decl_bind | condition_decls.cpp:41:9:41:23 | (condition decl) | condition_decls.cpp:44:3:44:6 | ExprStmt | Standard edge, only from QL |
+| condition_decls__while_decl_bind | condition_decls.cpp:42:5:42:7 | -- ... | condition_decls.cpp:41:23:41:23 | x | Standard edge, only from QL |
+| condition_decls__while_decl_bind | condition_decls.cpp:42:5:42:7 | -- ... | condition_decls.cpp:43:3:43:3 | bi | Standard edge, only from extractor |
+| condition_decls__while_decl_bind | condition_decls.cpp:43:3:43:3 | call to bi.~BoxedInt | condition_decls.cpp:41:23:41:23 | x | Standard edge, only from extractor |
+| condition_decls__while_decl_bind | condition_decls.cpp:43:3:43:3 | call to bi.~BoxedInt | condition_decls.cpp:44:3:44:6 | ExprStmt | Standard edge, only from extractor |
+| destructors__destructors_main | destructors.cpp:16:12:16:12 | 2 | destructors.cpp:6:5:6:20 | destructors_main | Standard edge, only from QL |
+| destructors__destructors_main | destructors.cpp:16:12:16:12 | 2 | destructors.cpp:21:1:21:1 | fscope | Standard edge, only from extractor |
+| destructors__destructors_main | destructors.cpp:19:10:19:10 | 3 | destructors.cpp:6:5:6:20 | destructors_main | Standard edge, only from QL |
+| destructors__destructors_main | destructors.cpp:19:10:19:10 | 3 | destructors.cpp:21:1:21:1 | fscope | Standard edge, only from extractor |
+| ms_try_mix__f | ms_try_mix.cpp:20:15:20:39 | 1 | ms_try_mix.cpp:10:6:10:6 | f | False edge, only from QL |
+| ms_try_mix__f | ms_try_mix.cpp:20:15:20:39 | 1 | ms_try_mix.cpp:10:6:10:6 | f | Standard edge, only from QL |
+| ms_try_mix__f | ms_try_mix.cpp:20:15:20:39 | 1 | ms_try_mix.cpp:38:1:38:1 | c101 | False edge, only from extractor |
+| ms_try_mix__f | ms_try_mix.cpp:20:15:20:39 | 1 | ms_try_mix.cpp:38:1:38:1 | c101 | Standard edge, only from extractor |
+| ms_try_mix__f | ms_try_mix.cpp:35:5:35:5 | call to c108.~C | ms_try_mix.cpp:10:6:10:6 | f | Standard edge, only from QL |
+| ms_try_mix__f | ms_try_mix.cpp:35:5:35:5 | call to c108.~C | ms_try_mix.cpp:38:1:38:1 | c105 | Standard edge, only from extractor |
 | staticlocals__staticlocals_f2 | file://:0:0:0:0 | call to C | staticlocals.cpp:30:1:30:1 | return ... | Standard edge, only from QL |
 | staticlocals__staticlocals_f2 | file://:0:0:0:0 | initializer for c | file://:0:0:0:0 | call to C | Standard edge, only from QL |
 | staticlocals__staticlocals_f2 | staticlocals.cpp:29:5:29:17 | declaration | file://:0:0:0:0 | initializer for c | Standard edge, only from QL |

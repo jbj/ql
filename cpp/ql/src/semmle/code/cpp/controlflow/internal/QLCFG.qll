@@ -2,6 +2,7 @@
  * Calculation of the control-flow graph in QL.
  */
 import cpp
+private import semmle.code.cpp.controlflow.internal.SyntheticDestructorCalls
 
 /*
 TODO: difficulties:
@@ -569,7 +570,7 @@ private predicate straightLineRanked(Node scope, int rnk, Node nrnk, Spec spec) 
   )
 }
 
-private predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
+private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
   exists(Node scope, int rnk, Spec spec1, Spec spec2 |
     straightLineRanked(scope, rnk, n1, spec1) and
     straightLineRanked(scope, rnk + 1, n2, spec2) and
@@ -968,6 +969,59 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     or
     test = e.getRightOperand() and
     conditionJumps(e, truth, targetNode, targetPos)
+  )
+}
+
+// TODO: private
+class DestructorCallPredecessor extends Node {
+  Pos pos;
+
+  DestructorCallPredecessor() {
+    exists(getDestructorCallAfterNode(this, 0)) and
+    pos.isAfter()
+    or
+    exists(getDestructorCallAtNode(this, 0)) and
+    pos.isAt()
+  }
+
+  SyntheticDestructorCall getCall(int i) {
+    result = getDestructorCallAfterNode(this, i)
+    or
+    result = getDestructorCallAtNode(this, i)
+  }
+
+  Pos getPos() { result = pos }
+}
+
+// TODO: private
+predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
+  nonBranchEdgeRaw(n1, p1, n2, p2) and
+  not exists(DestructorCallPredecessor pred |
+    n1 = pred and p1 = pred.getPos()
+  )
+  or
+  exists(DestructorCallPredecessor pred |
+    // pos(pred) -> access(0)
+    n1 = pred and p1 = pred.getPos() and
+    p2.nodeAt(n2, pred.getCall(0).getAccess())
+    or
+    // access(i) -> call(i)
+    // TODO: via getChild? Then we need to get disciplined with before/after
+    // nodes for these expressions.
+    exists(int i |
+      p1.nodeAt(n1, pred.getCall(i).getAccess()) and
+      p2.nodeAt(n2, pred.getCall(i))
+    )
+    or
+    // call(i) -> access(i+1)
+    exists(int i |
+      p1.nodeAt(n1, pred.getCall(i)) and
+      p2.nodeAt(n2, pred.getCall(i + 1).getAccess())
+    )
+    or
+    // call(max) -> successor of pos(pred)
+    p1.nodeAt(n1, pred.getCall(max(int i | exists(pred.getCall(i))))) and
+    nonBranchEdgeRaw(pred, pred.getPos(), n2, p2)
   )
 }
 

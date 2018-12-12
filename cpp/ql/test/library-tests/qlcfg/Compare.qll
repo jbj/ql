@@ -39,29 +39,32 @@ private module CollapseDestructorCalls {
   }
 
   predicate successorsForCompare(ControlFlowNode n1, ControlFlowNode n2) {
-    not shouldSkip(n1) and
-    exists(ControlFlowNode member |
-      successors(n1, member) and
-      isMember(member, n2)
-    )
-    or
-    // Preserve edges within pair of access and call in order to to mimic the QL
-    // construction.
-    n1.(VariableAccess).getParent() = n2.(SyntheticDestructorCall)
+    successors(n1, n2)
+    //not shouldSkip(n1) and
+    //exists(ControlFlowNode member |
+    //  successors(n1, member) and
+    //  isMember(member, n2)
+    //)
+    //or
+    //// Preserve edges within pair of access and call in order to to mimic the QL
+    //// construction.
+    //n1.(VariableAccess).getParent() = n2.(SyntheticDestructorCall)
   }
 
   predicate truecondForCompare(ControlFlowNode n1, ControlFlowNode n2) {
-    exists(ControlFlowNode member |
-      truecond_base(n1, member) and
-      isMember(member, n2)
-    )
+    truecond_base(n1, n2)
+    //exists(ControlFlowNode member |
+    //  truecond_base(n1, member) and
+    //  isMember(member, n2)
+    //)
   }
 
   predicate falsecondForCompare(ControlFlowNode n1, ControlFlowNode n2) {
-    exists(ControlFlowNode member |
-      falsecond_base(n1, member) and
-      isMember(member, n2)
-    )
+    falsecond_base(n1, n2)
+    //exists(ControlFlowNode member |
+    //  falsecond_base(n1, member) and
+    //  isMember(member, n2)
+    //)
   }
 }
 
