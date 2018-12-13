@@ -92,16 +92,9 @@ class DestructedVariable extends LocalScopeVariable {
       not exists(PrematureScopeExitNode exit | exit.getSyntheticDestructorBlock() = block) and
       result.getAccess().getTarget() = this
     |
-      // TODO: this is a mess. The requirement for the parent to be a loop is
-      // fragile, and there's repetition.
-      exists(ConditionDeclExpr decl | this = decl.getVariable() |
-        falsecond_base(
-          decl.getParent().(Loop).getCondition(),
-          block.getCall(0).getAccess()
-        )
-      )
+      falsecond_base(getDeclaringLoop().getCondition(), block.getCall(0).getAccess())
       or
-      not exists(ConditionDeclExpr decl | this = decl.getVariable() | decl.getParent() instanceof Loop)
+      not exists(this.getDeclaringLoop())
     )
   }
 
@@ -131,13 +124,8 @@ class DestructedVariable extends LocalScopeVariable {
       not exists(PrematureScopeExitNode exit | exit.getSyntheticDestructorBlock() = block) and
       result.getAccess().getTarget() = this
     |
-      // TODO: this is a mess. The requirement for the parent to be a loop is
-      // fragile, and there's repetition.
-      exists(ConditionDeclExpr decl, Loop parent | this = decl.getVariable() and parent = decl.getParent() |
-        not falsecond_base(
-          parent.getCondition(),
-          block.getCall(0).getAccess()
-        )
+      exists(Loop loop | loop = this.getDeclaringLoop() |
+        not falsecond_base(loop.getCondition(), block.getCall(0).getAccess())
       )
     )
   }
@@ -145,6 +133,10 @@ class DestructedVariable extends LocalScopeVariable {
   predicate hasPositionInInnerScope(int x, int y, ControlFlowNodeBase scope) {
     exists(ConditionDeclExpr decl |
       this = decl.getVariable() and
+      // These coordinates are chosen to place the destruction correctly
+      // relative to the destruction of other variables in `scope`. Only in the
+      // `while` case can there be other variables in `scope`, and in that case
+      // `scope` will be a `Block`, whose smallest `x` coordinate can be 0.
       x = -1 and
       y = 0 and
       (
@@ -153,6 +145,10 @@ class DestructedVariable extends LocalScopeVariable {
         scope = decl.getParent().(WhileStmt).getStmt()
       )
     )
+  }
+
+  private Loop getDeclaringLoop() {
+    exists(ConditionDeclExpr decl | this = decl.getVariable() and result = decl.getParent())
   }
 }
 
