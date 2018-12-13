@@ -83,8 +83,8 @@ class DestructedVariable extends LocalScopeVariable {
   }
 
   /**
-   * Gets the single destructor call that doesn't come from a
-   * `PrematureScopeExitNode`.
+   * Gets the single destructor call that that corresponds to falling off the
+   * end of the scope of this variable.
    */
   SyntheticDestructorCall getOrdinaryCall() {
     exists(SyntheticDestructorBlock block |
@@ -105,10 +105,10 @@ class DestructedVariable extends LocalScopeVariable {
     )
   }
 
-  predicate hasPositionInParent(int x, int y, Stmt parent) {
+  predicate hasPositionInScope(int x, int y, Stmt scope) {
     exists(DeclStmt declStmt |
       this = declStmt.getDeclaration(y) and
-      declStmt = parent.getChild(x)
+      declStmt = scope.getChild(x)
     )
     or
     exists(ConditionDeclExpr decl |
@@ -121,15 +121,49 @@ class DestructedVariable extends LocalScopeVariable {
       // declared in the init statement of the `for` loop.
       x = 1 and
       y = 0 and
-      parent = decl.getParent()
+      scope = decl.getParent()
+    )
+  }
+
+  SyntheticDestructorCall getInnerScopeCall() {
+    exists(SyntheticDestructorBlock block |
+      block.getCall(_) = result and
+      not exists(PrematureScopeExitNode exit | exit.getSyntheticDestructorBlock() = block) and
+      result.getAccess().getTarget() = this
+    |
+      // TODO: this is a mess. The requirement for the parent to be a loop is
+      // fragile, and there's repetition.
+      exists(ConditionDeclExpr decl, Loop parent | this = decl.getVariable() and parent = decl.getParent() |
+        not falsecond_base(
+          parent.getCondition(),
+          block.getCall(0).getAccess()
+        )
+      )
+    )
+  }
+
+  predicate hasPositionInInnerScope(int x, int y, ControlFlowNodeBase scope) {
+    exists(ConditionDeclExpr decl |
+      this = decl.getVariable() and
+      x = -1 and
+      y = 0 and
+      (
+        scope = decl.getParent().(ForStmt).getUpdate()
+        or
+        scope = decl.getParent().(WhileStmt).getStmt()
+      )
     )
   }
 }
 
+// TODO: join these two predicates into one and put some logic in QLCFG.qll instead.
 SyntheticDestructorCall getDestructorCallAfterNode(ControlFlowNodeBase node, int index) {
   result = rank[index + 1](SyntheticDestructorCall call, DestructedVariable var, int x, int y |
     call = var.getOrdinaryCall() and
-    var.hasPositionInParent(x, y, node)
+    var.hasPositionInScope(x, y, node)
+    or
+    call = var.getInnerScopeCall() and
+    var.hasPositionInInnerScope(x, y, node)
   |
     call
     order by x desc, y desc
