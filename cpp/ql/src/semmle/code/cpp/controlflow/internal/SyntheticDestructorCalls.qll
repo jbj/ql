@@ -112,7 +112,8 @@ class DestructedVariable extends LocalScopeVariable {
       this = decl.getVariable() and
       y = -1 and
       x = -1 and
-      parent = getConditionDeclExprScope(decl)
+      //parent = getConditionDeclExprScope(decl)
+      parent = decl.getParent()
     )
   }
 }
