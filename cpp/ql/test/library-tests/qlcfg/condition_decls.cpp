@@ -45,7 +45,7 @@ void while_decl_bind(int x) {
 }
 
 void for_decl_bind(int x) {
-  for(BoxedInt init = -x; BoxedInt bi = x; x *= 2) {
+  for(BoxedInt init = -x, init2 = -x; BoxedInt bi = x; x *= 2) {
     ++x;
   }
   --x;

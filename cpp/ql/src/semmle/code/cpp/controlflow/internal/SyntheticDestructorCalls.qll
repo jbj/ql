@@ -95,7 +95,10 @@ class DestructedVariable extends LocalScopeVariable {
       // TODO: this is a mess. The requirement for the parent to be a loop is
       // fragile, and there's repetition.
       exists(ConditionDeclExpr decl | this = decl.getVariable() |
-        falsecond_base(decl.getParent().(Loop), block.getCall(0).getAccess())
+        falsecond_base(
+          decl.getParent().(Loop).getCondition(),
+          block.getCall(0).getAccess()
+        )
       )
       or
       not exists(ConditionDeclExpr decl | this = decl.getVariable() | decl.getParent() instanceof Loop)
@@ -110,25 +113,17 @@ class DestructedVariable extends LocalScopeVariable {
     or
     exists(ConditionDeclExpr decl |
       this = decl.getVariable() and
-      y = -1 and
-      x = -1 and
-      //parent = getConditionDeclExprScope(decl)
+      // These coordinates are chosen to place the destruction correctly
+      // relative to the destruction of other variables declared in
+      // `decl.getParent()`. Only a `for` loop can have other declarations in
+      // it. These show up as a `DeclStmt` with `x = 0`, so by choosing `x = 1`
+      // here we get the `ConditionDeclExpr` placed after all variables
+      // declared in the init statement of the `for` loop.
+      x = 1 and
+      y = 0 and
       parent = decl.getParent()
     )
   }
-}
-
-Stmt getConditionDeclExprScope(ConditionDeclExpr decl) {
-  exists(IfStmt s |
-    decl = s.getCondition() and
-    result = s
-  )
-  or
-  exists(SwitchStmt s |
-    decl = s.getExpr() and
-    result = s.getStmt() // could just be `s`? Does that make a difference?
-  )
-  // TODO: cases for loops -- at least the outside cases
 }
 
 SyntheticDestructorCall getDestructorCallAfterNode(ControlFlowNodeBase node, int index) {
