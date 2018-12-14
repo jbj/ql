@@ -35,10 +35,21 @@ class SyntheticDestructorCall extends DestructorCall {
 // Things we know about these blocks
 // - If they follow a JumpStmt, the VariableAccesses of their calls never
 //   have multiple predecessors.
-//   - But that's different for ReturnStmt. TODO: account for that.
+//   - But after ReturnStmt, that may happen.
+/**
+ * Describes a straight line of `SyntheticDestructorCall`s. Node that such
+ * lines can share tails.
+ */
 private class SyntheticDestructorBlock extends ControlFlowNodeBase {
   SyntheticDestructorBlock() {
-    this = any(SyntheticDestructorCall call | not exists(call.getPrev()))
+    this = any(SyntheticDestructorCall call |
+      not exists(call.getPrev())
+      or
+      exists(ControlFlowNodeBase pred |
+        not pred instanceof SyntheticDestructorCall and
+        successors(pred, call.getAccess())
+      )
+    )
   }
 
   SyntheticDestructorCall getCall(int i) {
@@ -48,7 +59,8 @@ private class SyntheticDestructorBlock extends ControlFlowNodeBase {
   }
 
   ControlFlowNode getAPredecessor() {
-    successors(result, this.(SyntheticDestructorCall).getAccess())
+    successors(result, this.(SyntheticDestructorCall).getAccess()) and
+    not result instanceof SyntheticDestructorCall
   }
 
   ControlFlowNode getSuccessor() {
