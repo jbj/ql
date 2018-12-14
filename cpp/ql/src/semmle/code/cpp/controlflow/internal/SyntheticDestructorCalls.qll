@@ -35,7 +35,7 @@ class SyntheticDestructorCall extends DestructorCall {
 // Things we know about these blocks
 // - If they follow a JumpStmt, the VariableAccesses of their calls never
 //   have multiple predecessors.
-//   - TODO: what about ReturnStmt?
+//   - But that's different for ReturnStmt. TODO: account for that.
 private class SyntheticDestructorBlock extends ControlFlowNodeBase {
   SyntheticDestructorBlock() {
     this = any(SyntheticDestructorCall call | not exists(call.getPrev()))
