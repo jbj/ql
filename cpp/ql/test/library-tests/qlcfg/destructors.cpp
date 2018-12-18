@@ -19,3 +19,13 @@ int destructors_main(HasDtor p) {
   return 3;
   ;
 }
+
+
+void destructor_after_handler() {
+  HasDtor x;
+
+  try {
+  } catch (const HasDtor&) {
+    return;
+  }
+}

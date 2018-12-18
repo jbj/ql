@@ -992,13 +992,19 @@ class DestructorCallPredecessor extends Node {
   }
 
   Pos getPos() { result = pos }
+
+  predicate hasPostDestructionSuccessor(Node n, Pos p) {
+    if this instanceof Handler
+    then p.nodeAt(n, this.(ExceptionSource).getExceptionTarget())
+    else nonBranchEdgeRaw(this, pos, n, p)
+  }
 }
 
 // TODO: private
 predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
   nonBranchEdgeRaw(n1, p1, n2, p2) and
   not exists(DestructorCallPredecessor pred |
-    n1 = pred and p1 = pred.getPos()
+    n1 = pred and p1 = pred.getPos() and pred.hasPostDestructionSuccessor(n2, p2)
   )
   or
   exists(DestructorCallPredecessor pred |
@@ -1022,7 +1028,7 @@ predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
     or
     // call(max) -> successor of pos(pred)
     p1.nodeAt(n1, pred.getCall(max(int i | exists(pred.getCall(i))))) and
-    nonBranchEdgeRaw(pred, pred.getPos(), n2, p2)
+    pred.hasPostDestructionSuccessor(n2, p2)
   )
 }
 
