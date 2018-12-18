@@ -17,12 +17,21 @@ private predicate isDeleteDestructorCall(DestructorCall c) {
 //   the ordinary one.
 //   - TODO: Not true for ConditionDeclExpr! One chain should be directly
 //     connected to the false edge out of the parent, and the other should not.
-class SyntheticDestructorCall extends DestructorCall {
+class SyntheticDestructorCall extends FunctionCall {
   SyntheticDestructorCall() {
+    (
+      this instanceof DestructorCall
+      or
+      // Work around extractor bug related to local classes
+      exists(Function target |
+        target = this.(FunctionCall).getTarget() and
+        not exists(target.getName())
+      )
+    ) and
     not exists(this.getParent()) and
     not isDeleteDestructorCall(this) and
-    not this.isUnevaluated() /*and
-    this.isCompilerGenerated()*/
+    not this.isUnevaluated() and
+    this.isCompilerGenerated()
   }
 
   VariableAccess getAccess() { successors(result, this) }

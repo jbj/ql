@@ -45,7 +45,8 @@ private class Node extends ControlFlowNodeBase {
 private class Orphan extends Expr {
   Orphan() {
     not exists(this.getParent()) and
-    not this instanceof DestructorCall
+    not this instanceof DestructorCall and
+    not this instanceof SyntheticDestructorCall // TODO: replace DestructorCall with this?
     or
     // For the GNU binary `? :` operator, an extra copy of the condition is
     // extracted and attached at position -1. We do not want this copy in the
@@ -124,7 +125,6 @@ private class Pos extends int {
   bindingset[this]
   Pos() { any() }
 
-  // TODO: inline these?
   predicate isBefore() { this = -1 }
   predicate isAt() { this = 0 }
   predicate isAfter() { this = 1 }
