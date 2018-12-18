@@ -46,7 +46,7 @@ private class Orphan extends Expr {
   Orphan() {
     not exists(this.getParent()) and
     not this instanceof DestructorCall and
-    not this instanceof SyntheticDestructorCall // TODO: replace DestructorCall with this?
+    not this instanceof SyntheticDestructorCall // Workaround for CPP-320
     or
     // For the GNU binary `? :` operator, an extra copy of the condition is
     // extracted and attached at position -1. We do not want this copy in the

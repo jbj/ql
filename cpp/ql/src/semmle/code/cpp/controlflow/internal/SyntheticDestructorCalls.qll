@@ -22,7 +22,7 @@ class SyntheticDestructorCall extends FunctionCall {
     (
       this instanceof DestructorCall
       or
-      // Work around extractor bug related to local classes
+      // Workaround for CPP-320
       exists(Function target |
         target = this.(FunctionCall).getTarget() and
         not exists(target.getName())
