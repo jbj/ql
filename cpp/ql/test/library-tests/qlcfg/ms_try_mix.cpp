@@ -7,7 +7,7 @@ class C {
         ~C();
 };
 
-void f(int b1, int b2) {
+void ms_except_mix(int b1) {
     C c101(101);
 
     __try {
@@ -22,6 +22,10 @@ void f(int b1, int b2) {
     }
 
     C c105(105);
+}
+
+void ms_finally_mix(int b2) {
+    C c101(101);
 
     __try {
         C c106(106);
@@ -37,3 +41,15 @@ void f(int b1, int b2) {
     C c109(109);
 }
 
+// This function gets a buggy CFG from both the extractor and the QL CFG
+// implementation. The extractor-produced CFG contains a loop (!), and the QL
+// CFG may destruct c201 twice.
+void ms_empty_finally_at_end() {
+  C c201(201);
+
+  __try {
+    throw 3;
+  }
+  __finally {
+  }
+}

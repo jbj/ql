@@ -86,15 +86,31 @@ class PrematureScopeExitNode extends ControlFlowNodeBase {
     this instanceof ThrowExpr
     or
     this instanceof ReturnStmt
-    // TODO: check this against the list of nodes that can throw in QLCFG
+    or
+    this instanceof MicrosoftTryExceptStmt
+    or
+    // TODO: Detecting exception edges out of a MicrosoftTryExceptStmt is not
+    // implemented. It may not be easy to do. It'll be something like finding
+    // the first synthetic destructor call that crosses out of the scope of the
+    // statement and does not belong to some other `PrematureScopeExitNode`.
+    // Note that the exception destructors after __try can follow right after
+    // ordinary cleanup from the __finally block.
+    this instanceof MicrosoftTryFinallyStmt
   }
 
   // TODO: is this always a straight line, or might the tail be shared? Does that matter?
   SyntheticDestructorBlock getSyntheticDestructorBlock() {
     result.getAPredecessor() = this
     or
-    // StmtExpr not handled properly here.
+    // TODO: StmtExpr not handled properly here.
     result.getAPredecessor().(Expr).getParent+() = this.(ReturnStmt)
+    or
+    // TODO: Only handles post-order conditions. Won't work with
+    // short-circuiting operators.
+    falsecond_base(
+      this.(MicrosoftTryExceptStmt).getCondition(),
+      result.(SyntheticDestructorCall).getAccess()
+    )
   }
 }
 
@@ -173,7 +189,6 @@ class DestructedVariable extends LocalScopeVariable {
   }
 }
 
-// TODO: join these two predicates into one and put some logic in QLCFG.qll instead.
 SyntheticDestructorCall getDestructorCallAfterNode(ControlFlowNodeBase node, int index) {
   result = rank[index + 1](SyntheticDestructorCall call, DestructedVariable var, int x, int y |
     call = var.getOrdinaryCall() and
@@ -186,18 +201,8 @@ SyntheticDestructorCall getDestructorCallAfterNode(ControlFlowNodeBase node, int
     order by x desc, y desc
   )
   or
-  // Return statement with expression: destructor calls come after that expression
-  exists(SyntheticDestructorBlock block, ReturnStmt ret |
-    node = ret.getExpr() and
-    ret.(PrematureScopeExitNode).getSyntheticDestructorBlock() = block and
-    result = block.getCall(index)
-  )
-}
-
-SyntheticDestructorCall getDestructorCallAtNode(ControlFlowNodeBase node, int index) {
   exists(SyntheticDestructorBlock block |
     node.(PrematureScopeExitNode).getSyntheticDestructorBlock() = block and
-    result = block.getCall(index) and
-    not exists(node.(ReturnStmt).getExpr()) // handled in getDestructorCallAfterNode
+    result = block.getCall(index)
   )
 }

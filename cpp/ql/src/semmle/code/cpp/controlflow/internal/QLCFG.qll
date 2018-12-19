@@ -438,7 +438,7 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 1 and ni = e and spec.isAt()
     or
-    i = 2 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isAt()
+    i = 2 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isBefore()
   )
   or
   scope = any(ReturnStmt ret |
@@ -714,7 +714,7 @@ private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
     )
     or
     p1.nodeAt(n1, h) and
-    p2.nodeAt(n2, h.(ExceptionSource).getExceptionTarget())
+    p2.nodeBefore(n2, h.(ExceptionSource).getExceptionTarget())
   )
   or exists(CatchBlock cb |
     p1.nodeAfter(n1, cb) and
@@ -724,10 +724,9 @@ private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
   // Additional edge for `MicrosoftTryFinallyStmt` for the case where an
   // exception is propagated. It gets its other edges from being a
   // `PreOrderNode` and a `Stmt`.
-  exists(MicrosoftTryFinallyStmt s, Stmt finally |
-    finally = s.getFinally() and
-    p1.nodeAfter(n1, finally) and
-    p2.nodeBefore(n2, finally.(ExceptionSource).getExceptionTarget())
+  exists(MicrosoftTryFinallyStmt s |
+    p1.nodeAfter(n1, s) and
+    p2.nodeBefore(n2, s.(ExceptionSource).getExceptionTarget())
   )
 }
 
@@ -815,15 +814,15 @@ private class ExceptionSource extends Node {
     // By reusing the same set of predicates for Microsoft exceptions and C++
     // exceptions, we're pretending that their handlers can catch each other.
     // This may or may not be true depending on compiler options.
-    exists(MicrosoftTryExceptStmt try | this = try.getCondition())
+    this instanceof MicrosoftTryExceptStmt
     or
-    exists(MicrosoftTryFinallyStmt try | this = try.getFinally())
+    this instanceof MicrosoftTryFinallyStmt
   }
 
   private predicate reachesParent(Node parent) {
     parent = this.(Expr).getEnclosingStmt()
     or
-    parent = this
+    parent = this.(Stmt)
     or
     exists(Node mid |
       this.reachesParent(mid) and
@@ -833,6 +832,13 @@ private class ExceptionSource extends Node {
     )
   }
 
+  /**
+   * Gets the target node where this exception source will jump in case it
+   * throws or propagates an exception. The jump will target the "before"
+   * position of this node, not the "at" position. This is because possible
+   * jump targets include the condition of a `MicrosoftTryExceptStmt`, which is
+   * an `Expr`.
+   */
   Node getExceptionTarget() {
     exists(Stmt parent |
       this.reachesParent(parent)
@@ -909,7 +915,7 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     or
     // TODO: Actually, this test is ternary.
     truth = false and
-    targetPos.nodeBefore(targetNode, test.(ExceptionSource).getExceptionTarget())
+    targetPos.nodeBefore(targetNode, try.(ExceptionSource).getExceptionTarget())
   )
 }
 
@@ -974,42 +980,92 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
 }
 
 // TODO: private
-class DestructorCallPredecessor extends Node {
-  Pos pos;
-
-  DestructorCallPredecessor() {
-    exists(getDestructorCallAfterNode(this, 0)) and
-    pos.isAfter()
-    or
-    exists(getDestructorCallAtNode(this, 0)) and
-    pos.isAt()
+class DestructorCallAnchor extends Node {
+  DestructorCallAnchor() {
+    exists(getDestructorCallAfterNode(this, 0))
   }
 
-  SyntheticDestructorCall getCall(int i) {
+  final SyntheticDestructorCall getCall(int i) {
     result = getDestructorCallAfterNode(this, i)
-    or
-    result = getDestructorCallAtNode(this, i)
   }
 
-  Pos getPos() { result = pos }
+  predicate edgesHaveSource(Node n1, Pos p1) {
+    p1.nodeAfter(n1, this)
+  }
 
-  predicate hasPostDestructionSuccessor(Node n, Pos p) {
-    if this instanceof Handler
-    then p.nodeAt(n, this.(ExceptionSource).getExceptionTarget())
-    else nonBranchEdgeRaw(this, pos, n, p)
+  predicate edgesHaveTarget(Node n2, Pos p2) {
+    // Default implementation: all successors of the source.
+    exists(Node n1, Pos p1 |
+      this.edgesHaveSource(n1, p1) and
+      nonBranchEdgeRaw(n1, p1, n2, p2)
+    )
+  }
+}
+
+private module DestructorCallPredecessor_overrides {
+  class OverrideReturnWithExpr extends DestructorCallAnchor, ReturnStmt {
+    OverrideReturnWithExpr() { exists(this.getExpr()) }
+    override predicate edgesHaveSource(Node n1, Pos p1) {
+      p1.nodeAfter(n1, this.getExpr())
+    }
+  }
+
+  abstract class SourceIsAt extends DestructorCallAnchor {
+    override predicate edgesHaveSource(Node n1, Pos p1) {
+      p1.nodeAt(n1, this)
+    }
+  }
+
+  class OverrideReturnWithoutExpr extends ReturnStmt, SourceIsAt {
+    OverrideReturnWithoutExpr() { not exists(this.getExpr()) }
+  }
+
+  class OverrideJumpStmt extends SourceIsAt {
+    OverrideJumpStmt() { this instanceof JumpStmt }
+  }
+
+  class OverrideThrowExpr extends SourceIsAt, ThrowExpr {
+  }
+
+  class OverrideHandler extends SourceIsAt, Handler, ExceptionSource {
+    override predicate edgesHaveTarget(Node n2, Pos p2) {
+      // A `Handler` can have multiple outgoing edges. We select the one that
+      // jumps to its target.
+      p2.nodeBefore(n2, this.getExceptionTarget())
+    }
+  }
+
+  class OverrideMicrosoftFinally extends DestructorCallAnchor, ExceptionSource, MicrosoftTryFinallyStmt {
+    override predicate edgesHaveTarget(Node n2, Pos p2) {
+      // A `MicrosoftTryFinallyStmt` can have multiple outgoing edges. We
+      // select the one that jumps to its target.
+      p2.nodeBefore(n2, this.getExceptionTarget())
+    }
+  }
+
+  class OverrideMicrosoftExcept extends DestructorCallAnchor, ExceptionSource, MicrosoftTryExceptStmt {
+    override predicate edgesHaveSource(Node n2, Pos p2) {
+      // Has no result because the source will be added in
+      // `conditionalSuccessor` as a special case.
+      none()
+    }
+    override predicate edgesHaveTarget(Node n2, Pos p2) {
+      p2.nodeBefore(n2, this.getExceptionTarget())
+    }
   }
 }
 
 // TODO: private
 predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
   nonBranchEdgeRaw(n1, p1, n2, p2) and
-  not exists(DestructorCallPredecessor pred |
-    n1 = pred and p1 = pred.getPos() and pred.hasPostDestructionSuccessor(n2, p2)
+  not exists(DestructorCallAnchor pred |
+    pred.edgesHaveSource(n1, p1) and
+    pred.edgesHaveTarget(n2, p2)
   )
   or
-  exists(DestructorCallPredecessor pred |
-    // pos(pred) -> access(0)
-    n1 = pred and p1 = pred.getPos() and
+  exists(DestructorCallAnchor pred |
+    // edge start -> access(0)
+    pred.edgesHaveSource(n1, p1) and
     p2.nodeAt(n2, pred.getCall(0).getAccess())
     or
     // access(i) -> call(i)
@@ -1026,9 +1082,9 @@ predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
       p2.nodeAt(n2, pred.getCall(i + 1).getAccess())
     )
     or
-    // call(max) -> successor of pos(pred)
+    // call(max) -> edge end
     p1.nodeAt(n1, pred.getCall(max(int i | exists(pred.getCall(i))))) and
-    pred.hasPostDestructionSuccessor(n2, p2)
+    pred.edgesHaveTarget(n2, p2)
   )
 }
 
@@ -1068,15 +1124,31 @@ private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
 
 // To find true/false edges, search forward and backward among the ordinary
 // half-edges from a true/false half-edge, stopping at At-nodes. Then link,
-// with true/false, any At-nodes found backwrads with any At-nodes found
+// with true/false, any At-nodes found backwards with any At-nodes found
 // forward.
-private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
-  // TODO: this is a join of some rather large relations. It's possible that
-  // some of them should be cut down with manual magic before being joined.
+private predicate conditionalSuccessorRaw(Node n1, boolean truth, Node n2) {
   exists(Node test, Node targetNode, Pos targetPos |
     precedesCondition(n1, any(Pos at | at.isAt()), test) and
     conditionJumps(test, truth, targetNode, targetPos) and
     normalGroupMember(targetNode, targetPos, n2)
+  )
+}
+
+// TODO: This is a bit of a hack. For all other cases we've added the
+// destructors in the graph of half-edges, but for this case we're adding it in
+// the collapsed graph.
+private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
+  conditionalSuccessorRaw(n1, truth, n2) and
+  not exists(DestructorCallAnchor anchor |
+    n1 = anchor.(MicrosoftTryExceptStmt).getCondition() and
+    truth = false
+  )
+  or
+  exists(DestructorCallAnchor anchor, Expr condition |
+    condition = anchor.(MicrosoftTryExceptStmt).getCondition() and
+    n1 = condition and
+    truth = false and
+    n2 = anchor.getCall(0).getAccess()
   )
 }
 
