@@ -153,6 +153,16 @@ class DestructedVariable extends LocalScopeVariable {
       y = 0 and
       scope = decl.getParent()
     )
+    or
+    exists(CatchBlock cb |
+      this = cb.getParameter() and
+      scope = cb and
+      // A `CatchBlock` is a `Block`, so there might be other variables
+      // declared in it. These coordinates are chosen to place the Parameter
+      // before any such declarations.
+      x = -1 and
+      y = 0
+    )
   }
 
   SyntheticDestructorCall getInnerScopeCall() {

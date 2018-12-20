@@ -13,6 +13,7 @@ namespace range_based_for_11 {
     bool operator!=(const Iterator &other);
     Iterator &operator++();
     int &operator*();
+    ~Iterator();
   };
 
   struct Iterable {

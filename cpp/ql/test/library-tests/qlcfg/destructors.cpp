@@ -29,3 +29,10 @@ void destructor_after_handler() {
     return;
   }
 }
+
+void destructor_catch() {
+  try {
+  } catch (HasDtor d) {
+    HasDtor d2 = { 0 };
+  }
+}
