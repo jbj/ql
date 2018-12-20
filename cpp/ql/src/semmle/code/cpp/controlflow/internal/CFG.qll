@@ -1,32 +1,8 @@
-// TODO: Rename this file
 /*
  * Calculation of the control-flow graph in QL.
  */
 import cpp
 private import semmle.code.cpp.controlflow.internal.SyntheticDestructorCalls
-
-/*
-TODO: difficulties:
-- Take cases from Ian's orphanedExpr and orphanedInitializer.
-- getSwitchStmtEndLabel. What's going on there, and do I need it? Doesn't work
-  with macros and templates.
-- Synthetic destructor calls. I've taken them out of the reference in the
-  comparisons until there is a solution.
-  - TODO: exception with destructor caught by value/reference
-  - following_destructor extractor changes
-    - Can we just construct the CFG and then inject these calls? It looks like
-      they should be injected After the marked node.
-    - For prototyping, I'd like to take this information from `successors`, but
-      I don't see how to reconstruct it. I'd have to splice them in based on
-      where `successors` tells me to add them, but that's cheating just as much
-      as the current workaround in Compare.
-    - index_destructor_call documentation mentions `\param following`, not
-      `\param label`.
-    - Why add both the var access and the call to following_destructor? I'd
-      just add the call.
-    - How does the size and contents of the `label` buffers match up?
-      (`char label[sizeof(unsigned long) + strlen(suffix)];`)
- */
 
 private class Node extends ControlFlowNodeBase {
   /**
@@ -70,23 +46,21 @@ Expr getConditionDeclContents(ConditionDeclExpr cd) {
  */
 private class SupportedNode extends Node {
   SupportedNode() {
-    // TODO: It appears the extractor doesn't produce CFG for free-standing
-    // expressions. Why?
+    // The extractor doesn't produce CFG for free-standing expressions such as
+    // initializers of globals and fields. We can change this in the future.
     exists(this.(ControlFlowNode).getControlFlowScope()) and
     not this.getParentNode+() instanceof SwitchCase and
     // Constructor init lists should be evaluated, and we can change this in
     // the future, but it would mean that a `Function` entry point is not
     // always a `Block`.
-    // TODO: Ian's prototype built CFG for ConstructorBaseInit. Was that
-    // deliberate?
     not this.getParentNode*() instanceof ConstructorInit and
     // Destructor field destructions should also be hooked into the CFG
     // properly in the future.
     not this.getParentNode*() instanceof DestructorFieldDestruction and
-    // TODO: This excludes the synthetic VariableAccess that ought to be the
-    // result of the ConditionalExpr after the variable has been initialized.
-    // It would be more correct to include this VariableAccess in the CFG, but
-    // for now we omit it for compatibility with the extractor CFG.
+    // This excludes the synthetic VariableAccess that ought to be the result
+    // of the ConditionDeclExpr after the variable has been initialized. It
+    // would be more correct to include this VariableAccess in the CFG, but for
+    // now we omit it for compatibility with the extractor CFG.
     not this.getParentNode+() instanceof ConditionDeclExpr and
     not this.getParentNode+() instanceof ArgumentsUnevaluatedNode and
     not this.getParentNode*() instanceof Orphan and
@@ -144,7 +118,7 @@ private class Pos extends int {
   predicate nodeAfterDestructors(Node n, Node nEq) { this.isAfterDestructors() and n = nEq }
 }
 
-// TODO: remove this class when we don't need extractor compatibility
+// This class only exists for extractor CFG compatibility.
 private class PostOrderInitializer extends Initializer {
   PostOrderInitializer() {
     exists(RangeBasedForStmt for |
@@ -159,16 +133,12 @@ private class PostOrderInitializer extends Initializer {
 
 private class PostOrderNode extends Node {
   PostOrderNode() {
-    // TODO: positive list instead of negative list
     this instanceof Expr and
     not this instanceof ShortCircuitOperator and
     not this instanceof ThrowExpr and
     not this instanceof Conversion // not in CFG
     or
-    // It's highly unusual for a statement not to start with itself. This type
-    // of statement is only found in `Block`s.
-    // TODO: Turn this into a PreOrderNode when we're no longer comparing with
-    // the extractor CFG.
+    // VlaDeclStmt is a post-order node for extractor CFG compatibility only.
     this instanceof VlaDeclStmt
     or
     this instanceof PostOrderInitializer
@@ -177,7 +147,8 @@ private class PostOrderNode extends Node {
 
 private class PreOrderNode extends Node {
   PreOrderNode() {
-    // TODO: this is to mimic the extractor. Why not extend to all initializers?
+    // For extractor CFG compatibility, we only compute flow for local
+    // variables.
     this.(Initializer).getDeclaration() instanceof LocalVariable and
     not this instanceof PostOrderInitializer
     or
@@ -206,8 +177,8 @@ private predicate isDeleteDestructorCall(DestructorCall c) {
 
 private Node controlOrderChildSparse(Node n, int i) {
   result = n.(PostOrderNode).(Expr).getChild(i) and
-  not n instanceof AssignExpr and // they go from right to left
-  not n instanceof Call and // qualifier comes last
+  not n instanceof AssignExpr and
+  not n instanceof Call and
   not n instanceof ConditionDeclExpr and
   not n instanceof DeleteExpr and
   not n instanceof DeleteArrayExpr and
@@ -215,8 +186,8 @@ private Node controlOrderChildSparse(Node n, int i) {
   not n instanceof NewExpr and
   not n instanceof ArgumentsUnevaluatedNode and
   not n.(Expr).getParent() instanceof LambdaExpression and
-  not result instanceof TypeName and // TODO: is this the right place?
-  not isDeleteDestructorCall(n) // already evaluated
+  not result instanceof TypeName and
+  not isDeleteDestructorCall(n)
   or
   n = any(AssignExpr a |
     i = 0 and result = a.getRValue()
@@ -235,7 +206,6 @@ private Node controlOrderChildSparse(Node n, int i) {
     )
   )
   or
-  // TODO: this is compatible with the extractor but could be better
   n = any(ConditionDeclExpr cd |
     i = 0 and result = getConditionDeclContents(cd)
   )
@@ -358,7 +328,8 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
     or
     e instanceof PointerArithmeticOperation
     or
-    // TODO: extractor doesn't populate this specifier. See CPP-314.
+    // Extractor doesn't populate this specifier at the time of writing, so
+    // this case has not been tested. See CPP-314.
     e.(FunctionCall).getTarget().hasSpecifier("constexpr")
   then runtimeExprInStaticInitializer(e.getAChild())
   else (
@@ -684,26 +655,23 @@ private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
   )
   or
   // ALmost all statements start with themselves.
-  // TODO: does that mean we should never make edges to _before_ a statement
-  // but always _at_ the statement? Or is that premature optimization?
-  // To make this change, we'd need an `isAroundStmt` spec. We also need to do
-  // something about exception targets, Microsoft `__try`-exceptions can either
-  // propagate to an expression (`__except(e)`) or a statement (`__finally`).
   exists(Stmt s |
     not s instanceof VlaDeclStmt and
     p1.nodeBefore(n1, s) and
     p2.nodeAt(n2, s)
   )
   or
+  // Exceptions always jump to "before" their target, so we redirect from
+  // "before" the function to "at" the function.
   exists(Function f |
     p1.nodeBefore(n1, f) and
     p2.nodeAt(n2, f)
   )
   or
   // entry point -> Function
-  // TODO: delete this later. Only for compatibility with extractor quirks. It
-  // happens when the extractor doesn't synthesize a `ReturnStmt` because it
-  // can tell that it wouldn't be reached.
+  // This makes a difference when the extractor doesn't synthesize a
+  // `ReturnStmt` because it can tell that it wouldn't be reached. This case is
+  // only for extractor CFG compatibility.
   exists(Function f |
     p1.nodeAfter(n1, f.getEntryPoint()) and
     p2.nodeAt(n2, f)
@@ -826,8 +794,6 @@ private predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeAt(n2, getDestructorCallAfterNode(n, 0).getAccess())
     or
     // access(i) -> call(i)
-    // TODO: via getChild? Then we need to get disciplined with before/after
-    // nodes for these expressions.
     exists(int i |
       p1.nodeAt(n1, getDestructorCallAfterNode(n, i).getAccess()) and
       p2.nodeAt(n2, getDestructorCallAfterNode(n, i))
@@ -1031,7 +997,8 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     truth = true and
     targetPos.nodeBefore(targetNode, try.getExcept())
     or
-    // TODO: Actually, this test is ternary. The extractor doesn't model that either.
+    // TODO: Actually, this test is ternary. The extractor CFG doesn't model
+    // that either.
     truth = false and
     targetPos.nodeBeforeDestructors(targetNode, try)
   )
@@ -1063,12 +1030,6 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
     truth = false and
     targetPos.nodeBefore(targetNode, e.getElse())
   )
-  // TODO: handle `!` better in the future. Like this?
-  //or
-  //exists(NotExpr e |
-  //  test = e.getOperand() and
-  //  conditionJumps(e, truth.booleanNot(), targetNode, targetPos)
-  //)
   or
   exists(LogicalAndLikeExpr e |
     test = e.getLeftOperand() and
