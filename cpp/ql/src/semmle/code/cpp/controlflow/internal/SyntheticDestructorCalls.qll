@@ -1,7 +1,6 @@
 // TODO: `private` annotations
 import cpp
 
-// TODO: copied from QLCFG.qll. Needed?
 private predicate isDeleteDestructorCall(DestructorCall c) {
   exists(DeleteExpr del | c = del.getDestructorCall())
   or

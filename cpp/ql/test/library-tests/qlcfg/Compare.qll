@@ -1,5 +1,5 @@
 import cpp
-import semmle.code.cpp.controlflow.internal.QLCFG
+import semmle.code.cpp.controlflow.internal.CFG
 
 class DestructorCallEnhanced extends DestructorCall {
     override string toString() {
