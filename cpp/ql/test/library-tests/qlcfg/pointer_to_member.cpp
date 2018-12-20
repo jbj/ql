@@ -11,17 +11,20 @@ int PM::* getDataMemberPointer(bool);
 typedef void (PM::*pmVoidVoid)();
 pmVoidVoid getFunctionMemberPointer(bool);
 
-int usePM() {
+int usePM(int PM::* pm) {
     int acc;
 
     PM obj;
 
-    // TODO: These tests don't work on 1.18
+    // Needs fix for extractor bug CPP-313
     //acc += obj.clone() .* getDataMemberPointer(true);
     //acc += (&obj) ->* getDataMemberPointer(true);
 
     (obj.clone() .* getFunctionMemberPointer(false))();
     ((&obj) ->* getFunctionMemberPointer(true))();
+
+    acc += obj .* pm;
+    acc += obj.clone() .* pm;
 
     return acc;
 }
