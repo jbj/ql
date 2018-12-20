@@ -12,6 +12,7 @@ TODO: difficulties:
   with macros and templates.
 - Synthetic destructor calls. I've taken them out of the reference in the
   comparisons until there is a solution.
+  - TODO: exception with destructor caught by value/reference
   - following_destructor extractor changes
     - Can we just construct the CFG and then inject these calls? It looks like
       they should be injected After the marked node.
@@ -128,6 +129,8 @@ private class Pos extends int {
   predicate isBefore() { this = -1 }
   predicate isAt() { this = 0 }
   predicate isAfter() { this = 1 }
+  predicate isBeforeDestructors() { this = 2 }
+  predicate isAfterDestructors() { this = 3 }
 
   pragma[inline]
   predicate nodeBefore(Node n, Node nEq) { this.isBefore() and n = nEq }
@@ -135,6 +138,10 @@ private class Pos extends int {
   predicate nodeAt(Node n, Node nEq) { this.isAt() and n = nEq }
   pragma[inline]
   predicate nodeAfter(Node n, Node nEq) { this.isAfter() and n = nEq }
+  pragma[inline]
+  predicate nodeBeforeDestructors(Node n, Node nEq) { this.isBeforeDestructors() and n = nEq }
+  pragma[inline]
+  predicate nodeAfterDestructors(Node n, Node nEq) { this.isAfterDestructors() and n = nEq }
 }
 
 // TODO: remove this class when we don't need extractor compatibility
@@ -175,8 +182,6 @@ private class PreOrderNode extends Node {
     not this instanceof PostOrderInitializer
     or
     this instanceof DeclStmt
-    or
-    this instanceof Block
     or
     this instanceof LabelStmt
     or
@@ -301,8 +306,7 @@ private Node controlOrderChildSparse(Node n, int i) {
     i = 0 and result = n.(Initializer).getExpr()
   )
   or
-  result = n.(PreOrderNode).(Stmt).getChild(i) and
-  not n instanceof Block // handled below
+  result = n.(PreOrderNode).(Stmt).getChild(i)
   // VLAs are special because of how their associated statements are added
   // in-line in the block containing their corresponding DeclStmt but should
   // not be evaluated in the order implied by their position in the block. We
@@ -395,34 +399,65 @@ private Node lastControlOrderChild(Node n) {
   result = controlOrderChild(n, max(int i | exists(controlOrderChild(n, i))))
 }
 
-private class Spec extends int {
+private class Spec extends Pos {
   bindingset[this]
   Spec() { any() }
 
-  predicate isBefore() { this = -1 }
-  predicate isAt() { this = 0 }
-  predicate isAfter() { this = 1 }
-  predicate isAround() { this = 2 }
-  predicate isBarrier() { this = 3 }
+  // Values -1 .. 3 are used by Pos
+  predicate isAround() { this = 4 }
+  predicate isAroundDestructors() { this = 5 }
+  predicate isBarrier() { this = 6 }
 
   Pos asLeftPos() {
-    this = [-1 .. 1] and
+    this = [-1 .. 3] and
     result = this
     or
     this.isAround() and
     result.isAfter()
+    or
+    this.isAroundDestructors() and
+    result.isAfterDestructors()
   }
 
   Pos asRightPos() {
-    this = [-1 .. 1] and
+    this = [-1 .. 3] and
     result = this
     or
     this.isAround() and
     result.isBefore()
+    or
+    this.isAroundDestructors() and
+    result.isBeforeDestructors()
   }
 }
 
 private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
+  scope = any(Block b |
+    i = -1 and ni = b and spec.isAt()
+    or
+    if exists(lastControlOrderChild(b))
+    then (
+      i = 0 and ni = controlOrderChild(b, 0) and spec.isBefore()
+      or
+      // Links from one child to the next are added in nonBranchEdgeRaw
+      i = 1 and ni = b and spec.isBarrier()
+      or
+      i = 2 and ni = lastControlOrderChild(b) and spec.isAfter()
+      or
+      i = 3 and ni = b and spec.isAroundDestructors()
+      or
+      i = 4 and ni = b and spec.isAfter()
+    )
+    else (
+      // There can be destructors even when the body is empty. This happens
+      // when a `WhileStmt` with an empty body has a `ConditionDeclExpr` in its
+      // condition.
+      i = 0 and ni = b and spec.isAroundDestructors()
+      or
+      i = 1 and ni = b and spec.isAfter()
+    )
+  )
+  or
   scope = any(ShortCircuitOperator op |
     i = -1 and ni = op and spec.isBefore()
     or
@@ -438,7 +473,9 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 1 and ni = e and spec.isAt()
     or
-    i = 2 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isBefore()
+    i = 2 and ni = e and spec.isAroundDestructors()
+    or
+    i = 3 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isBefore()
   )
   or
   scope = any(ReturnStmt ret |
@@ -446,7 +483,17 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 0 and ni = ret.getExpr() and spec.isAround()
     or
-    i = 1 and ni = ret.getEnclosingFunction() and spec.isAt()
+    i = 1 and ni = ret and spec.isAroundDestructors()
+    or
+    i = 2 and ni = ret.getEnclosingFunction() and spec.isAt()
+  )
+  or
+  scope = any(JumpStmt s |
+    i = -1 and ni = s and spec.isAt()
+    or
+    i = 0 and ni = s and spec.isAroundDestructors()
+    or
+    i = 1 and ni = s.getTarget() and spec.isBefore()
   )
   or
   scope = any(ForStmt s |
@@ -467,7 +514,16 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
       or
       i = 4 and ni = s.getUpdate() and spec.isAround()
       or
-      i = 5 and ni = s.getCondition() and spec.isBefore()
+      // Can happen when the condition is a `ConditionDeclExpr`
+      i = 5 and ni = s.getUpdate() and spec.isAroundDestructors()
+      or
+      i = 6 and ni = s.getCondition() and spec.isBefore()
+      or
+      i = 7 and ni = s and spec.isBarrier()
+      or
+      i = 8 and ni = s and spec.isAfterDestructors()
+      or
+      i = 9 and ni = s and spec.isAfter()
     ) else (
       // ... -> body [-> update] -> before body
       i = 1 and ni = s.getStmt() and spec.isAround()
@@ -532,6 +588,12 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     i = 3 and ni = s.getExcept() and spec.isAfter()
     or
     i = 4 and ni = s and spec.isAfter()
+    or
+    i = 5 and ni = s and spec.isBarrier()
+    or
+    i = 6 and ni = s and spec.isAfterDestructors()
+    or
+    i = 7 and ni = s.(ExceptionSource).getExceptionTarget() and spec.isBefore()
   )
   or
   scope = any(SwitchStmt s |
@@ -554,7 +616,9 @@ private predicate straightLine(Node scope, int i, Node ni, Spec spec) {
     or
     i = 4 and ni = s.getStmt() and spec.isAfter()
     or
-    i = 5 and ni = s and spec.isAfter()
+    i = 5 and ni = s and spec.isAroundDestructors()
+    or
+    i = 6 and ni = s and spec.isAfter()
   )
   or
   scope = any(ComputedGotoStmt s |
@@ -651,35 +715,37 @@ private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeBefore(n2, s.getCondition())
     or
     p1.nodeAfter(n1, s.getThen()) and
-    p2.nodeAfter(n2, s)
+    p2.nodeBeforeDestructors(n2, s)
     or
     p1.nodeAfter(n1, s.getElse()) and
+    p2.nodeBeforeDestructors(n2, s)
+    or
+    p1.nodeAfterDestructors(n1, s) and
     p2.nodeAfter(n2, s)
   )
   or
-  // WhileStmt -> condition ; body -> condition
+  // WhileStmt -> condition ; body -> condition ; after dtors -> after
   exists(WhileStmt s |
     p1.nodeAt(n1, s) and
     p2.nodeBefore(n2, s.getCondition())
     or
     p1.nodeAfter(n1, s.getStmt()) and
     p2.nodeBefore(n2, s.getCondition())
+    or
+    p1.nodeAfterDestructors(n1, s) and
+    p2.nodeAfter(n2, s)
   )
   or
-  // DoStmt -> body ; body -> condition
+  // DoStmt -> body ; body -> condition ; after dtors -> after
   exists(DoStmt s |
     p1.nodeAt(n1, s) and
     p2.nodeBefore(n2, s.getStmt())
     or
     p1.nodeAfter(n1, s.getStmt()) and
     p2.nodeBefore(n2, s.getCondition())
-  )
-  or
-  // JumpStmt -> target
-  // TODO: should the extractor continue to compute these targets?
-  exists(JumpStmt s |
-    p1.nodeAt(n1, s) and
-    p2.nodeBefore(n2, s.getTarget())
+    or
+    p1.nodeAfterDestructors(n1, s) and
+    p2.nodeAfter(n2, s)
   )
   or
   exists(DeclStmt s |
@@ -714,6 +780,9 @@ private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
     )
     or
     p1.nodeAt(n1, h) and
+    p2.nodeBeforeDestructors(n2, h.(ExceptionSource))
+    or
+    p1.nodeAfterDestructors(n1, h) and
     p2.nodeBefore(n2, h.(ExceptionSource).getExceptionTarget())
   )
   or exists(CatchBlock cb |
@@ -721,12 +790,61 @@ private predicate nonBranchEdgeRaw(Node n1, Pos p1, Node n2, Pos p2) {
     p2.nodeAfter(n2, cb.getTryStmt())
   )
   or
-  // Additional edge for `MicrosoftTryFinallyStmt` for the case where an
+  // Additional edges for `MicrosoftTryFinallyStmt` for the case where an
   // exception is propagated. It gets its other edges from being a
   // `PreOrderNode` and a `Stmt`.
   exists(MicrosoftTryFinallyStmt s |
     p1.nodeAfter(n1, s) and
+    p2.nodeBeforeDestructors(n2, s)
+    or
+    p1.nodeAfterDestructors(n1, s) and
     p2.nodeBefore(n2, s.(ExceptionSource).getExceptionTarget())
+  )
+}
+
+private predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
+  nonBranchEdgeRaw(n1, p1, n2, p2)
+  or
+  // If `n1` has half-nodes to accomodate destructors, but there are none to be
+  // called, connect the "before destructors" node directly to the "after
+  // destructors" node. For performance, only do this when the nodes exist.
+  // TODO: check if that really matters for performance. Otherwise merge this
+  // predicate into `nonBranchEdgeRaw`. We could probably just check that `n1`
+  // is either a Stmt or a for-loop update.
+  exists(Pos beforeDtors | beforeDtors.isBeforeDestructors() |
+    nonBranchEdgeRaw(_, _, n1, beforeDtors)
+    or
+    conditionJumps(_, _, n1, beforeDtors)
+  ) and
+  not exists(getDestructorCallAfterNode(n1, 0)) and
+  p1.nodeBeforeDestructors(n1, n1) and
+  p2.nodeAfterDestructors(n2, n1)
+  or
+  exists(Node n |
+    // before destructors -> access(0)
+    p1.nodeBeforeDestructors(n1, n) and
+    p2.nodeAt(n2, getDestructorCallAfterNode(n, 0).getAccess())
+    or
+    // access(i) -> call(i)
+    // TODO: via getChild? Then we need to get disciplined with before/after
+    // nodes for these expressions.
+    exists(int i |
+      p1.nodeAt(n1, getDestructorCallAfterNode(n, i).getAccess()) and
+      p2.nodeAt(n2, getDestructorCallAfterNode(n, i))
+    )
+    or
+    // call(i) -> access(i+1)
+    exists(int i |
+      p1.nodeAt(n1, getDestructorCallAfterNode(n, i)) and
+      p2.nodeAt(n2, getDestructorCallAfterNode(n, i + 1).getAccess())
+    )
+    or
+    // call(max) -> after destructors end
+    exists(int maxCallIndex |
+      maxCallIndex = max(int i | exists(getDestructorCallAfterNode(n, i))) and
+      p1.nodeAt(n1, getDestructorCallAfterNode(n, maxCallIndex)) and
+      p2.nodeAfterDestructors(n2, n)
+    )
   )
 }
 
@@ -878,7 +996,7 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     or
     not exists(s.getElse()) and
     truth = false and
-    targetPos.nodeAfter(targetNode, s)
+    targetPos.nodeBeforeDestructors(targetNode, s)
   )
   or
   exists(Loop l |
@@ -895,7 +1013,7 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     targetPos.nodeBefore(targetNode, l.getStmt())
     or
     truth = false and
-    targetPos.nodeAfter(targetNode, l)
+    targetPos.nodeBeforeDestructors(targetNode, l)
   )
   or
   exists(RangeBasedForStmt for | test = for.getCondition() |
@@ -913,9 +1031,9 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node targetNode, P
     truth = true and
     targetPos.nodeBefore(targetNode, try.getExcept())
     or
-    // TODO: Actually, this test is ternary.
+    // TODO: Actually, this test is ternary. The extractor doesn't model that either.
     truth = false and
-    targetPos.nodeBefore(targetNode, try.(ExceptionSource).getExceptionTarget())
+    targetPos.nodeBeforeDestructors(targetNode, try)
   )
 }
 
@@ -979,115 +1097,6 @@ private predicate conditionJumps(Expr test, boolean truth, Node targetNode, Pos 
   )
 }
 
-// TODO: private
-class DestructorCallAnchor extends Node {
-  DestructorCallAnchor() {
-    exists(getDestructorCallAfterNode(this, 0))
-  }
-
-  final SyntheticDestructorCall getCall(int i) {
-    result = getDestructorCallAfterNode(this, i)
-  }
-
-  predicate edgesHaveSource(Node n1, Pos p1) {
-    p1.nodeAfter(n1, this)
-  }
-
-  predicate edgesHaveTarget(Node n2, Pos p2) {
-    // Default implementation: all successors of the source.
-    exists(Node n1, Pos p1 |
-      this.edgesHaveSource(n1, p1) and
-      nonBranchEdgeRaw(n1, p1, n2, p2)
-    )
-  }
-}
-
-private module DestructorCallPredecessor_overrides {
-  class OverrideReturnWithExpr extends DestructorCallAnchor, ReturnStmt {
-    OverrideReturnWithExpr() { exists(this.getExpr()) }
-    override predicate edgesHaveSource(Node n1, Pos p1) {
-      p1.nodeAfter(n1, this.getExpr())
-    }
-  }
-
-  abstract class SourceIsAt extends DestructorCallAnchor {
-    override predicate edgesHaveSource(Node n1, Pos p1) {
-      p1.nodeAt(n1, this)
-    }
-  }
-
-  class OverrideReturnWithoutExpr extends ReturnStmt, SourceIsAt {
-    OverrideReturnWithoutExpr() { not exists(this.getExpr()) }
-  }
-
-  class OverrideJumpStmt extends SourceIsAt {
-    OverrideJumpStmt() { this instanceof JumpStmt }
-  }
-
-  class OverrideThrowExpr extends SourceIsAt, ThrowExpr {
-  }
-
-  class OverrideHandler extends SourceIsAt, Handler, ExceptionSource {
-    override predicate edgesHaveTarget(Node n2, Pos p2) {
-      // A `Handler` can have multiple outgoing edges. We select the one that
-      // jumps to its target.
-      p2.nodeBefore(n2, this.getExceptionTarget())
-    }
-  }
-
-  class OverrideMicrosoftFinally extends DestructorCallAnchor, ExceptionSource, MicrosoftTryFinallyStmt {
-    override predicate edgesHaveTarget(Node n2, Pos p2) {
-      // A `MicrosoftTryFinallyStmt` can have multiple outgoing edges. We
-      // select the one that jumps to its target.
-      p2.nodeBefore(n2, this.getExceptionTarget())
-    }
-  }
-
-  class OverrideMicrosoftExcept extends DestructorCallAnchor, ExceptionSource, MicrosoftTryExceptStmt {
-    override predicate edgesHaveSource(Node n2, Pos p2) {
-      // Has no result because the source will be added in
-      // `conditionalSuccessor` as a special case.
-      none()
-    }
-    override predicate edgesHaveTarget(Node n2, Pos p2) {
-      p2.nodeBefore(n2, this.getExceptionTarget())
-    }
-  }
-}
-
-// TODO: private
-predicate nonBranchEdge(Node n1, Pos p1, Node n2, Pos p2) {
-  nonBranchEdgeRaw(n1, p1, n2, p2) and
-  not exists(DestructorCallAnchor pred |
-    pred.edgesHaveSource(n1, p1) and
-    pred.edgesHaveTarget(n2, p2)
-  )
-  or
-  exists(DestructorCallAnchor pred |
-    // edge start -> access(0)
-    pred.edgesHaveSource(n1, p1) and
-    p2.nodeAt(n2, pred.getCall(0).getAccess())
-    or
-    // access(i) -> call(i)
-    // TODO: via getChild? Then we need to get disciplined with before/after
-    // nodes for these expressions.
-    exists(int i |
-      p1.nodeAt(n1, pred.getCall(i).getAccess()) and
-      p2.nodeAt(n2, pred.getCall(i))
-    )
-    or
-    // call(i) -> access(i+1)
-    exists(int i |
-      p1.nodeAt(n1, pred.getCall(i)) and
-      p2.nodeAt(n2, pred.getCall(i + 1).getAccess())
-    )
-    or
-    // call(max) -> edge end
-    p1.nodeAt(n1, pred.getCall(max(int i | exists(pred.getCall(i))))) and
-    pred.edgesHaveTarget(n2, p2)
-  )
-}
-
 private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode) {
   memberNode = atNode and
   memberPos.isAt() and
@@ -1126,29 +1135,11 @@ private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
 // half-edges from a true/false half-edge, stopping at At-nodes. Then link,
 // with true/false, any At-nodes found backwards with any At-nodes found
 // forward.
-private predicate conditionalSuccessorRaw(Node n1, boolean truth, Node n2) {
+private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
   exists(Node test, Node targetNode, Pos targetPos |
     precedesCondition(n1, any(Pos at | at.isAt()), test) and
     conditionJumps(test, truth, targetNode, targetPos) and
     normalGroupMember(targetNode, targetPos, n2)
-  )
-}
-
-// TODO: This is a bit of a hack. For all other cases we've added the
-// destructors in the graph of half-edges, but for this case we're adding it in
-// the collapsed graph.
-private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
-  conditionalSuccessorRaw(n1, truth, n2) and
-  not exists(DestructorCallAnchor anchor |
-    n1 = anchor.(MicrosoftTryExceptStmt).getCondition() and
-    truth = false
-  )
-  or
-  exists(DestructorCallAnchor anchor, Expr condition |
-    condition = anchor.(MicrosoftTryExceptStmt).getCondition() and
-    n1 = condition and
-    truth = false and
-    n2 = anchor.getCall(0).getAccess()
   )
 }
 
