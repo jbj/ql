@@ -59,12 +59,6 @@ Element getScopeElement(ControlFlowNode x) {
   or
   not isInFunction(x, _) and
   result = x.getFile()
-  or
-  // CPP-307
-  exists(ConditionDeclExpr cd |
-    x = getConditionDeclContents(cd) and
-    result = cd.getEnclosingFunction()
-  )
 }
 
 string getScopeName(ControlFlowNode x) {
