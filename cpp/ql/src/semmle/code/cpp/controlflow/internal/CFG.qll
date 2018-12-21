@@ -1,6 +1,7 @@
 /**
  * Calculation of the control-flow graph.
  */
+
 /*
  * The calculation is in two stages. First, a graph of _sub-nodes_ is produced.
  * A sub-node is either an actual CFG node or a _virtual node_. Second, the
@@ -71,6 +72,7 @@
  * For nodes whose flow passes through their children in left-to-right order,
  * the `getControlOrderChildSparse` predicate is used to specify that order.
  */
+
 private import cpp
 private import semmle.code.cpp.controlflow.internal.SyntheticDestructorCalls
 
@@ -164,9 +166,7 @@ private class SupportedNode extends Node {
 // TODO: test what the extractor does for a `.h` file included from both `.c`
 // and `.cpp`, where the `.h` file contains a static local with initializer.
 private predicate fileUsedInCPP(File f) {
-  exists(File cppFile | cppFile.compiledAsCpp() |
-    f = cppFile.getAnIncludedFile*()
-  )
+  exists(File cppFile | cppFile.compiledAsCpp() | f = cppFile.getAnIncludedFile*())
 }
 
 /**
@@ -180,8 +180,10 @@ private class Pos extends int {
 
   /** Holds if this is the position just _before_ the associated `Node`. */
   predicate isBefore() { this = -1 }
+
   /** Holds if `(n, this)` is the sub-node that represents `n` itself. */
   predicate isAt() { this = 0 }
+
   /** Holds if this is the position just _after_ the associated `Node`. */
   predicate isAfter() { this = 1 }
 
@@ -191,6 +193,7 @@ private class Pos extends int {
    * that may be followed by local variables going out of scope.
    */
   predicate isBeforeDestructors() { this = 2 }
+
   /**
    * Holds if `(n, this)` is the virtual sub-node that comes just _after_ any
    * implicit destructor calls following `n`. The node `n` will be some node
@@ -200,12 +203,16 @@ private class Pos extends int {
 
   pragma[inline]
   predicate nodeBefore(Node n, Node nEq) { this.isBefore() and n = nEq }
+
   pragma[inline]
   predicate nodeAt(Node n, Node nEq) { this.isAt() and n = nEq }
+
   pragma[inline]
   predicate nodeAfter(Node n, Node nEq) { this.isAfter() and n = nEq }
+
   pragma[inline]
   predicate nodeBeforeDestructors(Node n, Node nEq) { this.isBeforeDestructors() and n = nEq }
+
   pragma[inline]
   predicate nodeAfterDestructors(Node n, Node nEq) { this.isAfterDestructors() and n = nEq }
 }
@@ -300,93 +307,91 @@ private Node getControlOrderChildSparse(Node n, int i) {
   not isDeleteDestructorCall(n)
   or
   n = any(AssignExpr a |
-    i = 0 and result = a.getRValue()
-    or
-    i = 1 and result = a.getLValue()
-  )
+      i = 0 and result = a.getRValue()
+      or
+      i = 1 and result = a.getLValue()
+    )
   or
   n = any(Call c |
-    not isDeleteDestructorCall(c) and
-    (
-      result = c.getArgument(i)
-      or
-      i = c.getNumberOfArguments() and result = c.(ExprCall).getExpr()
-      or
-      i = c.getNumberOfArguments() + 1 and result = c.getQualifier()
+      not isDeleteDestructorCall(c) and
+      (
+        result = c.getArgument(i)
+        or
+        i = c.getNumberOfArguments() and result = c.(ExprCall).getExpr()
+        or
+        i = c.getNumberOfArguments() + 1 and result = c.getQualifier()
+      )
     )
-  )
   or
-  n = any(ConditionDeclExpr cd |
-    i = 0 and result = cd.getInitializingExpr()
-  )
+  n = any(ConditionDeclExpr cd | i = 0 and result = cd.getInitializingExpr())
   or
   n = any(DeleteExpr del |
-    i = 0 and result = del.getExpr()
-    or
-    i = 1 and result = del.getDestructorCall()
-    or
-    i = 2 and result = del.getAllocatorCall()
-  )
+      i = 0 and result = del.getExpr()
+      or
+      i = 1 and result = del.getDestructorCall()
+      or
+      i = 2 and result = del.getAllocatorCall()
+    )
   or
   n = any(DeleteArrayExpr del |
-    i = 0 and result = del.getExpr()
-    or
-    i = 1 and result = del.getDestructorCall()
-    or
-    i = 2 and result = del.getAllocatorCall()
-  )
+      i = 0 and result = del.getExpr()
+      or
+      i = 1 and result = del.getDestructorCall()
+      or
+      i = 2 and result = del.getAllocatorCall()
+    )
   or
   n = any(NewArrayExpr new |
-    // Extra arguments to a built-in allocator, such as alignment or pointer
-    // address, are found at child positions >= 3. Extra arguments to custom
-    // allocators are instead placed as subexpressions of `getAllocatorCall`.
-    exists(int extraArgPos |
-      extraArgPos >= 3 and
-      result = new.getChild(extraArgPos) and
-      i = extraArgPos - max(int iMax | exists(new.getChild(iMax)))
+      // Extra arguments to a built-in allocator, such as alignment or pointer
+      // address, are found at child positions >= 3. Extra arguments to custom
+      // allocators are instead placed as subexpressions of `getAllocatorCall`.
+      exists(int extraArgPos |
+        extraArgPos >= 3 and
+        result = new.getChild(extraArgPos) and
+        i = extraArgPos - max(int iMax | exists(new.getChild(iMax)))
+      )
+      or
+      i = 1 and result = new.getExtent()
+      or
+      i = 2 and result = new.getAllocatorCall()
+      or
+      i = 3 and result = new.getInitializer()
     )
-    or
-    i = 1 and result = new.getExtent()
-    or
-    i = 2 and result = new.getAllocatorCall()
-    or
-    i = 3 and result = new.getInitializer()
-  )
   or
   n = any(NewExpr new |
-    // Extra arguments to a built-in allocator, such as alignment or pointer
-    // address, are found at child positions >= 3. Extra arguments to custom
-    // allocators are instead placed as subexpressions of `getAllocatorCall`.
-    exists(int extraArgPos |
-      extraArgPos >= 3 and
-      result = new.getChild(extraArgPos) and
-      i = extraArgPos - max(int iMax | exists(new.getChild(iMax)))
+      // Extra arguments to a built-in allocator, such as alignment or pointer
+      // address, are found at child positions >= 3. Extra arguments to custom
+      // allocators are instead placed as subexpressions of `getAllocatorCall`.
+      exists(int extraArgPos |
+        extraArgPos >= 3 and
+        result = new.getChild(extraArgPos) and
+        i = extraArgPos - max(int iMax | exists(new.getChild(iMax)))
+      )
+      or
+      i = 1 and result = new.getAllocatorCall()
+      or
+      i = 2 and result = new.getInitializer()
     )
-    or
-    i = 1 and result = new.getAllocatorCall()
-    or
-    i = 2 and result = new.getInitializer()
-  )
   or
   // The extractor sometimes emits literals with no value for captures and
   // routes control flow around them.
   n = any(Expr e |
-    e.getParent() instanceof LambdaExpression and
-    result = e.getChild(i) and
-    forall(Literal lit | result = lit | exists(lit.getValue()))
-  )
+      e.getParent() instanceof LambdaExpression and
+      result = e.getChild(i) and
+      forall(Literal lit | result = lit | exists(lit.getValue()))
+    )
   or
-  n = any(StmtExpr e |
-    i = 0 and result = e.getStmt()
-  )
+  n = any(StmtExpr e | i = 0 and result = e.getStmt())
   or
   n = any(Initializer init |
-    not skipInitializer(init) and
-    not exists(ConditionDeclExpr cd | result = cd.getInitializingExpr()) and
-    i = 0 and result = n.(Initializer).getExpr()
-  )
+      not skipInitializer(init) and
+      not exists(ConditionDeclExpr cd | result = cd.getInitializingExpr()) and
+      i = 0 and
+      result = n.(Initializer).getExpr()
+    )
   or
   result = n.(PreOrderNode).(Stmt).getChild(i)
+  or
   // VLAs are special because of how their associated statements are added
   // in-line in the block containing their corresponding DeclStmt but should
   // not be evaluated in the order implied by their position in the block. We
@@ -394,21 +399,20 @@ private Node getControlOrderChildSparse(Node n, int i) {
   // - Block skips all the VlaDeclStmt and VlaDimensionStmt children.
   // - VlaDeclStmt is inserted as a child of DeclStmt
   // - VlaDimensionStmt is inserted as a child of VlaDeclStmt
-  or
   result = n.(Block).getChild(i) and
   not result instanceof VlaDeclStmt and
   not result instanceof VlaDimensionStmt
   or
   n = any(DeclStmt s |
-    exists(LocalVariable var | var = s.getDeclaration(i) |
-      result = var.getInitializer() and
-      not skipInitializer(result)
-      or
-      // A VLA cannot have an initializer, so there is no conflict between this
-      // case and the above.
-      result.(VlaDeclStmt).getVariable() = var
+      exists(LocalVariable var | var = s.getDeclaration(i) |
+        result = var.getInitializer() and
+        not skipInitializer(result)
+        or
+        // A VLA cannot have an initializer, so there is no conflict between this
+        // case and the above.
+        result.(VlaDeclStmt).getVariable() = var
+      )
     )
-  )
   or
   result = n.(VlaDeclStmt).getVlaDimensionStmt(i)
 }
@@ -478,11 +482,12 @@ private predicate inStaticInitializer(Expr e) {
  */
 private Node getControlOrderChildDense(Node n, int i) {
   result = rank[i + 1](Node child, int childIdx |
-    child = getControlOrderChildSparse(n, childIdx)
-  |
-    child
-    order by childIdx
-  )
+      child = getControlOrderChildSparse(n, childIdx)
+    |
+      child
+      order by
+        childIdx
+    )
 }
 
 /** Gets the last child of `n` in control-flow order. */
@@ -502,7 +507,6 @@ private class Spec extends Pos {
   Spec() { any() }
 
   // Values -1 .. 3 are used by Pos
-
   /**
    * Holds if this spec, when used on a node `n` between `(n1, p1)` and
    * `(n2, p2)`, should add the following sub-edges.
@@ -564,198 +568,198 @@ private class Spec extends Pos {
  */
 private predicate straightLineSparse(Node scope, int i, Node ni, Spec spec) {
   scope = any(Block b |
-    i = -1 and ni = b and spec.isAt()
-    or
-    if exists(getLastControlOrderChild(b))
-    then (
-      i = 0 and ni = getControlOrderChildDense(b, 0) and spec.isBefore()
+      i = -1 and ni = b and spec.isAt()
       or
-      i = 1 /* BARRIER */ and ni = b and spec.isBarrier()
-      or
-      i = 2 and ni = getLastControlOrderChild(b) and spec.isAfter()
-      or
-      i = 3 and ni = b and spec.isAroundDestructors()
-      or
-      i = 4 and ni = b and spec.isAfter()
+      if exists(getLastControlOrderChild(b))
+      then (
+        i = 0 and ni = getControlOrderChildDense(b, 0) and spec.isBefore()
+        or
+        i = 1 and /* BARRIER */ ni = b and spec.isBarrier()
+        or
+        i = 2 and ni = getLastControlOrderChild(b) and spec.isAfter()
+        or
+        i = 3 and ni = b and spec.isAroundDestructors()
+        or
+        i = 4 and ni = b and spec.isAfter()
+      ) else (
+        // There can be destructors even when the body is empty. This happens
+        // when a `WhileStmt` with an empty body has a `ConditionDeclExpr` in its
+        // condition.
+        i = 0 and ni = b and spec.isAroundDestructors()
+        or
+        i = 1 and ni = b and spec.isAfter()
+      )
     )
-    else (
-      // There can be destructors even when the body is empty. This happens
-      // when a `WhileStmt` with an empty body has a `ConditionDeclExpr` in its
-      // condition.
-      i = 0 and ni = b and spec.isAroundDestructors()
-      or
-      i = 1 and ni = b and spec.isAfter()
-    )
-  )
   or
   scope = any(ShortCircuitOperator op |
-    i = -1 and ni = op and spec.isBefore()
-    or
-    i = 0 and ni = op and spec.isAt()
-    or
-    i = 1 and ni = op.getFirstChildNode() and spec.isBefore()
-  )
+      i = -1 and ni = op and spec.isBefore()
+      or
+      i = 0 and ni = op and spec.isAt()
+      or
+      i = 1 and ni = op.getFirstChildNode() and spec.isBefore()
+    )
   or
   scope = any(ThrowExpr e |
-    i = -1 and ni = e and spec.isBefore()
-    or
-    i = 0 and ni = e.getExpr() and spec.isAround()
-    or
-    i = 1 and ni = e and spec.isAt()
-    or
-    i = 2 and ni = e and spec.isAroundDestructors()
-    or
-    i = 3 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isBefore()
-  )
+      i = -1 and ni = e and spec.isBefore()
+      or
+      i = 0 and ni = e.getExpr() and spec.isAround()
+      or
+      i = 1 and ni = e and spec.isAt()
+      or
+      i = 2 and ni = e and spec.isAroundDestructors()
+      or
+      i = 3 and ni = e.(ExceptionSource).getExceptionTarget() and spec.isBefore()
+    )
   or
   scope = any(ReturnStmt ret |
-    i = -1 and ni = ret and spec.isAt()
-    or
-    i = 0 and ni = ret.getExpr() and spec.isAround()
-    or
-    i = 1 and ni = ret and spec.isAroundDestructors()
-    or
-    i = 2 and ni = ret.getEnclosingFunction() and spec.isAt()
-  )
+      i = -1 and ni = ret and spec.isAt()
+      or
+      i = 0 and ni = ret.getExpr() and spec.isAround()
+      or
+      i = 1 and ni = ret and spec.isAroundDestructors()
+      or
+      i = 2 and ni = ret.getEnclosingFunction() and spec.isAt()
+    )
   or
   scope = any(JumpStmt s |
-    i = -1 and ni = s and spec.isAt()
-    or
-    i = 0 and ni = s and spec.isAroundDestructors()
-    or
-    i = 1 and ni = s.getTarget() and spec.isBefore()
-  )
+      i = -1 and ni = s and spec.isAt()
+      or
+      i = 0 and ni = s and spec.isAroundDestructors()
+      or
+      i = 1 and ni = s.getTarget() and spec.isBefore()
+    )
   or
   scope = any(ForStmt s |
-    // ForStmt [-> init]
-    i = -1 and ni = s and spec.isAt()
-    or
-    i = 0 and ni = s.getInitialization() and spec.isAround()
-    or
-    if exists(s.getCondition())
-    then (
-      // ... -> before condition
-      i = 1 and ni = s.getCondition() and spec.isBefore()
+      // ForStmt [-> init]
+      i = -1 and ni = s and spec.isAt()
       or
-      // body [-> update] -> before condition
-      i = 2 /* BARRIER */ and ni = s and spec.isBarrier()
+      i = 0 and ni = s.getInitialization() and spec.isAround()
       or
-      i = 3 and ni = s.getStmt() and spec.isAfter()
-      or
-      i = 4 and ni = s.getUpdate() and spec.isAround()
-      or
-      // Can happen when the condition is a `ConditionDeclExpr`
-      i = 5 and ni = s.getUpdate() and spec.isAroundDestructors()
-      or
-      i = 6 and ni = s.getCondition() and spec.isBefore()
-      or
-      i = 7 /* BARRIER */ and ni = s and spec.isBarrier()
-      or
-      i = 8 and ni = s and spec.isAfterDestructors()
-      or
-      i = 9 and ni = s and spec.isAfter()
-    ) else (
-      // ... -> body [-> update] -> before body
-      i = 1 and ni = s.getStmt() and spec.isAround()
-      or
-      i = 2 and ni = s.getUpdate() and spec.isAround()
-      or
-      i = 3 and ni = s.getStmt() and spec.isBefore()
+      if exists(s.getCondition())
+      then (
+        // ... -> before condition
+        i = 1 and ni = s.getCondition() and spec.isBefore()
+        or
+        // body [-> update] -> before condition
+        i = 2 and /* BARRIER */ ni = s and spec.isBarrier()
+        or
+        i = 3 and ni = s.getStmt() and spec.isAfter()
+        or
+        i = 4 and ni = s.getUpdate() and spec.isAround()
+        or
+        // Can happen when the condition is a `ConditionDeclExpr`
+        i = 5 and ni = s.getUpdate() and spec.isAroundDestructors()
+        or
+        i = 6 and ni = s.getCondition() and spec.isBefore()
+        or
+        i = 7 and /* BARRIER */ ni = s and spec.isBarrier()
+        or
+        i = 8 and ni = s and spec.isAfterDestructors()
+        or
+        i = 9 and ni = s and spec.isAfter()
+      ) else (
+        // ... -> body [-> update] -> before body
+        i = 1 and ni = s.getStmt() and spec.isAround()
+        or
+        i = 2 and ni = s.getUpdate() and spec.isAround()
+        or
+        i = 3 and ni = s.getStmt() and spec.isBefore()
+      )
     )
-  )
   or
   scope = any(RangeBasedForStmt for |
-    i = -1 and ni = for and spec.isAt()
-    or
-    exists(DeclStmt s |
-      s.getADeclaration() = for.getRangeVariable() and
-      i = 0 and ni = s and spec.isAround()
+      i = -1 and ni = for and spec.isAt()
+      or
+      exists(DeclStmt s | s.getADeclaration() = for.getRangeVariable() |
+        i = 0 and ni = s and spec.isAround()
+      )
+      or
+      exists(DeclStmt s |
+        s = for.getBeginEndDeclaration() and
+        // A DeclStmt with no declarations can arise here in an uninstantiated
+        // template, where the calls to `begin` and `end` cannot be resolved. For
+        // compatibility with the extractor, we omit the CFG node for the
+        // DeclStmt in that case.
+        exists(s.getADeclaration())
+      |
+        i = 1 and ni = s and spec.isAround()
+      )
+      or
+      i = 2 and ni = for.getCondition() and spec.isBefore()
+      or
+      i = 3 and /* BARRIER */ ni = for and spec.isBarrier()
+      or
+      exists(DeclStmt declStmt | declStmt.getADeclaration() = for.getVariable() |
+        i = 4 and ni = declStmt and spec.isAfter()
+      )
+      or
+      i = 5 and ni = for.getStmt() and spec.isAround()
+      or
+      i = 6 and ni = for.getUpdate() and spec.isAround()
+      or
+      i = 7 and ni = for.getCondition() and spec.isBefore()
     )
-    or
-    exists(DeclStmt s |
-      s = for.getBeginEndDeclaration() and
-      // A DeclStmt with no declarations can arise here in an uninstantiated
-      // template, where the calls to `begin` and `end` cannot be resolved. For
-      // compatibility with the extractor, we omit the CFG node for the
-      // DeclStmt in that case.
-      exists(s.getADeclaration()) and
-      i = 1 and ni = s and spec.isAround()
-    )
-    or
-    i = 2 and ni = for.getCondition() and spec.isBefore()
-    or
-    i = 3 /* BARRIER */ and ni = for and spec.isBarrier()
-    or
-    exists(DeclStmt declStmt |
-      declStmt.getADeclaration() = for.getVariable() and
-      i = 4 and ni = declStmt and spec.isAfter()
-    )
-    or
-    i = 5 and ni = for.getStmt() and spec.isAround()
-    or
-    i = 6 and ni = for.getUpdate() and spec.isAround()
-    or
-    i = 7 and ni = for.getCondition() and spec.isBefore()
-  )
   or
   scope = any(TryStmt s |
-    i = -1 and ni = s and spec.isAt()
-    or
-    i = 0 and ni = s.getStmt() and spec.isAround()
-    or
-    i = 1 and ni = s and spec.isAfter()
-  )
+      i = -1 and ni = s and spec.isAt()
+      or
+      i = 0 and ni = s.getStmt() and spec.isAround()
+      or
+      i = 1 and ni = s and spec.isAfter()
+    )
   or
   scope = any(MicrosoftTryExceptStmt s |
-    i = -1 and ni = s and spec.isAt()
-    or
-    i = 0 and ni = s.getStmt() and spec.isAround()
-    or
-    i = 1 and ni = s and spec.isAfter()
-    or
-    i = 2 /* BARRIER */ and ni = s and spec.isBarrier()
-    or
-    i = 3 and ni = s.getExcept() and spec.isAfter()
-    or
-    i = 4 and ni = s and spec.isAfter()
-    or
-    i = 5 /* BARRIER */ and ni = s and spec.isBarrier()
-    or
-    i = 6 and ni = s and spec.isAfterDestructors()
-    or
-    i = 7 and ni = s.(ExceptionSource).getExceptionTarget() and spec.isBefore()
-  )
+      i = -1 and ni = s and spec.isAt()
+      or
+      i = 0 and ni = s.getStmt() and spec.isAround()
+      or
+      i = 1 and ni = s and spec.isAfter()
+      or
+      i = 2 and /* BARRIER */ ni = s and spec.isBarrier()
+      or
+      i = 3 and ni = s.getExcept() and spec.isAfter()
+      or
+      i = 4 and ni = s and spec.isAfter()
+      or
+      i = 5 and /* BARRIER */ ni = s and spec.isBarrier()
+      or
+      i = 6 and ni = s and spec.isAfterDestructors()
+      or
+      i = 7 and ni = s.(ExceptionSource).getExceptionTarget() and spec.isBefore()
+    )
   or
   scope = any(SwitchStmt s |
-    i = -1 and ni = s and spec.isAt()
-    or
-    i = 0 and ni = s.getExpr() and spec.isAround()
-    or
-    // If the switch body is not a block then this step is skipped, and the
-    // expression jumps directly to the cases.
-    i = 1 and ni = s.getStmt().(Block) and spec.isAt()
-    or
-    i = 2 and ni = s.getASwitchCase() and spec.isBefore()
-    or
-    // If there is no default case, we can jump to after the block. Note: `i`
-    // is same value as above.
-    not s.getASwitchCase() instanceof DefaultCase and
-    i = 2 and ni = s.getStmt() and spec.isAfter()
-    or
-    i = 3 /* BARRIER */ and ni = s and spec.isBarrier()
-    or
-    i = 4 and ni = s.getStmt() and spec.isAfter()
-    or
-    i = 5 and ni = s and spec.isAroundDestructors()
-    or
-    i = 6 and ni = s and spec.isAfter()
-  )
+      i = -1 and ni = s and spec.isAt()
+      or
+      i = 0 and ni = s.getExpr() and spec.isAround()
+      or
+      // If the switch body is not a block then this step is skipped, and the
+      // expression jumps directly to the cases.
+      i = 1 and ni = s.getStmt().(Block) and spec.isAt()
+      or
+      i = 2 and ni = s.getASwitchCase() and spec.isBefore()
+      or
+      // If there is no default case, we can jump to after the block. Note: `i`
+      // is same value as above.
+      not s.getASwitchCase() instanceof DefaultCase and
+      i = 2 and
+      ni = s.getStmt() and
+      spec.isAfter()
+      or
+      i = 3 and /* BARRIER */ ni = s and spec.isBarrier()
+      or
+      i = 4 and ni = s.getStmt() and spec.isAfter()
+      or
+      i = 5 and ni = s and spec.isAroundDestructors()
+      or
+      i = 6 and ni = s and spec.isAfter()
+    )
   or
   scope = any(ComputedGotoStmt s |
-    i = -1 and ni = s and spec.isAt()
-    or
-    i = 0 and ni = s.getExpr() and spec.isBefore()
-  )
+      i = -1 and ni = s and spec.isAt()
+      or
+      i = 0 and ni = s.getExpr() and spec.isBefore()
+    )
 }
 
 /**
@@ -791,7 +795,7 @@ private predicate subEdge(Node n1, Pos p1, Node n2, Pos p2) {
   // child1 -> ... -> childn
   exists(Node n, int childIdx |
     p1.nodeAfter(n1, getControlOrderChildDense(n, childIdx)) and
-    p2.nodeBefore(n2, getControlOrderChildDense(n, childIdx+1))
+    p2.nodeBefore(n2, getControlOrderChildDense(n, childIdx + 1))
   )
   or
   // -> [children ->] PostOrderNode ->
@@ -918,7 +922,7 @@ private predicate subEdge(Node n1, Pos p1, Node n2, Pos p2) {
     exists(int i, TryStmt try |
       h = try.getChild(i) and
       p1.nodeAt(n1, h) and
-      p2.nodeAt(n2, try.getChild(i+1))
+      p2.nodeAt(n2, try.getChild(i + 1))
     )
     or
     p1.nodeAt(n1, h) and
@@ -927,7 +931,8 @@ private predicate subEdge(Node n1, Pos p1, Node n2, Pos p2) {
     p1.nodeAfterDestructors(n1, h) and
     p2.nodeBefore(n2, h.(ExceptionSource).getExceptionTarget())
   )
-  or exists(CatchBlock cb |
+  or
+  exists(CatchBlock cb |
     p1.nodeAfter(n1, cb) and
     p2.nodeAfter(n2, cb.getTryStmt())
   )
@@ -955,9 +960,7 @@ private predicate subEdgeIncludingDestructors(Node n1, Pos p1, Node n2, Pos p2) 
   // If `n1` has sub-nodes to accomodate destructors, but there are none to be
   // called, connect the "before destructors" node directly to the "after
   // destructors" node. For performance, only do this when the nodes exist.
-  exists(Pos afterDtors | afterDtors.isAfterDestructors() |
-    subEdge(n1, afterDtors, _, _)
-  ) and
+  exists(Pos afterDtors | afterDtors.isAfterDestructors() | subEdge(n1, afterDtors, _, _)) and
   not exists(getDestructorCallAfterNode(n1, 0)) and
   p1.nodeBeforeDestructors(n1, n1) and
   p2.nodeAfterDestructors(n2, n1)
@@ -992,7 +995,7 @@ private predicate subEdgeIncludingDestructors(Node n1, Pos p1, Node n2, Pos p2) 
  * An expression whose outgoing true/false sub-edges may come from different
  * sub-nodes.
  */
-private abstract class ShortCircuitOperator extends Expr {
+abstract private class ShortCircuitOperator extends Expr {
   final Expr getFirstChildNode() { result = this.getChild(0) }
 }
 
@@ -1002,20 +1005,21 @@ private class LogicalAndLikeExpr extends ShortCircuitOperator, LogicalAndExpr { 
 /** An expression whose control flow is the same as `||`. */
 private class LogicalOrLikeExpr extends ShortCircuitOperator {
   Expr left;
+
   Expr right;
 
   LogicalOrLikeExpr() {
     this = any(LogicalOrExpr e |
-      left = e.getLeftOperand() and
-      right = e.getRightOperand()
-    )
+        left = e.getLeftOperand() and
+        right = e.getRightOperand()
+      )
     or
     // GNU extension: the `? :` operator
     this = any(ConditionalExpr e |
-      left = e.getCondition() and
-      right = e.getElse() and
-      left = e.getThen()
-    )
+        left = e.getCondition() and
+        right = e.getElse() and
+        left = e.getThen()
+      )
   }
 
   Expr getLeftOperand() { result = left }
@@ -1026,22 +1030,24 @@ private class LogicalOrLikeExpr extends ShortCircuitOperator {
 /** An expression whose control flow is the same as `b ? x : y`. */
 private class ConditionalLikeExpr extends ShortCircuitOperator {
   Expr condition;
+
   Expr thenExpr;
+
   Expr elseExpr;
 
   ConditionalLikeExpr() {
     this = any(ConditionalExpr e |
-      condition = e.getCondition() and
-      thenExpr = e.getThen() and
-      elseExpr = e.getElse() and
-      thenExpr != condition
-    )
+        condition = e.getCondition() and
+        thenExpr = e.getThen() and
+        elseExpr = e.getElse() and
+        thenExpr != condition
+      )
     or
     this = any(BuiltInChooseExpr e |
-      condition = e.getChild(0) and
-      thenExpr = e.getChild(1) and
-      elseExpr = e.getChild(2)
-    )
+        condition = e.getChild(0) and
+        thenExpr = e.getChild(1) and
+        elseExpr = e.getChild(2)
+      )
   }
 
   Expr getCondition() { result = condition }
@@ -1102,9 +1108,7 @@ private class ExceptionSource extends Node {
    * an `Expr`.
    */
   Node getExceptionTarget() {
-    exists(Stmt parent |
-      this.reachesParent(parent)
-    |
+    exists(Stmt parent | this.reachesParent(parent) |
       result.(Function).getEntryPoint() = parent
       or
       exists(TryStmt try |

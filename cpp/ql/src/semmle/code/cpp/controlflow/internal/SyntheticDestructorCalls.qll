@@ -51,13 +51,13 @@ class SyntheticDestructorCall extends FunctionCall {
 private class SyntheticDestructorBlock extends ControlFlowNodeBase {
   SyntheticDestructorBlock() {
     this = any(SyntheticDestructorCall call |
-      not exists(call.getPrev())
-      or
-      exists(ControlFlowNodeBase pred |
-        not pred instanceof SyntheticDestructorCall and
-        successors(pred, call.getAccess())
+        not exists(call.getPrev())
+        or
+        exists(ControlFlowNodeBase pred |
+          not pred instanceof SyntheticDestructorCall and
+          successors(pred, call.getAccess())
+        )
       )
-    )
   }
 
   SyntheticDestructorCall getCall(int i) {
@@ -106,10 +106,8 @@ class PrematureScopeExitNode extends ControlFlowNodeBase {
     or
     // TODO: Only handles post-order conditions. Won't work with
     // short-circuiting operators.
-    falsecond_base(
-      this.(MicrosoftTryExceptStmt).getCondition(),
-      result.(SyntheticDestructorCall).getAccess()
-    )
+    falsecond_base(this.(MicrosoftTryExceptStmt).getCondition(),
+      result.(SyntheticDestructorCall).getAccess())
   }
 }
 
@@ -200,15 +198,16 @@ class DestructedVariable extends LocalScopeVariable {
 
 SyntheticDestructorCall getDestructorCallAfterNode(ControlFlowNodeBase node, int index) {
   result = rank[index + 1](SyntheticDestructorCall call, DestructedVariable var, int x, int y |
-    call = var.getOrdinaryCall() and
-    var.hasPositionInScope(x, y, node)
-    or
-    call = var.getInnerScopeCall() and
-    var.hasPositionInInnerScope(x, y, node)
-  |
-    call
-    order by x desc, y desc
-  )
+      call = var.getOrdinaryCall() and
+      var.hasPositionInScope(x, y, node)
+      or
+      call = var.getInnerScopeCall() and
+      var.hasPositionInInnerScope(x, y, node)
+    |
+      call
+      order by
+        x desc, y desc
+    )
   or
   exists(SyntheticDestructorBlock block |
     node.(PrematureScopeExitNode).getSyntheticDestructorBlock() = block and
