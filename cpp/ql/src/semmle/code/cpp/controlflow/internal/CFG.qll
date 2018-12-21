@@ -1187,8 +1187,11 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node n2, Pos p2) {
 }
 
 /**
- * Holds if there should be a `truth`-labeled edge from _after_ `test` to
- * `(n2, p2)`.
+ * Holds if there should be a `truth`-labeled sub-edge from _after_ `test` to
+ * `(n2, p2)`. This can be because `test` is used in a condition context or
+ * because it's a short-circuiting operator in a non-condition context such as
+ * `x = a || b`. In the latter case, both the true and the false sub-edge go to
+ * the same place, and later steps will turn such pairs into normal edges.
  */
 private predicate conditionJumps(Expr test, boolean truth, Node n2, Pos p2) {
   conditionJumpsTop(test, truth, n2, p2)
@@ -1240,13 +1243,18 @@ private predicate conditionJumps(Expr test, boolean truth, Node n2, Pos p2) {
   )
 }
 
+/**
+ * Holds if the sub-node `(memberNode, memberPos)` can reach `at(atNode)` by
+ * following sub-edges forward without crossing another "at" node. Here,
+ * `memberPos.isAt()` holds only when `memberNode = atNode`.
+ */
 private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode) {
   memberNode = atNode and
   memberPos.isAt() and
   // We check for SupportedNode here as it's slower to check in all the leaf
   // cases during construction of the sub-graph.
   // TODO: we could check at lower levels than this without going all the way
-  // to the leaves.
+  // to the leaves. Use SupportedNode in parameter lists where appropriate.
   atNode instanceof SupportedNode
   or
   // TODO: this is a transitive closure. If it's slow, we can speed it up with
@@ -1258,9 +1266,15 @@ private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode)
   )
 }
 
+/**
+ * Holds if the sub-node `(memberNode, memberPos)` can reach `after(test)`
+ * by following sub-edges forward without _entering_ an "at" node. That means
+ * `(memberNode, memberPos)` can be an "at" node, but it can't come before one.
+ */
 private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
   memberNode = test and
-  memberPos.isAfter()
+  memberPos.isAfter() and
+  conditionJumps(test, _, _, _)
   or
   // TODO: this is a transitive closure. If it's slow, we can speed it up with
   // FastTC (and IPA).
