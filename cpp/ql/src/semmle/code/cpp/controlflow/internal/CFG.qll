@@ -71,7 +71,7 @@
  * For nodes whose flow passes through their children in left-to-right order,
  * the `getControlOrderChildSparse` predicate is used to specify that order.
  */
-import cpp
+private import cpp
 private import semmle.code.cpp.controlflow.internal.SyntheticDestructorCalls
 
 /** A control-flow node. */
