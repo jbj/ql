@@ -1181,8 +1181,8 @@ private predicate conditionJumpsTop(Expr test, boolean truth, Node n2, Pos p2) {
     truth = true and
     p2.nodeBefore(n2, try.getExcept())
     or
-    // TODO: Actually, this test is ternary. The extractor CFG doesn't model
-    // that either.
+    // Actually, this test is ternary. The extractor CFG doesn't model that
+    // either.
     truth = false and
     p2.nodeBeforeDestructors(n2, try)
   )
@@ -1257,8 +1257,6 @@ private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode)
   // cases during construction of the sub-graph.
   not excludeNode(atNode)
   or
-  // TODO: this is a transitive closure. If it's slow, we can speed it up with
-  // FastTC (and IPA).
   exists(Node succNode, Pos succPos |
     normalGroupMember(succNode, succPos, atNode) and
     not memberPos.isAt() and
