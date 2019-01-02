@@ -244,7 +244,8 @@ private class PostOrderNode extends Node {
     this instanceof Expr and
     not this instanceof ShortCircuitOperator and
     not this instanceof ThrowExpr and
-    not this instanceof Conversion // not in CFG
+    not this instanceof Conversion and // not in CFG
+    not excludeNode(this) // for performance
     or
     // VlaDeclStmt is a post-order node for extractor CFG compatibility only.
     this instanceof VlaDeclStmt
@@ -1254,8 +1255,6 @@ private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode)
   memberPos.isAt() and
   // We check for excludeNode here as it's slower to check in all the leaf
   // cases during construction of the sub-graph.
-  // TODO: we could check at lower levels than this without going all the way
-  // to the leaves.
   not excludeNode(atNode)
   or
   // TODO: this is a transitive closure. If it's slow, we can speed it up with
@@ -1277,8 +1276,6 @@ private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
   memberPos.isAfter() and
   conditionJumps(test, _, _, _)
   or
-  // TODO: this is a transitive closure. If it's slow, we can speed it up with
-  // FastTC (and IPA).
   exists(Node succNode, Pos succPos |
     precedesCondition(succNode, succPos, test) and
     subEdgeIncludingDestructors(memberNode, memberPos, succNode, succPos) and
