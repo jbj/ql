@@ -1288,11 +1288,17 @@ private predicate precedesCondition(Node memberNode, Pos memberPos, Node test) {
   )
 }
 
-// To find true/false edges, search forward and backward among the ordinary
-// sub-edges from a true/false sub-edge, stopping at At-nodes. Then link,
-// with true/false, any At-nodes found backwards with any At-nodes found
-// forward.
+/**
+ * Holds if `n2` is a `truth`-successor of `n1` in the CFG after all virtual
+ * sub-nodes have been collapsed away. This predicate includes cases where both
+ * the false and true edges have the same target, but these will be filtered
+ * away in subsequent predicates.
+ */
 private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
+  // To find true/false edges, we search forward and backward among the
+  // ordinary sub-edges from a true/false sub-edge, stopping at At-nodes. Then
+  // link, with true/false, any At-nodes found backwards with any At-nodes
+  // found forward.
   exists(Node test, Node targetNode, Pos targetPos |
     precedesCondition(n1, any(Pos at | at.isAt()), test) and
     conditionJumps(test, truth, targetNode, targetPos) and
@@ -1300,6 +1306,12 @@ private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
   )
 }
 
+/**
+ * Holds if `n2` is a successor of `n1` in the CFG. This includes also
+ * true-successors and false-successors.
+ *
+ * This corresponds to the old `successors` dbscheme relation.
+ */
 predicate qlCFGSuccessor(Node n1, Node n2) {
   exists(Node memberNode, Pos memberPos |
     subEdgeIncludingDestructors(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
@@ -1309,11 +1321,21 @@ predicate qlCFGSuccessor(Node n1, Node n2) {
   conditionalSuccessor(n1, _, n2)
 }
 
+/**
+ * Holds if `n2` is a true-successor of `n1` in the CFG.
+ *
+ * This corresponds to the old `truecond` dbscheme relation.
+ */
 predicate qlCFGTrueSuccessor(Node n1, Node n2) {
   conditionalSuccessor(n1, true, n2) and
   not conditionalSuccessor(n1, false, n2)
 }
 
+/**
+ * Holds if `n2` is a false-successor of `n1` in the CFG.
+ *
+ * This corresponds to the old `falsecond` dbscheme relation.
+ */
 predicate qlCFGFalseSuccessor(Node n1, Node n2) {
   conditionalSuccessor(n1, false, n2) and
   not conditionalSuccessor(n1, true, n2)
