@@ -151,16 +151,17 @@ private predicate excludeNodesStrictlyBelow(Node n) {
 
 /**
  * For compatibility with the extractor-generated CFG, the QL-generated CFG
- * will only be produced for nodes in this class.
+ * will not be produced for nodes in this predicate.
  */
-private class SupportedNode extends Node {
-  SupportedNode() {
-    // The extractor doesn't produce CFG for free-standing expressions such as
-    // initializers of globals and fields. We can change this in the future.
-    exists(this.(ControlFlowNode).getControlFlowScope()) and
-    not excludeNodesStrictlyBelow(this.getParentNode+()) and
-    not excludeNodeAndNodesBelow(this.getParentNode*())
-  }
+predicate excludeNode(Node n) {
+  excludeNodeAndNodesBelow(n)
+  or
+  excludeNodesStrictlyBelow(n.getParentNode())
+  or
+  n = any(Expr e | not exists(e.getEnclosingFunction()))
+  or
+  // Fast TC has turned out to be more expensive than this manual recursion.
+  excludeNode(n.getParentNode())
 }
 
 // TODO: test what the extractor does for a `.h` file included from both `.c`
@@ -1251,11 +1252,11 @@ private predicate conditionJumps(Expr test, boolean truth, Node n2, Pos p2) {
 private predicate normalGroupMember(Node memberNode, Pos memberPos, Node atNode) {
   memberNode = atNode and
   memberPos.isAt() and
-  // We check for SupportedNode here as it's slower to check in all the leaf
+  // We check for excludeNode here as it's slower to check in all the leaf
   // cases during construction of the sub-graph.
   // TODO: we could check at lower levels than this without going all the way
-  // to the leaves. Use SupportedNode in parameter lists where appropriate.
-  atNode instanceof SupportedNode
+  // to the leaves.
+  not excludeNode(atNode)
   or
   // TODO: this is a transitive closure. If it's slow, we can speed it up with
   // FastTC (and IPA).
@@ -1305,38 +1306,45 @@ private predicate conditionalSuccessor(Node n1, boolean truth, Node n2) {
     normalGroupMember(targetNode, targetPos, n2)
   )
 }
+import Cached
 
-/**
- * Holds if `n2` is a successor of `n1` in the CFG. This includes also
- * true-successors and false-successors.
- *
- * This corresponds to the old `successors` dbscheme relation.
- */
-predicate qlCFGSuccessor(Node n1, Node n2) {
-  exists(Node memberNode, Pos memberPos |
-    subEdgeIncludingDestructors(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
-    normalGroupMember(memberNode, memberPos, n2)
-  )
-  or
-  conditionalSuccessor(n1, _, n2)
-}
+cached
+private module Cached {
+  /**
+   * Holds if `n2` is a successor of `n1` in the CFG. This includes also
+   * true-successors and false-successors.
+   *
+   * This corresponds to the old `successors` dbscheme relation.
+   */
+  cached
+  predicate qlCFGSuccessor(Node n1, Node n2) {
+    exists(Node memberNode, Pos memberPos |
+      subEdgeIncludingDestructors(n1, any(Pos at | at.isAt()), memberNode, memberPos) and
+      normalGroupMember(memberNode, memberPos, n2)
+    )
+    or
+    conditionalSuccessor(n1, _, n2)
+  }
 
-/**
- * Holds if `n2` is a true-successor of `n1` in the CFG.
- *
- * This corresponds to the old `truecond` dbscheme relation.
- */
-predicate qlCFGTrueSuccessor(Node n1, Node n2) {
-  conditionalSuccessor(n1, true, n2) and
-  not conditionalSuccessor(n1, false, n2)
-}
+  /**
+   * Holds if `n2` is a true-successor of `n1` in the CFG.
+   *
+   * This corresponds to the old `truecond` dbscheme relation.
+   */
+  cached
+  predicate qlCFGTrueSuccessor(Node n1, Node n2) {
+    conditionalSuccessor(n1, true, n2) and
+    not conditionalSuccessor(n1, false, n2)
+  }
 
-/**
- * Holds if `n2` is a false-successor of `n1` in the CFG.
- *
- * This corresponds to the old `falsecond` dbscheme relation.
- */
-predicate qlCFGFalseSuccessor(Node n1, Node n2) {
-  conditionalSuccessor(n1, false, n2) and
-  not conditionalSuccessor(n1, true, n2)
+  /**
+   * Holds if `n2` is a false-successor of `n1` in the CFG.
+   *
+   * This corresponds to the old `falsecond` dbscheme relation.
+   */
+  cached
+  predicate qlCFGFalseSuccessor(Node n1, Node n2) {
+    conditionalSuccessor(n1, false, n2) and
+    not conditionalSuccessor(n1, true, n2)
+  }
 }
