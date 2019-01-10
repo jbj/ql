@@ -470,22 +470,69 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
     // this case has not been tested. See CPP-314.
     e.(FunctionCall).getTarget().hasSpecifier("constexpr")
   then runtimeExprInStaticInitializer(e.getAChild())
-  else (
-    // Not constant
-    not e.isConstant() and
-    // Not a function address
-    not e instanceof FunctionAccess and
-    // Not a function address-of (same as above)
-    not e.(AddressOfExpr).getOperand() instanceof FunctionAccess and
-    // Not the address of a global variable
-    not exists(Variable v |
+  else not constantInStaticInitializer(e.(Node).getParentNode*())
+}
+
+private predicate constantInStaticInitializer(Expr e) {
+  inStaticInitializer(e) and
+  (
+    e.isConstant()
+    or
+    // This represents the function access as implicitly converted to a pointer
+    e instanceof FunctionAccess
+    or
+    exists(Variable v |
       v.isStatic()
       or
       v instanceof GlobalOrNamespaceVariable
     |
-      e.(AddressOfExpr).getOperand() = v.getAnAccess()
+      // This represents the variable access after array-to-pointer conversion
+      e = v.getAnAccess() and
+      v.getType().getUnspecifiedType() instanceof ArrayType
     )
   )
+  or
+  e = any(PointerArithmeticOperation pae |
+    constantInStaticInitializer(pae.getLeftOperand()) and
+    pae.getRightOperand().isConstant()
+  )
+  or
+  fixedLvalueInStaticInitializer(e.(AddressOfExpr).getOperand())
+}
+
+private predicate fixedLvalueInStaticInitializer(Expr e) {
+  inStaticInitializer(e) and
+  (
+    // This represents the compiled function body
+    e instanceof FunctionAccess
+    or
+    exists(Variable v |
+      v.isStatic()
+      or
+      v instanceof GlobalOrNamespaceVariable
+    |
+      e = v.getAnAccess()
+    )
+  )
+  or
+  constantInStaticInitializer(e.(PointerDereferenceExpr).getOperand())
+  or
+  e = any(ArrayExpr ae |
+    constantInStaticInitializer(ae.getArrayBase()) and
+    ae.getArrayOffset().isConstant()
+  )
+  or
+  // When indexing into an array that's a fixed lvalue, the result is again a
+  // fixed lvalue
+  e = any(ArrayExpr ae |
+    ae.getType() instanceof ArrayType and
+    fixedLvalueInStaticInitializer(ae.getArrayBase()) and
+    ae.getArrayOffset().isConstant()
+  )
+  or
+  fixedLvalueInStaticInitializer(e.(DotFieldAccess).getQualifier())
+  or
+  constantInStaticInitializer(e.(PointerFieldAccess).getQualifier())
 }
 
 /** Holds if `e` is part of the initializer of a local static variable. */
