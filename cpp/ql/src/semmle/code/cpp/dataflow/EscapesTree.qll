@@ -201,26 +201,29 @@ private predicate valueMayEscapeMutablyAt(Expr e) {
   )
 }
 
-private
-predicate addressFromVariableAccess(VariableAccess va, Expr e) {
-  pointerFromVariableAccess(va, e)
-  or
-  referenceFromVariableAccess(va, e)
-  or
-  // `e` could be a pointer that is converted to a reference as the final step,
-  // meaning that we pass a value that is two dereferences away from referring
-  // to `va`. This happens, for example, with `void std::vector::push_back(T&&
-  // value);` when called as `v.push_back(&x)`, for a static variable `x`. It
-  // can also happen when taking a reference to a const pointer to a
-  // (potentially non-const) value.
-  exists(Expr pointerValue |
-    pointerFromVariableAccess(va, pointerValue) and
-    e = pointerValue.getConversion().(ReferenceToExpr)
-  )
-}
-
 import EscapesTree_Cached
 private cached module EscapesTree_Cached {
+  /**
+   * Holds if `e` is a fully-converted expression that evaluates to an address
+   * derived from the address of `va`.
+   */
+  cached predicate addressFromVariableAccess(VariableAccess va, Expr e) {
+    pointerFromVariableAccess(va, e)
+    or
+    referenceFromVariableAccess(va, e)
+    or
+    // `e` could be a pointer that is converted to a reference as the final step,
+    // meaning that we pass a value that is two dereferences away from referring
+    // to `va`. This happens, for example, with `void std::vector::push_back(T&&
+    // value);` when called as `v.push_back(&x)`, for a static variable `x`. It
+    // can also happen when taking a reference to a const pointer to a
+    // (potentially non-const) value.
+    exists(Expr pointerValue |
+      pointerFromVariableAccess(va, pointerValue) and
+      e = pointerValue.getConversion().(ReferenceToExpr)
+    )
+  }
+
   /**
    * Holds if `e` is a fully-converted expression that evaluates to an address
    * derived from the address of `va` and is stored in a variable or passed

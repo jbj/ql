@@ -81,6 +81,7 @@
 
 private import cpp
 private import semmle.code.cpp.controlflow.internal.SyntheticDestructorCalls
+private import semmle.code.cpp.dataflow.EscapesTree
 
 /**
  * A control-flow node. This class exists to provide a shorter name than
@@ -473,6 +474,19 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
   else not constantInStaticInitializer(e.(Node).getParentNode*())
 }
 
+private predicate computesConstantAddress(Expr e) {
+  inStaticInitializer(e) and
+  exists(Variable v |
+    v.isStatic()
+    or
+    v instanceof GlobalOrNamespaceVariable
+  |
+    addressFromVariableAccess(v.getAnAccess(), e.getFullyConverted())
+  )
+  or
+  computesConstantAddress(e.getParent())
+}
+
 private predicate constantInStaticInitializer(Expr e) {
   inStaticInitializer(e) and
   (
@@ -481,58 +495,10 @@ private predicate constantInStaticInitializer(Expr e) {
     // This represents the function access as implicitly converted to a pointer
     e instanceof FunctionAccess
     or
-    exists(Variable v |
-      v.isStatic()
-      or
-      v instanceof GlobalOrNamespaceVariable
-    |
-      // This represents the variable access after array-to-pointer conversion
-      e = v.getAnAccess() and
-      v.getType().getUnspecifiedType() instanceof ArrayType
-    )
-  )
-  or
-  e = any(PointerArithmeticOperation pae |
-    constantInStaticInitializer(pae.getLeftOperand()) and
-    pae.getRightOperand().isConstant()
-  )
-  or
-  fixedLvalueInStaticInitializer(e.(AddressOfExpr).getOperand())
-}
-
-private predicate fixedLvalueInStaticInitializer(Expr e) {
-  inStaticInitializer(e) and
-  (
-    // This represents the compiled function body
-    e instanceof FunctionAccess
+    e.(AddressOfExpr).getOperand() instanceof FunctionAccess
     or
-    exists(Variable v |
-      v.isStatic()
-      or
-      v instanceof GlobalOrNamespaceVariable
-    |
-      e = v.getAnAccess()
-    )
+    computesConstantAddress(e)
   )
-  or
-  constantInStaticInitializer(e.(PointerDereferenceExpr).getOperand())
-  or
-  e = any(ArrayExpr ae |
-    constantInStaticInitializer(ae.getArrayBase()) and
-    ae.getArrayOffset().isConstant()
-  )
-  or
-  // When indexing into an array that's a fixed lvalue, the result is again a
-  // fixed lvalue
-  e = any(ArrayExpr ae |
-    ae.getType() instanceof ArrayType and
-    fixedLvalueInStaticInitializer(ae.getArrayBase()) and
-    ae.getArrayOffset().isConstant()
-  )
-  or
-  fixedLvalueInStaticInitializer(e.(DotFieldAccess).getQualifier())
-  or
-  constantInStaticInitializer(e.(PointerFieldAccess).getQualifier())
 }
 
 /** Holds if `e` is part of the initializer of a local static variable. */
