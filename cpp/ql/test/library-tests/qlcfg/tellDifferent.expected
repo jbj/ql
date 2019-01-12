@@ -1,3 +1,7 @@
+| cpp11__run_init | cpp11.cpp:60:3:60:30 | declaration | cpp11.cpp:60:18:60:29 | initializer for x2 | Standard edge, only from extractor |
+| cpp11__run_init | cpp11.cpp:60:18:60:29 | initializer for x2 | cpp11.cpp:60:21:60:29 | nonstatic | Standard edge, only from extractor |
+| cpp11__run_init | cpp11.cpp:60:20:60:29 | & ... | cpp11.cpp:61:1:61:1 | return ... | Standard edge, only from extractor |
+| cpp11__run_init | cpp11.cpp:60:21:60:29 | nonstatic | cpp11.cpp:60:20:60:29 | & ... | Standard edge, only from extractor |
 | ms_try_mix__ms_empty_finally_at_end | ms_try_mix.cpp:53:13:54:3 | { ... } | ms_try_mix.cpp:47:6:47:28 | ms_empty_finally_at_end | Standard edge, only from QL |
 | ms_try_mix__ms_empty_finally_at_end | ms_try_mix.cpp:53:13:54:3 | { ... } | ms_try_mix.cpp:55:1:55:1 | c201 | Standard edge, only from extractor |
 | ms_try_mix__ms_empty_finally_at_end | ms_try_mix.cpp:55:1:55:1 | call to c201.~C | ms_try_mix.cpp:47:6:47:28 | ms_empty_finally_at_end | Standard edge, only from extractor |
