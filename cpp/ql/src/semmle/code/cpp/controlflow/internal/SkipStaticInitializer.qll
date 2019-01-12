@@ -117,12 +117,11 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
   pointerIn.getConversion() = pointerOut.(ParenthesisExpr)
   or
   pointerOut = any(ConditionalExpr cond |
-    cond.getCondition().isConstant() and
-    (
-      pointerIn = cond.getThen().getFullyConverted()
-      or
-      pointerIn = cond.getElse().getFullyConverted()
-    )
+    cond.getCondition().getValue().toInt() != 0 and
+    pointerIn = cond.getThen().getFullyConverted()
+    or
+    cond.getCondition().getValue().toInt() = 0 and
+    pointerIn = cond.getElse().getFullyConverted()
   )
 }
 
