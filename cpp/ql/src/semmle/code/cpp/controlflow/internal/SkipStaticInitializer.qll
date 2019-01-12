@@ -19,14 +19,7 @@ predicate skipInitializer(Initializer init) {
  */
 private predicate runtimeExprInStaticInitializer(Expr e) {
   inStaticInitializer(e) and
-  if
-    e instanceof AggregateLiteral
-    or
-    e instanceof PointerArithmeticOperation
-    or
-    // Extractor doesn't populate this specifier at the time of writing, so
-    // this case has not been tested. See CPP-314.
-    e.(FunctionCall).getTarget().hasSpecifier("constexpr")
+  if e instanceof AggregateLiteral
   then runtimeExprInStaticInitializer(e.getAChild())
   else not constantInStaticInitializer(e)
 }
