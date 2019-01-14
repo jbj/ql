@@ -60,7 +60,8 @@ void constantAddresses(int param) {
 
 
 // All variables in this function are initialized to non-const values. Writing
-// `const` in front of any of the variables will be a compile error (C++14).
+// `constexpr` in front of any of the variables will be a compile error
+// (C++14).
 void nonConstantAddresses(const int param, int *const pparam, int &rparam, fref frparam) {
     int *int_param = &int_arr[param];
     int *int_noinit = &int_arr[extern_int_const_noinit];
