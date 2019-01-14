@@ -1,0 +1,4 @@
+| addresses.cpp:43:26:43:35 | (reference to) | fr1 | misclassified as NOT constant |
+| addresses.cpp:44:26:44:37 | (reference to) | fr2 | misclassified as NOT constant |
+| addresses.cpp:45:26:45:37 | (reference to) | fr3 | misclassified as NOT constant |
+| addresses.cpp:62:17:62:24 | (reference to) | r3 | misclassified as constant |

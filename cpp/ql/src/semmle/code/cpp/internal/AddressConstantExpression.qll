@@ -43,17 +43,6 @@ private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
   lvalueIn = lvalueOut.(DotFieldAccess).getQualifier().getFullyConverted()
   or
   lvalueIn.getConversion() = lvalueOut.(ParenthesisExpr)
-  or
-  // When an object is implicitly converted to a reference to one of its base
-  // classes, it gets two `Conversion`s: there is first an implicit
-  // `CStyleCast` to its base class followed by a `ReferenceToExpr` to a
-  // reference to its base class. Whereas an explicit cast to the base class
-  // would produce an rvalue, which would not be convertible to an lvalue
-  // reference, this implicit cast instead produces an lvalue. The following
-  // case ensures that we propagate the property of being an lvalue through
-  // such casts.
-  lvalueIn.getConversion() = lvalueOut and
-  lvalueOut.(CStyleCast).isImplicit()
 }
 
 private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
