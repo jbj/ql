@@ -69,6 +69,11 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
     cond.getCondition().getValue().toInt() = 0 and
     pointerIn = cond.getElse().getFullyConverted()
   )
+  or
+  pointerOut = any(CommaExpr comma |
+    comma.getLeftOperand().isPure() and
+    pointerIn = comma.getRightOperand()
+  )
 }
 
 private predicate lvalueToReferenceStep(Expr lvalueIn, Expr referenceOut) {
