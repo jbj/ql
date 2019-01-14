@@ -1,12 +1,5 @@
 private import cpp
 
-/** Holds if `v` is a constexpr variable initialized to a constant address. */
-predicate addressConstantVariable(Variable v) {
-  addressConstantExpression(v.getInitializer().getExpr().getFullyConverted())
-  // Here we should also require that `v` is constexpr, but we don't have that
-  // information in the db. See CPP-314.
-}
-
 // TODO: make isConstant cached
 predicate addressConstantExpression(Expr e) {
   constantAddressPointer(e)
@@ -18,82 +11,11 @@ predicate addressConstantExpression(Expr e) {
   e.getType() instanceof FunctionPointerType
 }
 
-private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
-  lvalueIn = lvalueOut.(DotFieldAccess).getQualifier().getFullyConverted()
-  or
-  lvalueIn.getConversion() = lvalueOut.(ParenthesisExpr)
-  or
-  // Special case for function pointers, where `fp == *fp`.
-  lvalueIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted() and
-  lvalueIn.getType() instanceof FunctionPointerType
-}
-
-private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
-  lvalueOut = any(ArrayExpr ae |
-    pointerIn = ae.getArrayBase().getFullyConverted() and
-    hasConstantValue(ae.getArrayOffset().getFullyConverted())
-  )
-  or
-  pointerIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted()
-  or
-  pointerIn = lvalueOut.(PointerFieldAccess).getQualifier().getFullyConverted()
-}
-
-private predicate lvalueToPointerStep(Expr lvalueIn, Expr pointerOut) {
-  lvalueIn.getConversion() = pointerOut.(ArrayToPointerConversion)
-  or
-  lvalueIn = pointerOut.(AddressOfExpr).getOperand().getFullyConverted()
-}
-
-private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
-  (
-    pointerOut instanceof PointerAddExpr
-    or
-    pointerOut instanceof PointerSubExpr
-  ) and
-  pointerIn = pointerOut.getAChild().getFullyConverted() and
-  pointerIn.getType().getUnspecifiedType() instanceof PointerType and
-  // The pointer arg won't be constant in the sense of `hasConstantValue`, so
-  // this will have to match the integer argument.
-  hasConstantValue(pointerOut.getAChild().getFullyConverted())
-  or
-  pointerIn = pointerOut.(UnaryPlusExpr).getOperand().getFullyConverted()
-  or
-  pointerIn.getConversion() = pointerOut.(Cast)
-  or
-  pointerIn.getConversion() = pointerOut.(ParenthesisExpr)
-  or
-  pointerOut = any(ConditionalExpr cond |
-    cond.getCondition().getFullyConverted().getValue().toInt() != 0 and
-    pointerIn = cond.getThen().getFullyConverted()
-    or
-    cond.getCondition().getFullyConverted().getValue().toInt() = 0 and
-    pointerIn = cond.getElse().getFullyConverted()
-  )
-  or
-  // The comma operator is allowed by C++17 but disallowed by C99. This
-  // disjunct is a compromise that's chosen for being easy to implement.
-  pointerOut = any(CommaExpr comma |
-    hasConstantValue(comma.getLeftOperand()) and
-    pointerIn = comma.getRightOperand().getFullyConverted()
-  )
-}
-
-private predicate lvalueToReferenceStep(Expr lvalueIn, Expr referenceOut) {
-  lvalueIn.getConversion() = referenceOut.(ReferenceToExpr)
-}
-
-private predicate referenceToLvalueStep(Expr referenceIn, Expr lvalueOut) {
-  // This probably cannot happen. It would require an expression to be
-  // converted to a reference and back again without an intermediate variable
-  // assignment.
-  referenceIn.getConversion() = lvalueOut.(ReferenceDereferenceExpr)
-}
-
-private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) {
-  referenceIn.getConversion() = referenceOut.(Cast)
-  or
-  referenceIn.getConversion() = referenceOut.(ParenthesisExpr)
+/** Holds if `v` is a constexpr variable initialized to a constant address. */
+predicate addressConstantVariable(Variable v) {
+  addressConstantExpression(v.getInitializer().getExpr().getFullyConverted())
+  // Here we should also require that `v` is constexpr, but we don't have that
+  // information in the db. See CPP-314.
 }
 
 /**
@@ -173,6 +95,84 @@ private predicate constantAddressReference(Expr reference) {
     constantAddressLValue(prev) and
     lvalueToReferenceStep(prev, reference)
   )
+}
+
+private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
+  lvalueIn = lvalueOut.(DotFieldAccess).getQualifier().getFullyConverted()
+  or
+  lvalueIn.getConversion() = lvalueOut.(ParenthesisExpr)
+  or
+  // Special case for function pointers, where `fp == *fp`.
+  lvalueIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted() and
+  lvalueIn.getType() instanceof FunctionPointerType
+}
+
+private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
+  lvalueOut = any(ArrayExpr ae |
+    pointerIn = ae.getArrayBase().getFullyConverted() and
+    hasConstantValue(ae.getArrayOffset().getFullyConverted())
+  )
+  or
+  pointerIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted()
+  or
+  pointerIn = lvalueOut.(PointerFieldAccess).getQualifier().getFullyConverted()
+}
+
+private predicate lvalueToPointerStep(Expr lvalueIn, Expr pointerOut) {
+  lvalueIn.getConversion() = pointerOut.(ArrayToPointerConversion)
+  or
+  lvalueIn = pointerOut.(AddressOfExpr).getOperand().getFullyConverted()
+}
+
+private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
+  (
+    pointerOut instanceof PointerAddExpr
+    or
+    pointerOut instanceof PointerSubExpr
+  ) and
+  pointerIn = pointerOut.getAChild().getFullyConverted() and
+  pointerIn.getType().getUnspecifiedType() instanceof PointerType and
+  // The pointer arg won't be constant in the sense of `hasConstantValue`, so
+  // this will have to match the integer argument.
+  hasConstantValue(pointerOut.getAChild().getFullyConverted())
+  or
+  pointerIn = pointerOut.(UnaryPlusExpr).getOperand().getFullyConverted()
+  or
+  pointerIn.getConversion() = pointerOut.(Cast)
+  or
+  pointerIn.getConversion() = pointerOut.(ParenthesisExpr)
+  or
+  pointerOut = any(ConditionalExpr cond |
+    cond.getCondition().getFullyConverted().getValue().toInt() != 0 and
+    pointerIn = cond.getThen().getFullyConverted()
+    or
+    cond.getCondition().getFullyConverted().getValue().toInt() = 0 and
+    pointerIn = cond.getElse().getFullyConverted()
+  )
+  or
+  // The comma operator is allowed by C++17 but disallowed by C99. This
+  // disjunct is a compromise that's chosen for being easy to implement.
+  pointerOut = any(CommaExpr comma |
+    hasConstantValue(comma.getLeftOperand()) and
+    pointerIn = comma.getRightOperand().getFullyConverted()
+  )
+}
+
+private predicate lvalueToReferenceStep(Expr lvalueIn, Expr referenceOut) {
+  lvalueIn.getConversion() = referenceOut.(ReferenceToExpr)
+}
+
+private predicate referenceToLvalueStep(Expr referenceIn, Expr lvalueOut) {
+  // This probably cannot happen. It would require an expression to be
+  // converted to a reference and back again without an intermediate variable
+  // assignment.
+  referenceIn.getConversion() = lvalueOut.(ReferenceDereferenceExpr)
+}
+
+private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) {
+  referenceIn.getConversion() = referenceOut.(Cast)
+  or
+  referenceIn.getConversion() = referenceOut.(ParenthesisExpr)
 }
 
 /** Holds if `e` is constant according to the database. */
