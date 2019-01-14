@@ -7,17 +7,6 @@ predicate addressConstantExpression(Expr e) {
   or
   referenceFromAccess(_, e)
   or
-  // `e` could be a pointer that is converted to a reference as the final step,
-  // meaning that we pass a value that is two dereferences away from referring
-  // to `va`. This happens, for example, with `void std::vector::push_back(T&&
-  // value);` when called as `v.push_back(&x)`, for a static variable `x`. It
-  // can also happen when taking a reference to a const pointer to a
-  // (potentially non-const) value.
-  exists(Expr pointerValue |
-    pointerFromAccess(_, pointerValue) and
-    e = pointerValue.getConversion().(ReferenceToExpr)
-  )
-  or
   // Special case for function pointers, where `fp == *fp`.
   lvalueFromAccess(_, e) and
   e.getType() instanceof FunctionPointerType
