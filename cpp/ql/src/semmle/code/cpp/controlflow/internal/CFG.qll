@@ -463,38 +463,7 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
   inStaticInitializer(e) and
   if e instanceof AggregateLiteral
   then runtimeExprInStaticInitializer(e.getAChild())
-  else not constantInStaticInitializer(e)
-}
-
-private predicate computesConstantAddress(Expr e) {
-  inStaticInitializer(e) and
-  (
-    e instanceof AddressOfExpr
-    or
-    e.getConversion+() instanceof ArrayToPointerConversion
-    or
-    e.getFullyConverted() instanceof ReferenceToExpr
-  )
-  or
-  // Pointer arithmetic involving a constant address and a constant integer.
-  // Because the predicates involved restrict the types, we know that it'll be
-  // for two different arguments.
-  e = any(PointerArithmeticOperation op |
-    computesConstantAddress(op.getAnOperand()) and
-    op.getAnOperand().isConstant()
-  )
-}
-
-private predicate constantInStaticInitializer(Expr e) {
-  inStaticInitializer(e) and
-  (
-    e.isConstant()
-    or
-    // This represents the function access as implicitly converted to a pointer
-    e instanceof FunctionAccess
-  )
-  or
-  computesConstantAddress(e)
+  else not e.isConstant()
 }
 
 /** Holds if `e` is part of the initializer of a local static variable. */
