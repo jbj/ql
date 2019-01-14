@@ -34,6 +34,7 @@ void constantAddresses(int param) {
     constexpr int *comma_addr = ((void)0, &int_var);
     constexpr int *ternary_true = int_const ? &int_var : &param;
     constexpr int *ternary_false = !int_const ? &param : &int_var;
+    constexpr int *ternary_overflow = (unsigned char)256 ? &param : &int_var;
     constexpr int *ternary_ptr_cond = (&int_arr+1) ? &int_var : &param;;
     constexpr int *ptr_subtract = &int_arr[&int_arr[1] - &int_arr[0]];
 

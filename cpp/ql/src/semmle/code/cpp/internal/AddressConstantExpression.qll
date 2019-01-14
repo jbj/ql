@@ -11,11 +11,6 @@ predicate addressConstantExpression(Expr e) {
   e.getType() instanceof FunctionPointerType
 }
 
-/*
- * The following is adapted from EscapesTree.qll and adjusted to require
- * constants everywhere.
- */
-
 private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
   lvalueIn = lvalueOut.(DotFieldAccess).getQualifier().getFullyConverted()
   or
@@ -29,7 +24,7 @@ private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
 private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
   lvalueOut = any(ArrayExpr ae |
     pointerIn = ae.getArrayBase().getFullyConverted() and
-    hasConstantValue(ae.getArrayOffset())
+    hasConstantValue(ae.getArrayOffset().getFullyConverted())
   )
   or
   pointerIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted()
@@ -53,7 +48,7 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
   pointerIn.getType().getUnspecifiedType() instanceof PointerType and
   // The pointer arg won't be constant in the sense of `hasConstantValue`, so
   // this will have to match the integer argument.
-  hasConstantValue(pointerOut.getAChild())
+  hasConstantValue(pointerOut.getAChild().getFullyConverted())
   or
   pointerIn = pointerOut.(UnaryPlusExpr).getOperand().getFullyConverted()
   or
@@ -62,16 +57,16 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
   pointerIn.getConversion() = pointerOut.(ParenthesisExpr)
   or
   pointerOut = any(ConditionalExpr cond |
-    cond.getCondition().getValue().toInt() != 0 and
+    cond.getCondition().getFullyConverted().getValue().toInt() != 0 and
     pointerIn = cond.getThen().getFullyConverted()
     or
-    cond.getCondition().getValue().toInt() = 0 and
+    cond.getCondition().getFullyConverted().getValue().toInt() = 0 and
     pointerIn = cond.getElse().getFullyConverted()
   )
   or
   pointerOut = any(CommaExpr comma |
     comma.getLeftOperand().isPure() and
-    pointerIn = comma.getRightOperand()
+    pointerIn = comma.getRightOperand().getFullyConverted()
   )
 }
 
