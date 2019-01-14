@@ -9,12 +9,12 @@ predicate addressConstantVariable(Variable v) {
 
 // TODO: make isConstant cached
 predicate addressConstantExpression(Expr e) {
-  pointerFromAccess(e)
+  constantAddressPointer(e)
   or
-  referenceFromAccess(e)
+  constantAddressReference(e)
   or
   // Special case for function pointers, where `fp == *fp`.
-  lvalueFromAccess(e) and
+  constantAddressLValue(e) and
   e.getType() instanceof FunctionPointerType
 }
 
@@ -96,8 +96,11 @@ private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) 
   referenceIn.getConversion() = referenceOut.(ParenthesisExpr)
 }
 
-// TODO: rename this and others
-private predicate lvalueFromAccess(Expr lvalue) {
+/**
+ * Holds if `lvalue` is an lvalue whose address is an _address constant
+ * expression_.
+ */
+private predicate constantAddressLValue(Expr lvalue) {
   lvalue.(VariableAccess).getTarget() = any(Variable v |
     v.(Variable).isStatic()
     or
@@ -111,24 +114,25 @@ private predicate lvalueFromAccess(Expr lvalue) {
   or
   // lvalue -> lvalue
   exists(Expr prev |
-    lvalueFromAccess(prev) and
+    constantAddressLValue(prev) and
     lvalueToLvalueStep(prev, lvalue)
   )
   or
   // pointer -> lvalue
   exists(Expr prev |
-    pointerFromAccess(prev) and
+    constantAddressPointer(prev) and
     pointerToLvalueStep(prev, lvalue)
   )
   or
   // reference -> lvalue
   exists(Expr prev |
-    referenceFromAccess(prev) and
+    constantAddressReference(prev) and
     referenceToLvalueStep(prev, lvalue)
   )
 }
 
-private predicate pointerFromAccess(Expr pointer) {
+/** Holds if `pointer` is an _address constant expression_ of pointer type. */
+private predicate constantAddressPointer(Expr pointer) {
   // There is no `Conversion` for the implicit conversion from a function type
   // to a function _pointer_ type. Instead, the type of a `FunctionAccess`
   // tells us how it's going to be used.
@@ -139,18 +143,19 @@ private predicate pointerFromAccess(Expr pointer) {
   or
   // pointer -> pointer
   exists(Expr prev |
-    pointerFromAccess(prev) and
+    constantAddressPointer(prev) and
     pointerToPointerStep(prev, pointer)
   )
   or
   // lvalue -> pointer
   exists(Expr prev |
-    lvalueFromAccess(prev) and
+    constantAddressLValue(prev) and
     lvalueToPointerStep(prev, pointer)
   )
 }
 
-private predicate referenceFromAccess(Expr reference) {
+/** Holds if `reference` is an _address constant expression_ of reference type. */
+private predicate constantAddressReference(Expr reference) {
   addressConstantVariable(reference.(VariableAccess).getTarget()) and
   reference.getType().getUnderlyingType() instanceof ReferenceType
   or
@@ -159,13 +164,13 @@ private predicate referenceFromAccess(Expr reference) {
   or
   // reference -> reference
   exists(Expr prev |
-    referenceFromAccess(prev) and
+    constantAddressReference(prev) and
     referenceToReferenceStep(prev, reference)
   )
   or
   // lvalue -> reference
   exists(Expr prev |
-    lvalueFromAccess(prev) and
+    constantAddressLValue(prev) and
     lvalueToReferenceStep(prev, reference)
   )
 }
