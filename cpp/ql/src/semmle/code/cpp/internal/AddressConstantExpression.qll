@@ -30,7 +30,7 @@ private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
 private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
   lvalueOut = any(ArrayExpr ae |
     pointerIn = ae.getArrayBase().getFullyConverted() and
-    ae.getArrayOffset().isConstant()
+    hasConstantValue(ae.getArrayOffset())
   )
   or
   pointerIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted()
@@ -52,9 +52,9 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
   ) and
   pointerIn = pointerOut.getAChild().getFullyConverted() and
   pointerIn.getType().getUnspecifiedType() instanceof PointerType and
-  // The pointer arg won't be constant in the sense of `isConstant`, so this
-  // will have to match the integer argument.
-  pointerOut.getAChild().isConstant()
+  // The pointer arg won't be constant in the sense of `hasConstantValue`, so
+  // this will have to match the integer argument.
+  hasConstantValue(pointerOut.getAChild())
   or
   pointerIn = pointerOut.(UnaryPlusExpr).getOperand().getFullyConverted()
   or
@@ -168,4 +168,9 @@ private predicate referenceFromAccess(Access va, Expr reference) {
     lvalueFromAccess(va, prev) and
     lvalueToReferenceStep(prev, reference)
   )
+}
+
+/** Holds if `e` is constant according to the database. */
+private predicate hasConstantValue(Expr e) {
+  valuebind(_,underlyingElement(e))
 }
