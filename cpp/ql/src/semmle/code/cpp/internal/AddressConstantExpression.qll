@@ -23,10 +23,10 @@ private predicate addressConstantVariable(Variable v) {
  */
 private predicate constantAddressLValue(Expr lvalue) {
   lvalue.(VariableAccess).getTarget() = any(Variable v |
-    v.(Variable).isStatic()
-    or
-    v instanceof GlobalOrNamespaceVariable
-  )
+      v.(Variable).isStatic()
+      or
+      v instanceof GlobalOrNamespaceVariable
+    )
   or
   // There is no `Conversion` for the implicit conversion from a function type
   // to a function _pointer_ type. Instead, the type of a `FunctionAccess`
@@ -108,9 +108,9 @@ private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
 
 private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
   lvalueOut = any(ArrayExpr ae |
-    pointerIn = ae.getArrayBase().getFullyConverted() and
-    hasConstantValue(ae.getArrayOffset().getFullyConverted())
-  )
+      pointerIn = ae.getArrayBase().getFullyConverted() and
+      hasConstantValue(ae.getArrayOffset().getFullyConverted())
+    )
   or
   pointerIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted()
   or
@@ -142,19 +142,19 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
   pointerIn.getConversion() = pointerOut.(ParenthesisExpr)
   or
   pointerOut = any(ConditionalExpr cond |
-    cond.getCondition().getFullyConverted().getValue().toInt() != 0 and
-    pointerIn = cond.getThen().getFullyConverted()
-    or
-    cond.getCondition().getFullyConverted().getValue().toInt() = 0 and
-    pointerIn = cond.getElse().getFullyConverted()
-  )
+      cond.getCondition().getFullyConverted().getValue().toInt() != 0 and
+      pointerIn = cond.getThen().getFullyConverted()
+      or
+      cond.getCondition().getFullyConverted().getValue().toInt() = 0 and
+      pointerIn = cond.getElse().getFullyConverted()
+    )
   or
   // The comma operator is allowed by C++17 but disallowed by C99. This
   // disjunct is a compromise that's chosen for being easy to implement.
   pointerOut = any(CommaExpr comma |
-    hasConstantValue(comma.getLeftOperand()) and
-    pointerIn = comma.getRightOperand().getFullyConverted()
-  )
+      hasConstantValue(comma.getLeftOperand()) and
+      pointerIn = comma.getRightOperand().getFullyConverted()
+    )
 }
 
 private predicate lvalueToReferenceStep(Expr lvalueIn, Expr referenceOut) {
@@ -175,6 +175,4 @@ private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) 
 }
 
 /** Holds if `e` is constant according to the database. */
-private predicate hasConstantValue(Expr e) {
-  valuebind(_,underlyingElement(e))
-}
+private predicate hasConstantValue(Expr e) { valuebind(_, underlyingElement(e)) }
