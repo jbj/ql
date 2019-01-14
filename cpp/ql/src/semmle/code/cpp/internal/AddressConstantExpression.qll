@@ -3,9 +3,9 @@ private import cpp
 cached
 predicate addressConstantExpression(Expr e) {
 // TODO: propagate these underscores as far down as possible.
-  pointerFromVariableAccess(_, e)
+  pointerFromAccess(_, e)
   or
-  referenceFromVariableAccess(_, e)
+  referenceFromAccess(_, e)
   or
   // `e` could be a pointer that is converted to a reference as the final step,
   // meaning that we pass a value that is two dereferences away from referring
@@ -14,7 +14,7 @@ predicate addressConstantExpression(Expr e) {
   // can also happen when taking a reference to a const pointer to a
   // (potentially non-const) value.
   exists(Expr pointerValue |
-    pointerFromVariableAccess(_, pointerValue) and
+    pointerFromAccess(_, pointerValue) and
     e = pointerValue.getConversion().(ReferenceToExpr)
   )
   or
@@ -106,9 +106,9 @@ private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) 
   referenceIn.getConversion() = referenceOut.(ParenthesisExpr)
 }
 
-private predicate lvalueFromVariableAccess(VariableAccess va, Expr lvalue) {
+private predicate lvalueFromAccess(Access va, Expr lvalue) {
   // Base case for non-reference types.
-  lvalue = va and
+  lvalue = va.(VariableAccess) and
   not va.getConversion() instanceof ReferenceDereferenceExpr and
   va.getTarget() = any(Variable v |
     v.isStatic()
@@ -123,47 +123,47 @@ private predicate lvalueFromVariableAccess(VariableAccess va, Expr lvalue) {
   or
   // lvalue -> lvalue
   exists(Expr prev |
-    lvalueFromVariableAccess(va, prev) and
+    lvalueFromAccess(va, prev) and
     lvalueToLvalueStep(prev, lvalue)
   )
   or
   // pointer -> lvalue
   exists(Expr prev |
-    pointerFromVariableAccess(va, prev) and
+    pointerFromAccess(va, prev) and
     pointerToLvalueStep(prev, lvalue)
   )
   or
   // reference -> lvalue
   exists(Expr prev |
-    referenceFromVariableAccess(va, prev) and
+    referenceFromAccess(va, prev) and
     referenceToLvalueStep(prev, lvalue)
   )
 }
 
-private predicate pointerFromVariableAccess(VariableAccess va, Expr pointer) {
+private predicate pointerFromAccess(Access va, Expr pointer) {
   // pointer -> pointer
   exists(Expr prev |
-    pointerFromVariableAccess(va, prev) and
+    pointerFromAccess(va, prev) and
     pointerToPointerStep(prev, pointer)
   )
   or
   // lvalue -> pointer
   exists(Expr prev |
-    lvalueFromVariableAccess(va, prev) and
+    lvalueFromAccess(va, prev) and
     lvalueToPointerStep(prev, pointer)
   )
 }
 
-private predicate referenceFromVariableAccess(VariableAccess va, Expr reference) {
+private predicate referenceFromAccess(Access va, Expr reference) {
   // reference -> reference
   exists(Expr prev |
-    referenceFromVariableAccess(va, prev) and
+    referenceFromAccess(va, prev) and
     referenceToReferenceStep(prev, reference)
   )
   or
   // lvalue -> reference
   exists(Expr prev |
-    lvalueFromVariableAccess(va, prev) and
+    lvalueFromAccess(va, prev) and
     lvalueToReferenceStep(prev, reference)
   )
 }

@@ -33,8 +33,12 @@ void constantAddresses(int param) {
     constexpr int *p10 = &int_arr[&int_arr + 1 ? 1 : param]; // recursive
     constexpr int *p11 = &int_arr[&int_arr[1] - &int_arr[0]];
 
+    constexpr int *p12 = p11 + 1;
+
     constexpr int &r1 = int_var;
     constexpr int &r2 = int_arr_arr[1][1];
+    constexpr int &r4 = r2;
+    constexpr int &r5 = *(&r2 + 1);
 
     constexpr fptr fp1 = sideEffect;
     constexpr fptr fp2 = &sideEffect;
@@ -43,6 +47,7 @@ void constantAddresses(int param) {
     constexpr fref fr1 = sideEffect;
     constexpr fref fr2 = *&sideEffect;
     constexpr fref fr3 = **sideEffect;
+    constexpr fref fr4 = fr1;
 }
 
 
@@ -50,7 +55,7 @@ void constantAddresses(int param) {
 
 // All variables in this function are initialized to non-const values. Writing
 // `const` in front of any of the variables will be a compile error (C++14).
-void nonConstantAddresses(int param) {
+void nonConstantAddresses(int param, int *pparam, int &rparam, fref frparam) {
     int *p3 = &int_arr[param];
     int *p6 = &int_arr[extern_int_const_noinit];
 
@@ -58,6 +63,10 @@ void nonConstantAddresses(int param) {
     int *p8 = &int_arr[ (sideEffect(), 1) ]; // CommaExpr
     int *p9 = &int_arr[int_const ? param : 1];
     int *p10 = &int_arr[&int_arr + 1 ? param : 1]; // recursive
+    int *p12 = pparam;
 
     int *&&r3 = &int_var; // reference to temporary is not a const
+    int &r4 = rparam;
+
+    fref fr4 = frparam;
 }
