@@ -1,7 +1,4 @@
 | addresses.cpp:36:26:36:32 | ... + ... | p12 | misclassified as NOT constant |
-| addresses.cpp:47:26:47:35 | (reference to) | fr1 | misclassified as NOT constant |
-| addresses.cpp:48:26:48:37 | (reference to) | fr2 | misclassified as NOT constant |
-| addresses.cpp:49:26:49:37 | (reference to) | fr3 | misclassified as NOT constant |
-| addresses.cpp:68:17:68:24 | (reference to) | r3 | misclassified as constant |
-| addresses.cpp:69:15:69:20 | (reference to) | r4 | misclassified as constant |
-| addresses.cpp:71:16:71:22 | (reference to) | fr4 | misclassified as constant |
+| addresses.cpp:70:17:70:24 | (reference to) | r3 | misclassified as constant |
+| addresses.cpp:71:15:71:20 | (reference to) | r4 | misclassified as constant |
+| addresses.cpp:73:16:73:22 | (reference to) | fr4 | misclassified as constant |

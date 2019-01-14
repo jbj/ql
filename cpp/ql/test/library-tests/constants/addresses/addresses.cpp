@@ -42,7 +42,9 @@ void constantAddresses(int param) {
 
     constexpr fptr fp1 = sideEffect;
     constexpr fptr fp2 = &sideEffect;
-    constexpr fptr fp3 = **&**&**sideEffect;
+    constexpr fptr fp3 = &**&**sideEffect;
+    constexpr fptr fp4 = **&**&**sideEffect;
+    constexpr fptr fp5 = *&sideEffect;
 
     constexpr fref fr1 = sideEffect;
     constexpr fref fr2 = *&sideEffect;

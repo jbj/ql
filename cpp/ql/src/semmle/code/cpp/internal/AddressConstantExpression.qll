@@ -18,20 +18,9 @@ predicate addressConstantExpression(Expr e) {
     e = pointerValue.getConversion().(ReferenceToExpr)
   )
   or
-  isFunctionAccess(e)
-}
-
-/**
- * Holds if `e` is a constant function address. Implicit conversions mean that
- * an expression like `myFunction` is equivalent to `&**&***myFunction`.
- */
-private predicate isFunctionAccess(Expr e) {
-  e instanceof FunctionAccess
-  or
-  isFunctionAccess(e.(AddressOfExpr).getOperand())
-  or
-  isFunctionAccess(e.(PointerDereferenceExpr).getOperand())
-  // TODO: what about conversions? What about C++ function _references_?
+  // Special case for function pointers, where `fp == *fp`.
+  lvalueFromAccess(_, e) and
+  e.getType() instanceof FunctionPointerType
 }
 
 /*
@@ -43,6 +32,10 @@ private predicate lvalueToLvalueStep(Expr lvalueIn, Expr lvalueOut) {
   lvalueIn = lvalueOut.(DotFieldAccess).getQualifier().getFullyConverted()
   or
   lvalueIn.getConversion() = lvalueOut.(ParenthesisExpr)
+  or
+  // Special case for function pointers, where `fp == *fp`.
+  lvalueIn = lvalueOut.(PointerDereferenceExpr).getOperand().getFullyConverted() and
+  lvalueIn.getType() instanceof FunctionPointerType
 }
 
 private predicate pointerToLvalueStep(Expr pointerIn, Expr lvalueOut) {
@@ -108,13 +101,20 @@ private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) 
 
 private predicate lvalueFromAccess(Access va, Expr lvalue) {
   // Base case for non-reference types.
-  lvalue = va.(VariableAccess) and
+  lvalue = va and
   not va.getConversion() instanceof ReferenceDereferenceExpr and
   va.getTarget() = any(Variable v |
-    v.isStatic()
+    v.(Variable).isStatic()
     or
     v instanceof GlobalOrNamespaceVariable
   )
+  or
+  // There is no `Conversion` for the implicit conversion from a function type
+  // to a function _pointer_ type. Instead, the type of a `FunctionAccess`
+  // tells us how it's going to be used.
+  lvalue = va and
+  // TODO: not getConversion...
+  va.(FunctionAccess).getType() instanceof RoutineType
   or
   // Base case for reference types where we pretend that they are
   // non-reference types. The type of the target of `va` can be `ReferenceType`
@@ -141,6 +141,13 @@ private predicate lvalueFromAccess(Access va, Expr lvalue) {
 }
 
 private predicate pointerFromAccess(Access va, Expr pointer) {
+  // There is no `Conversion` for the implicit conversion from a function type
+  // to a function _pointer_ type. Instead, the type of a `FunctionAccess`
+  // tells us how it's going to be used.
+  pointer = va and
+  // TODO: not getConversion...
+  va.(FunctionAccess).getType() instanceof FunctionPointerType
+  or
   // pointer -> pointer
   exists(Expr prev |
     pointerFromAccess(va, prev) and
@@ -155,6 +162,7 @@ private predicate pointerFromAccess(Access va, Expr pointer) {
 }
 
 private predicate referenceFromAccess(Access va, Expr reference) {
+  // TODO: base case for function reference?
   // reference -> reference
   exists(Expr prev |
     referenceFromAccess(va, prev) and
