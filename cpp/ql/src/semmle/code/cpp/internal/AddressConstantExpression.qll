@@ -1,6 +1,14 @@
 private import cpp
 
-cached
+/** Holds if `v` is a constexpr variable initialized to a constant address. */
+predicate addressConstantVariable(Variable v) {
+  //v.getType().isConst() and
+  addressConstantExpression(v.getInitializer().getExpr().getFullyConverted())
+  // Here we should also require that `v` is constexpr, but we don't have that
+  // information in the db. See CPP-314.
+}
+
+// TODO: make isConstant cached
 predicate addressConstantExpression(Expr e) {
   pointerFromAccess(e)
   or
@@ -87,6 +95,7 @@ private predicate referenceToReferenceStep(Expr referenceIn, Expr referenceOut) 
   referenceIn.getConversion() = referenceOut.(ParenthesisExpr)
 }
 
+// TODO: rename this and others
 private predicate lvalueFromAccess(Expr lvalue) {
   lvalue.(VariableAccess).getTarget() = any(Variable v |
     v.(Variable).isStatic()
@@ -124,6 +133,9 @@ private predicate pointerFromAccess(Expr pointer) {
   // tells us how it's going to be used.
   pointer.(FunctionAccess).getType() instanceof FunctionPointerType
   or
+  addressConstantVariable(pointer.(VariableAccess).getTarget()) and
+  pointer.getType().getUnderlyingType() instanceof PointerType
+  or
   // pointer -> pointer
   exists(Expr prev |
     pointerFromAccess(prev) and
@@ -138,6 +150,12 @@ private predicate pointerFromAccess(Expr pointer) {
 }
 
 private predicate referenceFromAccess(Expr reference) {
+  addressConstantVariable(reference.(VariableAccess).getTarget()) and
+  reference.getType().getUnderlyingType() instanceof ReferenceType
+  or
+  addressConstantVariable(reference.(VariableAccess).getTarget()) and
+  reference.getType().getUnderlyingType() instanceof FunctionReferenceType // not a ReferenceType
+  or
   // reference -> reference
   exists(Expr prev |
     referenceFromAccess(prev) and
