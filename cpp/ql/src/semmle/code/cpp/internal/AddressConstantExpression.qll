@@ -1,6 +1,5 @@
 private import cpp
 
-// TODO: make isConstant cached
 predicate addressConstantExpression(Expr e) {
   constantAddressPointer(e)
   or
@@ -12,7 +11,7 @@ predicate addressConstantExpression(Expr e) {
 }
 
 /** Holds if `v` is a constexpr variable initialized to a constant address. */
-predicate addressConstantVariable(Variable v) {
+private predicate addressConstantVariable(Variable v) {
   addressConstantExpression(v.getInitializer().getExpr().getFullyConverted())
   // Here we should also require that `v` is constexpr, but we don't have that
   // information in the db. See CPP-314.
