@@ -70,6 +70,7 @@ void nonConstantAddresses(const int param, int *const pparam, int &rparam, fref 
     int *side_effect_stmtexpr = &int_arr[ ({ sideEffect(); 1; }) ];
     int *side_effect_comma_int = &int_arr[ (sideEffect(), 1) ];
     int *side_effect_comma_addr = (sideEffect(), &int_var);
+    int *side_effect_comma_addr2 = ((void)(sideEffect(), 1), &int_var);
     int *ternary_int = &int_arr[int_const ? param : 1];
     const int *ternary_addr = int_const ? &param : &int_var;
     int *va_non_constexpr = pparam;

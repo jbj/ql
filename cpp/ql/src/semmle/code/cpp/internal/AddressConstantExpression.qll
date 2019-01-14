@@ -2,7 +2,6 @@ private import cpp
 
 /** Holds if `v` is a constexpr variable initialized to a constant address. */
 predicate addressConstantVariable(Variable v) {
-  //v.getType().isConst() and
   addressConstantExpression(v.getInitializer().getExpr().getFullyConverted())
   // Here we should also require that `v` is constexpr, but we don't have that
   // information in the db. See CPP-314.
@@ -72,8 +71,10 @@ private predicate pointerToPointerStep(Expr pointerIn, Expr pointerOut) {
     pointerIn = cond.getElse().getFullyConverted()
   )
   or
+  // The comma operator is allowed by C++17 but disallowed by C99. This
+  // disjunct is a compromise that's chosen for being easy to implement.
   pointerOut = any(CommaExpr comma |
-    comma.getLeftOperand().isPure() and
+    hasConstantValue(comma.getLeftOperand()) and
     pointerIn = comma.getRightOperand().getFullyConverted()
   )
 }
