@@ -55,6 +55,10 @@ void constantAddresses(int param) {
     constexpr fref fr_deref = *&sideEffect;
     constexpr fref fr_2deref = **sideEffect;
     constexpr fref fr_va = fr_int;
+
+    constexpr const char *char_ptr = "str";
+    constexpr const char *char_ptr_1 = "str" + 1;
+    constexpr char char_arr[] = "str";
 }
 
 

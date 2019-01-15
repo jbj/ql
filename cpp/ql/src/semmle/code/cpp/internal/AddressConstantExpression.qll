@@ -33,6 +33,9 @@ private predicate constantAddressLValue(Expr lvalue) {
   // tells us how it's going to be used.
   lvalue.(FunctionAccess).getType() instanceof RoutineType
   or
+  // String literals have array types and undergo array-to-pointer conversion.
+  lvalue instanceof StringLiteral
+  or
   // lvalue -> lvalue
   exists(Expr prev |
     constantAddressLValue(prev) and
