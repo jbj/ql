@@ -463,7 +463,7 @@ private predicate runtimeExprInStaticInitializer(Expr e) {
   inStaticInitializer(e) and
   if e instanceof AggregateLiteral
   then runtimeExprInStaticInitializer(e.getAChild())
-  else not e.isConstant()
+  else not e.getFullyConverted().isConstant()
 }
 
 /** Holds if `e` is part of the initializer of a local static variable. */
