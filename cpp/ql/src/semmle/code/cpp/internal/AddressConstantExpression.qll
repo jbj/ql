@@ -1,4 +1,5 @@
 private import cpp
+private import semmle.code.cpp.dataflow.EscapesTree
 
 predicate addressConstantExpression(Expr e) {
   constantAddressPointer(e)
@@ -12,9 +13,18 @@ predicate addressConstantExpression(Expr e) {
 
 /** Holds if `v` is a constexpr variable initialized to a constant address. */
 private predicate addressConstantVariable(Variable v) {
-  addressConstantExpression(v.getInitializer().getExpr().getFullyConverted())
+  addressConstantExpression(v.getInitializer().getExpr().getFullyConverted()) and
   // Here we should also require that `v` is constexpr, but we don't have that
-  // information in the db. See CPP-314.
+  // information in the db. See CPP-314. Instead, we require that the variable
+  // is not assigned to.
+  not exists(VariableAccess va | va.getTarget() = v |
+    // `v` may be assigned to, completely or partially
+    exists(Expr lvalue | variableAccessedAsValue(va, lvalue) |
+      lvalue = any(Assignment a).getLValue().getFullyConverted()
+      or
+      lvalue = any(CrementOperation c).getOperand().getFullyConverted()
+    )
+  )
 }
 
 /**
