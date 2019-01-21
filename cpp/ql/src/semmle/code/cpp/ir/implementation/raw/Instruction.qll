@@ -1501,6 +1501,11 @@ class PhiInstruction extends Instruction {
   override final MemoryAccessKind getResultMemoryAccess() {
     result instanceof PhiMemoryAccess
   }
+
+  pragma[noinline]
+  final Instruction getAnOperandDefinitionInstruction() {
+    result = this.getAnOperand().(PhiOperand).getDefinitionInstruction()
+  }
 }
 
 /**
