@@ -32,15 +32,7 @@ IntValue getConstantValue(Instruction instr) {
   result = getConstantValue(instr.(CopyInstruction).getSourceValue()) or
   exists(PhiInstruction phi |
     phi = instr and
-    result = max(Instruction def | def = phi.getAnOperandDefinitionInstruction() | getConstantValueToPhi(def)) and
-    result = min(Instruction def | def = phi.getAnOperandDefinitionInstruction() | getConstantValueToPhi(def))
-  )
-}
-
-pragma[noinline]
-IntValue getConstantValueToPhi(Instruction def) {
-  exists(PhiInstruction phi |
-    result = getConstantValue(def) and
-    def = phi.getAnOperandDefinitionInstruction()
+    result = max(PhiOperand operand | operand = phi.getAnOperand() | getConstantValue(operand.getDefinitionInstruction())) and
+    result = min(PhiOperand operand | operand = phi.getAnOperand() | getConstantValue(operand.getDefinitionInstruction()))
   )
 }
