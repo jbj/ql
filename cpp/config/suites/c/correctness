@@ -23,6 +23,7 @@
 + semmlecode-cpp-queries/Likely Bugs/Arithmetic/BadAdditionOverflowCheck.ql: /Correctness/Common Errors
 + semmlecode-cpp-queries/Likely Bugs/NestedLoopSameVar.ql: /Correctness/Common Errors
 + semmlecode-cpp-queries/Likely Bugs/UseInOwnInitializer.ql: /Correctness/Common Errors
++ semmlecode-cpp-queries/Likely Bugs/RedundantNullCheckSimple.ql: /Correctness/Common Errors
 + semmlecode-cpp-queries/Critical/NewArrayDeleteMismatch.ql: /Correctness/Common Errors
 + semmlecode-cpp-queries/Critical/NewDeleteArrayMismatch.ql: /Correctness/Common Errors
 + semmlecode-cpp-queries/Critical/NewFreeMismatch.ql: /Correctness/Common Errors
