@@ -30,6 +30,10 @@
     "cpp/ql/src/semmle/code/cpp/ir/implementation/unaliased_ssa/IRBlock.qll",
     "cpp/ql/src/semmle/code/cpp/ir/implementation/aliased_ssa/IRBlock.qll"
   ],
+  "C++ SSA IRBlockConstruction": [
+    "cpp/ql/src/semmle/code/cpp/ir/implementation/unaliased_ssa/internal/IRBlockConstruction.qll",
+    "cpp/ql/src/semmle/code/cpp/ir/implementation/aliased_ssa/internal/IRBlockConstruction.qll"
+  ],
   "C++ IR IRVariable": [
     "cpp/ql/src/semmle/code/cpp/ir/implementation/raw/IRVariable.qll",
     "cpp/ql/src/semmle/code/cpp/ir/implementation/unaliased_ssa/IRVariable.qll",
