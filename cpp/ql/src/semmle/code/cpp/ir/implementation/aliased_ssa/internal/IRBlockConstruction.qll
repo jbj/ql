@@ -2,109 +2,67 @@ import SSAConstructionInternal
 private import SSAConstruction as Construction
 private import NewIR
 
-private predicate startsBasicBlock(Instruction instr) {
-  not instr instanceof PhiInstruction and
-  (
-    count(Instruction predecessor |
-      instr = predecessor.getASuccessor()
-    ) != 1 or  // Multiple predecessors or no predecessor
-    exists(Instruction predecessor |
-      instr = predecessor.getASuccessor() and
-      strictcount(Instruction other |
-        other = predecessor.getASuccessor()
-      ) > 1
-    ) or  // Predecessor has multiple successors
-    exists(Instruction predecessor, EdgeKind kind |
-      instr = predecessor.getSuccessor(kind) and
-      not kind instanceof GotoEdge
-    ) or  // Incoming edge is not a GotoEdge
-    exists(Instruction predecessor |
-      instr = Construction::getInstructionBackEdgeSuccessor(predecessor, _)
-    )  // A back edge enters this instruction
-  )
-}
-
-private predicate isEntryBlock(TIRBlock block) {
-  block = MkIRBlock(any(EnterFunctionInstruction enter))
-}
-
 import Cached
 private cached module Cached {
-  cached newtype TIRBlock =
-    MkIRBlock(Instruction firstInstr) {
-      startsBasicBlock(firstInstr)
-    }
+  cached newtype TIRBlock = MkIRBlock(OldIR::IRBlock oldBlock)
 
-  /** Holds if `i2` follows `i1` in a `IRBlock`. */
-  private predicate adjacentInBlock(Instruction i1, Instruction i2) {
-    exists(GotoEdge edgeKind | i2 = i1.getSuccessor(edgeKind)) and
-    not startsBasicBlock(i2)
+  private OldIR::IRBlock getOldBlock(TIRBlock block) {
+    block = MkIRBlock(result)
   }
 
-  /** Holds if `i` is the `index`th instruction the block starting with `first`. */
-  private Instruction getInstructionFromFirst(Instruction first, int index) =
-    shortestDistances(startsBasicBlock/1, adjacentInBlock/2)(first, result, index)
+  // The parameters to this predicate are carefully ordered to allow the QL
+  // engine to use the predicate directly instead of computing a `#rank_range`
+  // predicate.
+  pragma[noinline]
+  private predicate hasNewSparseIndex(TIRBlock block, Instruction instr, int sparseIndex) {
+    exists(OldIR::Instruction oldInstr, int oldIndex |
+      oldInstr = getOldBlock(block).getInstruction(oldIndex) and
+      (
+        sparseIndex = 2 * oldIndex and
+        Construction::getOldInstruction(instr) = oldInstr
+        or
+        sparseIndex = 2 * oldIndex + 1 and
+        instr = Construction::Chi(oldInstr)
+      )
+    )
+  }
 
-  /** Holds if `i` is the `index`th instruction in `block`. */
   cached Instruction getInstruction(TIRBlock block, int index) {
-    result = getInstructionFromFirst(getFirstInstruction(block), index)
+    result = rank[index + 1](Instruction instr, int sparseIndex |
+        hasNewSparseIndex(block, instr, sparseIndex)
+      |
+        instr
+        order by sparseIndex
+      )
   }
 
   cached int getInstructionCount(TIRBlock block) {
-    result = strictcount(getInstruction(block, _))
+    result =
+      getOldBlock(block).getInstructionCount() +
+      count(OldIR::Instruction oldInstr |
+          oldInstr = getOldBlock(block).getAnInstruction() and
+          exists(Construction::Chi(oldInstr))
+        )
   }
 
   cached predicate blockSuccessor(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
-    exists(Instruction predLast, Instruction succFirst |
-      predLast = getInstruction(pred, getInstructionCount(pred) - 1) and
-      succFirst = predLast.getSuccessor(kind) and
-      succ = MkIRBlock(succFirst)
-    )
-  }
-
-  cached predicate backEdgeSuccessor(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
-    backEdgeSuccessorRaw(pred, succ, kind)
-    or
-    forwardEdgeRaw+(pred, pred) and
-    blockSuccessor(pred, succ, kind)
-  }
-
-  /**
-   * Holds if there is an edge from `pred` to `succ` that is not a back edge.
-   */
-  private predicate forwardEdgeRaw(TIRBlock pred, TIRBlock succ) {
-    exists(EdgeKind kind |
-      blockSuccessor(pred, succ, kind) and
-      not backEdgeSuccessorRaw(pred, succ, kind)
-    )
-  }
-
-  /**
-   * Holds if the `kind`-edge from `pred` to `succ` is a back edge according to
-   * `Construction`.
-   *
-   * There could be loops of non-back-edges if there is a flaw in the IR
-   * construction or back-edge detection, and this could cause non-termination
-   * of subsequent analysis. To prevent that, a subsequent predicate further
-   * classifies all edges as back edges if they are involved in a loop of
-   * non-back-edges.
-   */
-  private predicate backEdgeSuccessorRaw(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
-    exists(Instruction predLast, Instruction succFirst |
-      predLast = getInstruction(pred, getInstructionCount(pred) - 1) and
-      succFirst = Construction::getInstructionBackEdgeSuccessor(predLast, kind) and
-      succ = MkIRBlock(succFirst)
-    )
+    succ = MkIRBlock(getOldBlock(pred).getSuccessor(kind))
   }
 
   cached predicate blockSuccessor(TIRBlock pred, TIRBlock succ) {
     blockSuccessor(pred, succ, _)
   }
 
-  cached predicate blockImmediatelyDominates(TIRBlock dominator, TIRBlock block) =
-    idominance(isEntryBlock/1, blockSuccessor/2)(_, dominator, block)
-}
+  cached predicate backEdgeSuccessor(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
+    succ = MkIRBlock(getOldBlock(pred).getBackEdgeSuccessor(kind))
+  }
 
-Instruction getFirstInstruction(TIRBlock block) {
-  block = MkIRBlock(result)
+  cached predicate blockImmediatelyDominates(TIRBlock dominator, TIRBlock block) {
+    getOldBlock(dominator).immediatelyDominates(getOldBlock(block))
+  }
+
+  cached Instruction getFirstInstruction(TIRBlock block) {
+    Construction::getOldInstruction(result) =
+      getOldBlock(block).getFirstInstruction()
+  }
 }
