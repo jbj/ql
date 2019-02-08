@@ -51,7 +51,7 @@ private cached module Cached {
   }
 
   cached int getInstructionCount(TIRBlock block) {
-    result = strictcount(getInstruction(block, _))
+    result = 1 + max(int index | exists(getInstruction(block, index)))
   }
 
   cached predicate blockSuccessor(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
