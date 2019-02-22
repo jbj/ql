@@ -22,6 +22,8 @@ cached private module Cached {
 
   cached OldInstruction getOldInstruction(Instruction instr) {
     instr = WrappedInstruction(result)
+    or
+    instr = Unreached(result.(OldIR::UnreachedInstruction).getEnclosingFunction())
   }
 
   private Instruction getNewInstruction(OldInstruction instr) {
@@ -200,6 +202,8 @@ cached private module Cached {
    * that node is its successor in the new successor relation, and the Chi node's successors are
    * the new instructions generated from the successors of the old instruction
    */
+  // TODO: When we've replicated this logic in `IRBlockConstruction`, we can
+  // delete this predicate and implement it in terms of basic-block successors.
   cached Instruction getInstructionSuccessor(Instruction instruction, EdgeKind kind) {
     if(hasChiNode(_, getOldInstruction(instruction)))
     then
@@ -224,6 +228,8 @@ cached private module Cached {
     )
   }
 
+  // TODO: When we've replicated this logic in `IRBlockConstruction`, we can
+  // delete this predicate and implement it in terms of basic-block successors.
   cached Instruction getInstructionBackEdgeSuccessor(Instruction instruction, EdgeKind kind) {
     exists(OldInstruction oldInstruction |
       not Reachability::isInfeasibleInstructionSuccessor(oldInstruction, kind) and

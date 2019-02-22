@@ -4,6 +4,12 @@ private import NewIR
 
 import Cached
 private cached module Cached {
+  // TODO: There needs to be an additional case for a BB with an Unreached
+  // instruction in it that didn't exist in the previous IR stage but exists
+  // now because an edge was found to be impossible. All predicates below need
+  // to handle that case. There's also the case where the previous stage _did_
+  // have an Unreached instruction, in which case we already have a BB for it
+  // through the `OldIR::IRBlock` case, and we should not add another BB.
   cached newtype TIRBlock = MkIRBlock(OldIR::IRBlock oldBlock)
 
   private OldIR::IRBlock getOldBlock(TIRBlock block) {
@@ -45,14 +51,29 @@ private cached module Cached {
         )
   }
 
+  // TODO: There should be two cases: one where we recycled the Unreached block
+  // from the last stage and one where we didn't.
+  private IRBlock getUnreachedBlock(Function f) {
+    Construction::Unreached(f) = getInstruction(result, _)
+  }
+
   cached predicate blockSuccessor(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
-    succ = MkIRBlock(getOldBlock(pred).getSuccessor(kind))
+    exists(OldIR::IRBlock oldBlock, OldIR::Instruction oldLast |
+      oldBlock = getOldBlock(pred) and
+      oldLast = oldBlock.getLastInstruction()
+    |
+      // TODO: untested
+      if Reachability::isInfeasibleInstructionSuccessor(oldLast, kind)
+      then succ = getUnreachedBlock(oldLast.getEnclosingFunction())
+      else succ = MkIRBlock(getOldBlock(pred).getSuccessor(kind))
+    )
   }
 
   cached predicate blockSuccessor(TIRBlock pred, TIRBlock succ) {
     blockSuccessor(pred, succ, _)
   }
 
+  // TODO: this is too simple. It needs to account for unreachable back-edges.
   cached predicate backEdgeSuccessor(TIRBlock pred, TIRBlock succ, EdgeKind kind) {
     succ = MkIRBlock(getOldBlock(pred).getBackEdgeSuccessor(kind))
   }
