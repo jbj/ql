@@ -121,26 +121,30 @@ class IRBlock extends IRBlockBase {
   }
 }
 
-private predicate startsBasicBlock(Instruction instr) {
-  not instr instanceof PhiInstruction and
-  (
-    count(Instruction predecessor |
-      instr = predecessor.getASuccessor()
-    ) != 1 or  // Multiple predecessors or no predecessor
-    exists(Instruction predecessor |
-      instr = predecessor.getASuccessor() and
-      strictcount(Instruction other |
-        other = predecessor.getASuccessor()
-      ) > 1
-    ) or  // Predecessor has multiple successors
-    exists(Instruction predecessor, EdgeKind kind |
-      instr = predecessor.getSuccessor(kind) and
-      not kind instanceof GotoEdge
-    ) or  // Incoming edge is not a GotoEdge
-    exists(Instruction predecessor |
-      instr = Construction::getInstructionBackEdgeSuccessor(predecessor, _)
-    )  // A back edge enters this instruction
-  )
+private class NonPhiInstruction extends Instruction {
+  NonPhiInstruction() { not this instanceof PhiInstruction }
+
+  predicate hasNoPredecessor() { not exists(this.getAPredecessor()) }
+}
+
+private predicate startsBasicBlock(NonPhiInstruction instr) {
+  instr.hasNoPredecessor() or   // No predecessor
+  strictcount(Instruction predecessor |
+    instr = predecessor.getASuccessor()
+  ) > 1 or  // Multiple predecessors
+  exists(Instruction predecessor |
+    instr = predecessor.getASuccessor() and
+    strictcount(Instruction other |
+      other = predecessor.getASuccessor()
+    ) > 1
+  ) or  // Predecessor has multiple successors
+  exists(Instruction predecessor, EdgeKind kind |
+    instr = predecessor.getSuccessor(kind) and
+    not kind instanceof GotoEdge
+  ) or  // Incoming edge is not a GotoEdge
+  exists(Instruction predecessor |
+    instr = Construction::getInstructionBackEdgeSuccessor(predecessor, _)
+  )  // A back edge enters this instruction
 }
 
 private predicate isEntryBlock(TIRBlock block) {
