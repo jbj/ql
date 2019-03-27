@@ -6,6 +6,7 @@
 
 | **Query**                   | **Tags**  | **Purpose**                                                        |
 |-----------------------------|-----------|--------------------------------------------------------------------|
+| Call to alloca in a loop (`cpp/alloca-in-loop`) | reliability, correctness, external/cwe/cwe-770 | Finds calls to `alloca` in loops, which can lead to stack overflow if the number of iterations is large.  Newly displayed on LGTM. |
 
 ## Changes to existing queries
 
