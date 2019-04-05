@@ -13,6 +13,7 @@
 
 import cpp
 import semmle.code.cpp.rangeanalysis.RangeAnalysisUtils
+import semmle.code.cpp.dataflow.DataFlow
 
 Loop getAnEnclosingLoopOfExpr(Expr e) {
   result = getAnEnclosingLoopOfStmt(e.getEnclosingStmt())
@@ -145,48 +146,40 @@ class LoopWithAlloca extends Stmt {
     not this.conditionReachesWithoutUpdate(var, this.(Loop).getCondition())
   }
 
-  private predicate precedesLoopUntilDefOf(Variable var, ControlFlowNode node) {
-    (
-      exists(Stmt forInit |
-        forInit = this.(ForStmt).getInitialization() and
-        // `node is in `forInit`
-        node.getEnclosingStmt() = forInit and
-        // `node` has an edge that leaves forInit
-        node.getASuccessor().getEnclosingStmt() != forInit
+  private DataFlow::Node getAPrecedingDef(Variable var) {
+    exists(VariableAccess va |
+      va = var.getAnAccess() and
+      conditionRequiresInequality(va, _, _) and
+      DataFlow::localFlow(result, DataFlow::exprNode(va)) and
+      // A source is outside the loop if it's an expression that's not inside
+      // the loop, or if it's an uninitialized variable or parameter.
+      (
+        exists(Expr e |
+          e = result.asExpr()
+          or
+          e = result.asDefiningArgument()
+        |
+          not this = getAnEnclosingLoopOfExpr(e)
+        )
+        or
+        result instanceof DataFlow::ParameterNode
+        or
+        result instanceof DataFlow::UninitializedNode
       )
-      or
-      not exists(this.(ForStmt).getInitialization()) and
-      node.getASuccessor() = this
-    ) and
-    var = this.getAControllingVariable()
-    or
-    exists(ControlFlowNode succ |
-      succ = node.getASuccessor() and
-      precedesLoopUntilDefOf(var, succ) and
-      not definition(var, succ)
     )
   }
 
-  // TODO: this is essentially a local data flow from values outside the loop
-  // to values inside it.
-  private int getAControllingVarInitialValue(Variable var, Expr def) {
-    exists(Expr e |
-      this.precedesLoopUntilDefOf(var, def) and
-      exprDefinition(var, def, e) and
-      result = e.getValue().toInt()
-    )
+  private int getAControllingVarInitialValue(Variable var, DataFlow::Node source) {
+    source = getAPrecedingDef(var) and
+    result = source.asExpr().getValue().toInt()
   }
 
   private predicate controllingVarHasUnknownInitialValue(Variable var) {
     // A definition without a constant value was reached
-    exists(Expr def |
-      this.precedesLoopUntilDefOf(var, def) and
-      definition(var, def) and
-      not exists(getAControllingVarInitialValue(var, def))
+    exists(DataFlow::Node source |
+      source = getAPrecedingDef(var) and
+      not exists(getAControllingVarInitialValue(var, source))
     )
-    or
-    // The function entry was reached
-    exists(Function f | this.precedesLoopUntilDefOf(var, f.getEntryPoint()))
   }
 
   private int getMinPrecedingDef(Variable var) {

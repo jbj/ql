@@ -98,6 +98,14 @@ void maybeSmallOffset() {
   }
 }
 
+void incBefore() {
+  int i = -1;
+  i++; // not understood by data flow
+  for (; i < 2; i++) {
+    alloca(100); // GOOD [FALSE POSITIVE]
+  }
+}
+
 void nestedAddsUp() {
   for (int i = 0; i < 16; i++) {
     for (int j = 0; j < 16; j++) {
