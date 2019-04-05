@@ -15,10 +15,12 @@ import cpp
 import semmle.code.cpp.rangeanalysis.RangeAnalysisUtils
 import semmle.code.cpp.dataflow.DataFlow
 
+/** Gets a loop that contains `e`. */
 Loop getAnEnclosingLoopOfExpr(Expr e) {
   result = getAnEnclosingLoopOfStmt(e.getEnclosingStmt())
 }
 
+/** Gets a loop that contains `s`. */
 Loop getAnEnclosingLoopOfStmt(Stmt s) {
   result = s.getParent*() and
   not s = result.(ForStmt).getInitialization()
@@ -26,6 +28,7 @@ Loop getAnEnclosingLoopOfStmt(Stmt s) {
   result = getAnEnclosingLoopOfExpr(s.getParent*())
 }
 
+/** A call to `alloca` in one of its forms. */
 class AllocaCall extends FunctionCall {
   AllocaCall() {
     this.getTarget().getName() = "__builtin_alloca"
@@ -35,73 +38,89 @@ class AllocaCall extends FunctionCall {
   }
 }
 
+/**
+ * A loop that contains an `alloca` call.
+ */
 class LoopWithAlloca extends Stmt {
   LoopWithAlloca() { this = getAnEnclosingLoopOfExpr(any(AllocaCall ac)) }
 
+  /** Get an `alloca` call inside this loop. It may be in a nested loop. */
   AllocaCall getAnAllocaCall() { this = getAnEnclosingLoopOfExpr(result) }
 
   /**
+   * Holds if the condition of this loop will only be true if `e` is `truth`.
+   * For example, if the loop condition is `a == 0 && b`, then
+   * `conditionRequires(a, false)` and `conditionRequires(b, true)`.
    */
-  private predicate conditionRequires(Expr condition, boolean truth) {
-    condition = this.(Loop).getCondition() and
+  private predicate conditionRequires(Expr e, boolean truth) {
+    e = this.(Loop).getCondition() and
     truth = true
     or
     // `e == 0`
     exists(EQExpr eq |
       conditionRequires(eq, truth.booleanNot()) and
       eq.getAnOperand().getValue().toInt() = 0 and
-      condition = eq.getAnOperand() and
-      not exists(condition.getValue())
+      e = eq.getAnOperand() and
+      not exists(e.getValue())
     )
     or
     // `e != 0`
     exists(NEExpr eq |
       conditionRequires(eq, truth) and
       eq.getAnOperand().getValue().toInt() = 0 and
-      condition = eq.getAnOperand() and
-      not exists(condition.getValue())
+      e = eq.getAnOperand() and
+      not exists(e.getValue())
     )
     or
     // `(bool)e == true`
     exists(EQExpr eq |
       conditionRequires(eq, truth) and
       eq.getAnOperand().getValue().toInt() = 1 and
-      condition = eq.getAnOperand() and
-      condition.getType().getUnspecifiedType() instanceof BoolType and
-      not exists(condition.getValue())
+      e = eq.getAnOperand() and
+      e.getType().getUnspecifiedType() instanceof BoolType and
+      not exists(e.getValue())
     )
     or
     // `(bool)e != true`
     exists(NEExpr eq |
       conditionRequires(eq, truth.booleanNot()) and
       eq.getAnOperand().getValue().toInt() = 1 and
-      condition = eq.getAnOperand() and
-      condition.getType().getUnspecifiedType() instanceof BoolType and
-      not exists(condition.getValue())
+      e = eq.getAnOperand() and
+      e.getType().getUnspecifiedType() instanceof BoolType and
+      not exists(e.getValue())
     )
     or
     exists(NotExpr notExpr |
       conditionRequires(notExpr, truth.booleanNot()) and
-      condition = notExpr.getOperand()
+      e = notExpr.getOperand()
     )
     or
-    // If the condition of `this` requires `andExpr` to be true, then it
+    // If the e of `this` requires `andExpr` to be true, then it
     // requires both of its operand to be true as well.
     exists(LogicalAndExpr andExpr |
       truth = true and
       conditionRequires(andExpr, truth) and
-      condition = andExpr.getAnOperand()
+      e = andExpr.getAnOperand()
     )
     or
-    // Dually, if the condition of `this` requires `orExpr` to be false, then
+    // Dually, if the e of `this` requires `orExpr` to be false, then
     // it requires both of its operand to be false as well.
     exists(LogicalOrExpr orExpr |
       truth = false and
       conditionRequires(orExpr, truth) and
-      condition = orExpr.getAnOperand()
+      e = orExpr.getAnOperand()
     )
   }
 
+  /**
+   * Holds if the condition of this loop will only be true if `e` relates to
+   * `value` as `dir`. We don't keep track of whether the equality is strict
+   * since this predicate is only used to heuristically determine whether
+   * there's a reasonably tight upper bound on the number of loop iterations.
+   *
+   * For example, if the loop condition is `a < 2 && b`, then
+   * `conditionRequiresInequality(a, 2, Lesser())`.
+   */
   private predicate conditionRequiresInequality(Expr e, int value, RelationDirection dir) {
     exists(RelationalOperation rel, Expr constant, boolean branch |
       this.conditionRequires(rel, branch) and
@@ -120,6 +139,10 @@ class LoopWithAlloca extends Stmt {
     )
   }
 
+  /**
+   * Gets a variable that's restricted by `conditionRequires` or
+   * `conditionRequiresInequality`.
+   */
   private Variable getAControllingVariable() {
     conditionRequires(result.getAnAccess(), _)
     or
@@ -159,20 +182,13 @@ class LoopWithAlloca extends Stmt {
       va = var.getAnAccess() and
       conditionRequiresInequality(va, _, _) and
       DataFlow::localFlow(result, DataFlow::exprNode(va)) and
-      // A source is outside the loop if it's an expression that's not inside
-      // the loop, or if it's an uninitialized variable or parameter.
-      (
-        exists(Expr e |
-          e = result.asExpr()
-          or
-          e = result.asDefiningArgument()
-        |
-          not this = getAnEnclosingLoopOfExpr(e)
-        )
+      // A source is outside the loop if it's not inside the loop
+      not exists(Expr e |
+        e = result.asExpr()
         or
-        result instanceof DataFlow::ParameterNode
-        or
-        result instanceof DataFlow::UninitializedNode
+        e = result.asDefiningArgument()
+      |
+        this = getAnEnclosingLoopOfExpr(e)
       )
     )
   }
