@@ -134,11 +134,19 @@ class LoopWithAlloca extends Stmt {
   }
 
   private predicate conditionReachesWithoutUpdate(Variable var, ControlFlowNode node) {
-    node = this.(Loop).getCondition().getATrueSuccessor() and
-    var = this.getAControllingVariable()
-    or
-    this.conditionReachesWithoutUpdate(var, node.getAPredecessor()) and
-    not node = this.getAControllingVariableUpdate(var)
+    (
+      // Don't leave the loop. It might cause us to leave the scope of `var`
+      node instanceof Stmt
+      implies
+      this = getAnEnclosingLoopOfStmt(node)
+    ) and
+    (
+      node = this.(Loop).getCondition().getASuccessor() and
+      var = this.getAControllingVariable()
+      or
+      this.conditionReachesWithoutUpdate(var, node.getAPredecessor()) and
+      not node = this.getAControllingVariableUpdate(var)
+    )
   }
 
   private predicate hasMandatoryUpdate(Variable var) {
