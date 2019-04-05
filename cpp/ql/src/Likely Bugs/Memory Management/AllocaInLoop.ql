@@ -145,12 +145,54 @@ class LoopWithAlloca extends Stmt {
     not this.conditionReachesWithoutUpdate(var, this.(Loop).getCondition())
   }
 
-  // TODO
-  //private predicate precedesLoopBeforeDefOf(Variable var, ControlFlowNode node) {
-  //  this = getAnEnclosingLoopOfExpr(node.getASuccessor()) and
-  //  not this = getAnEnclosingLoopOfExpr(node) and
-  //  var = this.getAControllingVariable()
-  //}
+  private predicate precedesLoopUntilDefOf(Variable var, ControlFlowNode node) {
+    (
+      exists(Stmt forInit |
+        forInit = this.(ForStmt).getInitialization() and
+        // `node is in `forInit`
+        node.getEnclosingStmt() = forInit and
+        // `node` has an edge that leaves forInit
+        node.getASuccessor().getEnclosingStmt() != forInit
+      )
+      or
+      not exists(this.(ForStmt).getInitialization()) and
+      node.getASuccessor() = this
+    ) and
+    var = this.getAControllingVariable()
+    or
+    exists(ControlFlowNode succ |
+      succ = node.getASuccessor() and
+      precedesLoopUntilDefOf(var, succ) and
+      not definition(var, succ)
+    )
+  }
+
+  // TODO: this is essentially a local data flow from values outside the loop
+  // to values inside it.
+  private int getAControllingVarInitialValue(Variable var, Expr def) {
+    exists(Expr e |
+      this.precedesLoopUntilDefOf(var, def) and
+      exprDefinition(var, def, e) and
+      result = e.getValue().toInt()
+    )
+  }
+
+  private predicate controllingVarHasUnknownInitialValue(Variable var) {
+    // A definition without a constant value was reached
+    exists(Expr def |
+      this.precedesLoopUntilDefOf(var, def) and
+      definition(var, def) and
+      not exists(getAControllingVarInitialValue(var, def))
+    )
+    or
+    // The function entry was reached
+    exists(Function f | this.precedesLoopUntilDefOf(var, f.getEntryPoint()))
+  }
+
+  private int getMinPrecedingDef(Variable var) {
+    not this.controllingVarHasUnknownInitialValue(var) and
+    result = min(this.getAControllingVarInitialValue(var, _))
+  }
 
   predicate isTightlyBounded() {
     exists(Variable var | this.hasMandatoryUpdate(var) |
@@ -172,7 +214,7 @@ class LoopWithAlloca extends Stmt {
       or
       exists(int bound |
         this.conditionRequiresInequality(var.getAnAccess(), bound, Lesser()) and
-        bound <= 16 and // TODO: relate bound to initial value
+        bound - this.getMinPrecedingDef(var) <= 16 and
         forall(VariableAccess update | update = this.getAControllingVariableUpdate(var) |
           // var++;
           // ++var;

@@ -35,7 +35,7 @@ void doTwice() {
 
 void unknownStartingPoint(int i) {
   for (; i < 2; i++) {
-    alloca(100); // BAD [NOT DETECTED]
+    alloca(100); // BAD
   }
 }
 
@@ -70,6 +70,30 @@ void upAndDown() {
 
 void largeBound() {
   for (int i = 0; i < 10000; i++) {
+    alloca(100); // BAD
+  }
+}
+
+void largeOffset() {
+  int i;
+  if (getInt()) {
+    i = 9998;
+  } else {
+    i = 9997;
+  }
+  for (; i < 10000; i++) {
+    alloca(100); // GOOD
+  }
+}
+
+void maybeSmallOffset() {
+  int i;
+  if (getInt()) {
+    i = 0;
+  } else {
+    i = 9997;
+  }
+  for (; i < 10000; i++) {
     alloca(100); // BAD
   }
 }
