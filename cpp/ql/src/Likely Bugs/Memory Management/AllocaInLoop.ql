@@ -187,6 +187,11 @@ class LoopWithAlloca extends Stmt {
     result = min(this.getAControllingVarInitialValue(var, _))
   }
 
+  private int getMaxPrecedingDef(Variable var) {
+    not this.controllingVarHasUnknownInitialValue(var) and
+    result = max(this.getAControllingVarInitialValue(var, _))
+  }
+
   predicate isTightlyBounded() {
     exists(Variable var | this.hasMandatoryUpdate(var) |
       this.conditionRequires(var.getAnAccess(), false) and
@@ -226,6 +231,30 @@ class LoopWithAlloca extends Stmt {
             assign.getRValue() = add and
             add.getAnOperand() = var.getAnAccess() and
             add.getAnOperand().getValue().toInt() > 0
+          )
+        )
+      )
+      or
+      exists(int bound |
+        this.conditionRequiresInequality(var.getAnAccess(), bound, Greater()) and
+        this.getMaxPrecedingDef(var) - bound <= 16 and
+        forall(VariableAccess update | update = this.getAControllingVariableUpdate(var) |
+          // var--;
+          // --var;
+          exists(DecrementOperation inc | inc.getOperand() = update)
+          or
+          // var -= positive_number;
+          exists(AssignSubExpr aa |
+            aa.getLValue() = update and
+            aa.getRValue().getValue().toInt() > 0
+          )
+          or
+          // var = var - positive_number;
+          exists(AssignExpr assign, SubExpr add |
+            assign.getLValue() = update and
+            assign.getRValue() = add and
+            add.getLeftOperand() = var.getAnAccess() and
+            add.getRightOperand().getValue().toInt() > 0
           )
         )
       )

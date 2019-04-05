@@ -150,3 +150,29 @@ void eqTrue() {
     alloca(100); // GOOD
   }
 }
+
+void countDownFor() {
+  for (int i = 2; i >= 0; i--) {
+    alloca(100); // GOOD
+  }
+}
+
+void countDownWhile() {
+  int i;
+  i = 2;
+  while (--i >= 0) {
+    alloca(100); // GOOD
+  }
+}
+
+void countDownAssignAdd() {
+  for (int i = 2; i >= 0; i = i - 1) {
+    alloca(100); // GOOD
+  }
+}
+
+void countDownWrong() {
+  for (int i = 2-1; i >= 0; i++) {
+    alloca(100); // BAD
+  }
+}
