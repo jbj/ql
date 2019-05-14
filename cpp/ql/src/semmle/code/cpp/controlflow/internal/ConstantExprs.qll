@@ -99,7 +99,7 @@ predicate reachableNode(Node n)
 {
   exists(Function f | f.getEntryPoint() = n)
   or
-  n instanceof CatchBlock
+  n instanceof Handler
   or
   exists(Node pred |
     successors_before_adapted(pred, n) and
