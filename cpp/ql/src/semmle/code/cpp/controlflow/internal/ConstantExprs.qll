@@ -102,14 +102,26 @@ predicate reachableNode(Node n)
   n instanceof Handler
   or
   exists(Node pred |
-    successors_before_adapted(pred, n) and
-    reachableNode(pred) and
-    (
-      not callRequiringRecursiveAnalysis(pred)
-      or
-      reachableNode(pred.(Call).getTarget())
-    )
+    simpleStep+(pred, n) and
+    reachableNode(pred)
   )
+  or
+  exists(FunctionCall pred, Function callTarget |
+    complexStep(pred, callTarget, n) and
+    reachableRecursivelyAnalyzedCall(pred) and
+    reachableFunction(callTarget)
+  )
+}
+
+pragma[noinline]
+private predicate reachableFunction(Function f) {
+  reachableNode(f)
+}
+
+pragma[noinline]
+private predicate reachableRecursivelyAnalyzedCall(FunctionCall call) {
+  reachableNode(call) and
+  callRequiringRecursiveAnalysis(call)
 }
 
 /**
@@ -225,6 +237,18 @@ predicate successors_before_adapted(Node pred, Node succ) {
   and not impossibleFunctionReturn(pred, succ)
   and not getOptions().exprExits(pred)
   and not getOptions().exits(pred.(Call).getTarget())
+}
+
+private predicate simpleStep(Node pred, Node succ) {
+  successors_before_adapted(pred, succ) and
+  not callRequiringRecursiveAnalysis(pred)
+}
+
+pragma[noinline]
+private predicate complexStep(FunctionCall pred, Function callTarget, Node succ) {
+  successors_before_adapted(pred, succ) and
+  callRequiringRecursiveAnalysis(pred) and
+  callTarget = pred.getTarget()
 }
 
 /**
