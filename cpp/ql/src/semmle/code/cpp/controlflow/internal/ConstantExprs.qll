@@ -227,6 +227,21 @@ predicate successors_before_adapted(Node pred, Node succ) {
   and not getOptions().exits(pred.(Call).getTarget())
 }
 
+/**
+ * An adapted version of the `successors_extended` relation that excludes
+ * impossible control-flow edges - flow will never occur along these
+ * edges, so it is safe (and indeed sensible) to remove them.
+ */
+cached
+predicate successors_adapted(ControlFlowNode pred, ControlFlowNode succ) {
+  successors_before_adapted(pred, succ) and
+  (
+    callRequiringRecursiveAnalysis(pred)
+    implies
+    reachableNode(pred.(Call).getTarget())
+  )
+}
+
 private predicate compileTimeConstantInt(Expr e, int val) {
   val = e.getFullyConverted().getValue().toInt() and
   not e instanceof StringLiteral and

@@ -94,17 +94,6 @@ private cached module Cached {
     reachableNode(n)
   }
 
-  /**
-   * An adapted version of the `successors_extended` relation that excludes
-   * impossible control-flow edges - flow will never occur along these
-   * edges, so it is safe (and indeed sensible) to remove them.
-   */
-  cached
-  predicate successors_adapted(ControlFlowNode pred, ControlFlowNode succ) {
-    successors_before_adapted(pred, succ) and
-    reachable(succ) // TODO
-  }
-
   /** Holds if `condition` always evaluates to a nonzero value. */
   cached
   predicate conditionAlwaysTrue(Expr condition) {
