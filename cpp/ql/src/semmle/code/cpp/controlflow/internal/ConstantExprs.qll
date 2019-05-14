@@ -4,8 +4,7 @@ private class Node = ControlFlowNodeBase;
 
 /** A call to a function known not to return. */
 predicate aborting(FunctionCall c) {
-  not callRequiringRecursiveAnalysis(c) and
-  abortingFunction(c.getTarget())
+  not potentiallyReturningFunctionCall(c)
 }
 
 /**
@@ -13,7 +12,7 @@ predicate aborting(FunctionCall c) {
  * exits the program or longjmps to another location.
  */
 predicate abortingFunction(Function f) {
-  not reachable(f)
+  not potentiallyReturningFunction(f)
 }
 
 /**
@@ -40,16 +39,11 @@ private predicate callHasNoTarget(@funbindexpr fc) {
   )
 }
 
-// This base case is pulled out to work around QL-796
-private predicate potentiallyReturningFunctionCall_base(FunctionCall fc) {
+/** A function call that *may* return; if in doubt, we assume it may. */
+private predicate potentiallyReturningFunctionCall(FunctionCall fc) {
   fc.isVirtual()
   or
   callHasNoTarget(fc)
-}
-
-/** A function call that *may* return; if in doubt, we assume it may. */
-private predicate potentiallyReturningFunctionCall(FunctionCall fc) {
-  potentiallyReturningFunctionCall_base(fc)
   or
   potentiallyReturningFunction(fc.getTarget())
 }
@@ -93,11 +87,10 @@ private predicate nonAnalyzableFunction(Function f) {
   )
 }
 
-
 private predicate callRequiringRecursiveAnalysis(FunctionCall call) {
   // The call _has_ a target that's analyzable, and the call is not virtual
   exists(Function f | f = call.getTarget() |
-    not nonAnalyzableFunction(f)
+    not nonAnalyzableFunction(f) // TODO: check that this requires the target to exist. Then the ugly workarounds aren't needed.
   ) and
   not call.isVirtual()
 }
