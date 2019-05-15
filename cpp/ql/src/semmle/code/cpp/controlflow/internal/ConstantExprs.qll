@@ -102,7 +102,7 @@ predicate reachableNode(Node n)
   n instanceof Handler
   or
   exists(Node pred |
-    simpleStep+(pred, n) and
+    simpleStep(pred, n) and
     reachableNode(pred)
   )
   or
