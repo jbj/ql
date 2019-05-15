@@ -106,9 +106,8 @@ predicate reachableNode(Node n)
     reachableNode(pred)
   )
   or
-  exists(FunctionCall pred, Function callTarget |
-    complexStep(pred, callTarget, n) and
-    reachableRecursivelyAnalyzedCall(pred) and
+  exists(Function callTarget |
+    reachableRecursivelyAnalyzedCall(callTarget, n) and
     reachableFunction(callTarget)
   )
 }
@@ -119,9 +118,13 @@ private predicate reachableFunction(Function f) {
 }
 
 pragma[noinline]
-private predicate reachableRecursivelyAnalyzedCall(FunctionCall call) {
-  reachableNode(call) and
-  callRequiringRecursiveAnalysis(call)
+private predicate reachableRecursivelyAnalyzedCall(Function callTarget, ControlFlowNode succ) {
+  exists(FunctionCall call |
+    reachableNode(call) and
+    callRequiringRecursiveAnalysis(call) and
+    callTarget = call.getTarget() and
+    successors_before_adapted(call, succ)
+  )
 }
 
 /**
@@ -242,13 +245,6 @@ predicate successors_before_adapted(Node pred, Node succ) {
 private predicate simpleStep(Node pred, Node succ) {
   successors_before_adapted(pred, succ) and
   not callRequiringRecursiveAnalysis(pred)
-}
-
-pragma[noinline]
-private predicate complexStep(FunctionCall pred, Function callTarget, Node succ) {
-  successors_before_adapted(pred, succ) and
-  callRequiringRecursiveAnalysis(pred) and
-  callTarget = pred.getTarget()
 }
 
 /**
