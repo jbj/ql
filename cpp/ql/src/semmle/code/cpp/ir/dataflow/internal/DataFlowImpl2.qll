@@ -121,6 +121,27 @@ abstract class Configuration extends string {
   deprecated predicate hasFlowBackward(Node source, Node sink) { hasFlow(source, sink) }
 }
 
+/**
+ * This class exists to prevent mutual recursion between the user-overridden
+ * member predicates of `Configuration` and the rest of the data-flow library.
+ * Good performance cannot be guaranteed in the presence of such recursion, so
+ * it should be replaced by using more than one copy of the data flow library.
+ */
+abstract private class ConfigurationRecursionPrevention extends Configuration {
+  bindingset[this]
+  ConfigurationRecursionPrevention() { any() }
+
+  override predicate hasFlow(Node source, Node sink) {
+    strictcount(Node n | this.isSource(n)) < 0
+    or
+    strictcount(Node n | this.isSink(n)) < 0
+    or
+    strictcount(Node n1, Node n2 | this.isAdditionalFlowStep(n1, n2)) < 0
+    or
+    super.hasFlow(source, sink)
+  }
+}
+
 private predicate inBarrier(Node node, Configuration config) {
   config.isBarrierIn(node) and
   config.isSource(node)
@@ -162,7 +183,7 @@ private predicate isAdditionalFlowStep(
  * Holds if data can flow in one local step from `node1` to `node2`.
  */
 private predicate localFlowStep(Node node1, Node node2, Configuration config) {
-  localFlowStep(node1, node2) and
+  simpleLocalFlowStep(node1, node2) and
   not outBarrier(node1, config) and
   not inBarrier(node2, config) and
   not fullBarrier(node1, config) and
