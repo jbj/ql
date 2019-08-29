@@ -97,11 +97,14 @@ class Expr extends StmtParent, @expr {
    * doesn't have its own value text.
    */
   private string getValueTextOverride() {
-    not exists(this.getDbValueText()) and
-    (
-      result = this.getConversion().getDbValueText()
+    exists(Expr conversion |
+      conversion = this.getConversion() and
+      conversion.getValue() = this.getValue() and
+      not exists(this.getDbValueText())
+    |
+      result = conversion.getDbValueText()
       or
-      result = this.getConversion().getValueTextOverride()
+      result = conversion.getValueTextOverride()
     )
   }
 
