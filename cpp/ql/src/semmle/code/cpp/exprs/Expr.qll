@@ -87,32 +87,33 @@ class Expr extends StmtParent, @expr {
   /** Gets the value of this expression, if it is a constant. */
   string getValue() { exists(@value v | values(v,result) and valuebind(v,underlyingElement(this))) }
 
+  /** Gets the value text of this expression that's in the database. */
+  private string getDbValueText() {
+    exists(@value v | valuebind(v,underlyingElement(this)) and valuetext(v, result))
+  }
+
   /**
-   * Walk along the sequence of `getConversion()s` until we reach
-   * one with a valuetext, and then return that valuetext, if any.
-   * For example, in an invocation of `#define THREE (1+2)`, there
-   * will not be a valuetext for `1+2`, but the conversion `(1+2)`
-   * will have valuetext `THREE`.
+   * Gets a value text for `this` from it nearest conversion, in case `this`
+   * doesn't have its own value text.
    */
-  private string getValueTextFollowingConversions(Expr e) {
-    e = this.getConversion*()
-    and
-    e.getValue() = this.getValue()
-    and
-    (if exists(@value v |
-               valuebind(v,underlyingElement(e)) and
-               valuetext(v, _))
-     then exists(@value v |
-                 valuebind(v,underlyingElement(e)) and
-                 valuetext(v, result))
-     else result = this.getValueTextFollowingConversions(e.getConversion()))
+  private string getValueTextOverride() {
+    not exists(this.getDbValueText()) and
+    (
+      result = this.getConversion().getDbValueText()
+      or
+      result = this.getConversion().getValueTextOverride()
+    )
   }
 
   /** Gets the source text for the value of this expression, if it is a constant. */
   string getValueText() {
-    if exists(this.getValueTextFollowingConversions(this))
-    then result = this.getValueTextFollowingConversions(this)
-    else result = this.getValue()
+    result = this.getDbValueText()
+    or
+    result = this.getValueTextOverride()
+    or
+    not exists(this.getDbValueText()) and
+    not exists(this.getValueTextOverride()) and
+    result = this.getValue()
   }
   
   /** Holds if this expression has a value that can be determined at compile time. */
