@@ -24,7 +24,11 @@ private import semmle.code.csharp.ir.internal.IRCSharpLanguage as Language
  */
 TranslatedExpr getTranslatedExpr(Expr expr) {
   result.getExpr() = expr and
-  result.producesExprResult()
+  result.producesExprResult() and
+  // When a constructor call is needed, we fetch it manually.
+  // This is because of how we translate object creations: the translated expression
+  // and the translated constructor call are attached to the same element.
+  (expr instanceof ObjectCreation implies not result instanceof TranslatedConstructorCall)
 }
 
 /**
@@ -88,20 +92,8 @@ abstract class TranslatedCoreExpr extends TranslatedExpr {
    * then a load.
    */
   final override predicate producesExprResult() {
-    // Reads need loads
-    not expr instanceof AssignableRead
-    or
-    // No load needed for an array access
-    expr.getParent() instanceof ArrayAccess
-    or
-    // No load is needed for `RefTypes` in assignments
-    // Eg. `Object obj = oldObj`;
-    expr.getParent() instanceof Assignment and
-    expr.getType() instanceof RefType
-    or
-    // Since the loads for a crement operation is handled by the
-    // expression itself, we ignore the default load
-    expr.getParent() instanceof MutatorOperation
+    // If the expr needs a load, its translation does not produce the final value.
+    not needsLoad(expr)
   }
 
   /**
@@ -481,11 +473,7 @@ class TranslatedObjectInitializerExpr extends TranslatedNonConstantExpr, Initial
   }
 
   override TranslatedElement getChild(int id) {
-    exists(AssignExpr assign |
-      result = getTranslatedExpr(expr.getChild(id)) and
-      expr.getAChild() = assign and
-      assign.getIndex() = id
-    )
+    result = getTranslatedExpr(expr.getMemberInitializer(id))
   }
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
@@ -499,9 +487,57 @@ class TranslatedObjectInitializerExpr extends TranslatedNonConstantExpr, Initial
     )
   }
 
-  override Instruction getTargetAddress() { result = this.getParent().getInstruction(NewObjTag()) }
+  override Instruction getTargetAddress() {
+    // The target address is the address of the newly allocated object,
+    // which can be retrieved from the parent `TranslatedObjectCreation`.
+    result = this.getParent().getInstruction(NewObjTag())
+  }
 
-  override Type getTargetType() { none() }
+  override Type getTargetType() {
+    result = this.getParent().getInstruction(NewObjTag()).getResultType()
+  }
+}
+
+class TranslatedCollectionInitializer extends TranslatedNonConstantExpr, InitializationContext {
+  override CollectionInitializer expr;
+
+  override Instruction getResult() { none() }
+
+  override Instruction getFirstInstruction() { result = this.getChild(0).getFirstInstruction() }
+
+  override predicate hasInstruction(
+    Opcode opcode, InstructionTag tag, Type resultType, boolean isLValue
+  ) {
+    none()
+  }
+
+  override TranslatedElement getChild(int id) {
+    result = getTranslatedExpr(expr.getElementInitializer(id))
+  }
+
+  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
+
+  override Instruction getChildSuccessor(TranslatedElement child) {
+    exists(int index |
+      child = this.getChild(index) and
+      (
+        result = this.getChild(index + 1).getFirstInstruction()
+        or
+        not exists(this.getChild(index + 1)) and
+        result = this.getParent().getChildSuccessor(this)
+      )
+    )
+  }
+
+  override Instruction getTargetAddress() {
+    // The target address is the address of the newly allocated object,
+    // which can be retrieved from the parent `TranslatedObjectCreation`.
+    result = this.getParent().getInstruction(NewObjTag())
+  }
+
+  override Type getTargetType() {
+    result = this.getParent().getInstruction(NewObjTag()).getResultType()
+  }
 }
 
 /**
@@ -644,7 +680,9 @@ class TranslatedArrayAccess extends TranslatedNonConstantExpr {
   private int getRank() { result = count(expr.getIndex(_)) }
 }
 
-abstract class TranslatedTransparentExpr extends TranslatedNonConstantExpr {
+abstract class TranslatedPointerOps extends TranslatedNonConstantExpr {
+  override UnaryOperation expr;
+
   final override Instruction getFirstInstruction() {
     result = this.getOperand().getFirstInstruction()
   }
@@ -670,6 +708,18 @@ abstract class TranslatedTransparentExpr extends TranslatedNonConstantExpr {
   }
 
   abstract TranslatedExpr getOperand();
+}
+
+class TranslatedPointerIndirectionExpr extends TranslatedPointerOps {
+  override PointerIndirectionExpr expr;
+
+  override TranslatedExpr getOperand() { result = getTranslatedExpr(expr.getOperand()) }
+}
+
+class TranslatedAddressExpr extends TranslatedPointerOps {
+  override AddressOfExpr expr;
+
+  override TranslatedExpr getOperand() { result = getTranslatedExpr(expr.getOperand()) }
 }
 
 class TranslatedThisExpr extends TranslatedNonConstantExpr {
@@ -723,16 +773,63 @@ abstract class TranslatedVariableAccess extends TranslatedNonConstantExpr {
     result = getTranslatedExpr(expr.(QualifiableExpr).getQualifier())
   }
 
-  override Instruction getResult() { result = this.getInstruction(OnlyInstructionTag()) }
+  override Instruction getResult() {
+    if this.needsExtraLoad()
+    then result = this.getInstruction(LoadTag())
+    else result = this.getInstruction(AddressTag())
+  }
+
+  override predicate hasInstruction(
+    Opcode opcode, InstructionTag tag, Type resultType, boolean isLValue
+  ) {
+    this.needsExtraLoad() and
+    tag = LoadTag() and
+    opcode instanceof Opcode::Load and
+    resultType = this.getResultType() and
+    isLValue = false
+  }
 
   final override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
-    tag = OnlyInstructionTag() and
-    result = this.getParent().getChildSuccessor(this) and
+    tag = AddressTag() and
+    (
+      if this.needsExtraLoad()
+      then result = this.getInstruction(LoadTag())
+      else result = this.getParent().getChildSuccessor(this)
+    ) and
     kind instanceof GotoEdge
+    or
+    this.needsExtraLoad() and
+    tag = LoadTag() and
+    kind instanceof GotoEdge and
+    result = this.getParent().getChildSuccessor(this)
+  }
+
+  override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
+    this.needsExtraLoad() and
+    tag = LoadTag() and
+    (
+      operandTag instanceof AddressOperandTag and
+      result = this.getInstruction(AddressTag())
+      or
+      operandTag instanceof LoadOperandTag and
+      result = this.getEnclosingFunction().getUnmodeledDefinitionInstruction()
+    )
   }
 
   final override Instruction getChildSuccessor(TranslatedElement child) {
-    child = this.getQualifier() and result = this.getInstruction(OnlyInstructionTag())
+    child = this.getQualifier() and result = this.getInstruction(AddressTag())
+  }
+
+  /**
+   * Some variable accesses need an extra load, eg. ref parameters,
+   * out parameters
+   */
+  final private predicate needsExtraLoad() {
+    (
+      expr.getTarget().(Parameter).isOutOrRef() or
+      expr.getTarget().(Parameter).isIn()
+    ) and
+    (expr.getParent() instanceof FieldAccess implies expr.getType().isRefType())
   }
 }
 
@@ -753,22 +850,26 @@ class TranslatedNonFieldVariableAccess extends TranslatedVariableAccess {
   override Instruction getFirstInstruction() {
     if exists(this.getQualifier())
     then result = this.getQualifier().getFirstInstruction()
-    else result = this.getInstruction(OnlyInstructionTag())
+    else result = this.getInstruction(AddressTag())
   }
 
-  override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) { none() }
+  override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
+    result = TranslatedVariableAccess.super.getInstructionOperand(tag, operandTag)
+  }
 
   override predicate hasInstruction(
     Opcode opcode, InstructionTag tag, Type resultType, boolean isLValue
   ) {
-    tag = OnlyInstructionTag() and
+    TranslatedVariableAccess.super.hasInstruction(opcode, tag, resultType, isLValue)
+    or
+    tag = AddressTag() and
     opcode instanceof Opcode::VariableAddress and
     resultType = this.getResultType() and
     isLValue = true
   }
 
   override IRVariable getInstructionVariable(InstructionTag tag) {
-    tag = OnlyInstructionTag() and
+    tag = AddressTag() and
     result = getIRUserVariable(expr.getEnclosingCallable(), expr.getTarget())
   }
 }
@@ -783,11 +884,13 @@ class TranslatedFieldAccess extends TranslatedVariableAccess {
     else
       // it means that the access is part of an `ObjectInitializer` expression
       // so the instructions for the qualifier have been generated previously.
-      result = this.getInstruction(OnlyInstructionTag())
+      result = this.getInstruction(AddressTag())
   }
 
   override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
-    tag = OnlyInstructionTag() and
+    result = TranslatedVariableAccess.super.getInstructionOperand(tag, operandTag)
+    or
+    tag = AddressTag() and
     operandTag instanceof UnaryOperandTag and
     // A normal field access always has a qualifier
     if exists(this.getQualifier())
@@ -803,14 +906,14 @@ class TranslatedFieldAccess extends TranslatedVariableAccess {
   override predicate hasInstruction(
     Opcode opcode, InstructionTag tag, Type resultType, boolean isLValue
   ) {
-    tag = OnlyInstructionTag() and
+    tag = AddressTag() and
     opcode instanceof Opcode::FieldAddress and
     resultType = this.getResultType() and
     isLValue = true
   }
 
   override Field getInstructionField(InstructionTag tag) {
-    tag = OnlyInstructionTag() and
+    tag = AddressTag() and
     result = expr.getTarget()
   }
 }
@@ -1917,4 +2020,133 @@ class TranslatedDelegateCall extends TranslatedNonConstantExpr {
   private TranslatedCompilerGeneratedCall getInvokeCall() {
     result = DelegateElements::getInvoke(expr)
   }
+}
+
+/**
+ * Represents the IR translation of creation expression. Can be the translation of an
+ * `ObjectCreation` or a `DelegateCreation`.
+ * The `NewObj` instruction denotes the fact that during initialization a new
+ * object is allocated, which is then initialized by the constructor.
+ */
+abstract class TranslatedCreation extends TranslatedCoreExpr, TTranslatedCreationExpr,
+  ConstructorCallContext {
+  TranslatedCreation() { this = TTranslatedCreationExpr(expr) }
+
+  override TranslatedElement getChild(int id) {
+    id = 0 and result = this.getConstructorCall()
+    or
+    id = 1 and result = this.getInitializerExpr()
+  }
+
+  override predicate hasInstruction(
+    Opcode opcode, InstructionTag tag, Type resultType, boolean isLValue
+  ) {
+    // Instruction that allocated space for a new object,
+    // and returns its address
+    tag = NewObjTag() and
+    opcode instanceof Opcode::NewObj and
+    resultType = expr.getType() and
+    isLValue = false
+    or
+    this.needsLoad() and
+    tag = LoadTag() and
+    opcode instanceof Opcode::Load and
+    resultType = expr.getType() and
+    isLValue = false
+  }
+
+  final override Instruction getFirstInstruction() { result = this.getInstruction(NewObjTag()) }
+
+  override Instruction getResult() {
+    if this.needsLoad()
+    then result = this.getInstruction(LoadTag())
+    else result = this.getInstruction(NewObjTag())
+  }
+
+  override Instruction getReceiver() { result = getInstruction(NewObjTag()) }
+
+  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+    kind instanceof GotoEdge and
+    tag = NewObjTag() and
+    result = this.getConstructorCall().getFirstInstruction()
+    or
+    this.needsLoad() and
+    kind instanceof GotoEdge and
+    tag = LoadTag() and
+    result = this.getParent().getChildSuccessor(this)
+  }
+
+  override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
+    this.needsLoad() and
+    tag = LoadTag() and
+    (
+      operandTag instanceof AddressOperandTag and
+      result = this.getInstruction(NewObjTag())
+      or
+      operandTag instanceof LoadOperandTag and
+      result = this.getEnclosingFunction().getUnmodeledDefinitionInstruction()
+    )
+  }
+
+  override Instruction getChildSuccessor(TranslatedElement child) {
+    (
+      child = this.getConstructorCall() and
+      if exists(this.getInitializerExpr())
+      then result = this.getInitializerExpr().getFirstInstruction()
+      else result = getLoadOrChildSuccessor()
+    )
+    or
+    child = this.getInitializerExpr() and
+    result = getLoadOrChildSuccessor()
+  }
+
+  private Instruction getLoadOrChildSuccessor() {
+    if this.needsLoad()
+    then result = this.getInstruction(LoadTag())
+    else result = this.getParent().getChildSuccessor(this)
+  }
+
+  abstract TranslatedElement getConstructorCall();
+
+  abstract TranslatedExpr getInitializerExpr();
+
+  /**
+   * If the newly allocated object is a value type, then we need
+   * to load the newly allocated object before storing it in the variable,
+   * since `NewObj` returns an address.
+   */
+  abstract predicate needsLoad();
+}
+
+/**
+ * Represents the IR translation of an `ObjectCreation`.
+ */
+class TranslatedObjectCreation extends TranslatedCreation {
+  override ObjectCreation expr;
+
+  override TranslatedExpr getInitializerExpr() { result = getTranslatedExpr(expr.getInitializer()) }
+
+  override TranslatedConstructorCall getConstructorCall() {
+    // Since calls are also expressions, we can't
+    // use the predicate getTranslatedExpr (since that would
+    // also return `this`).
+    result.getAST() = this.getAST()
+  }
+
+  override predicate needsLoad() { expr.getObjectType().isValueType() }
+}
+
+/**
+ * Represents the IR translation of a `DelegateCreation`.
+ */
+class TranslatedDelegateCreation extends TranslatedCreation {
+  override DelegateCreation expr;
+
+  override TranslatedExpr getInitializerExpr() { none() }
+
+  override TranslatedElement getConstructorCall() {
+    result = DelegateElements::getConstructor(expr)
+  }
+
+  override predicate needsLoad() { none() }
 }
