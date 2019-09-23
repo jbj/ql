@@ -8,6 +8,7 @@ private import InstructionTag
 private import TranslatedCondition
 private import TranslatedFunction
 private import TranslatedStmt
+private import TranslatedExpr
 private import IRConstruction
 
 /**
@@ -234,6 +235,20 @@ newtype TTranslatedElement =
     not isFlexibleCondition(expr) and
     expr.hasLValueToRValueConversion() and
     not ignoreLoad(expr)
+  } or
+  TTranslatedResultCopy(Expr expr) {
+    not ignoreExpr(expr) and
+    // not isNativeCondition(expr) and // redundant
+    not isFlexibleCondition(expr) and
+    exists(TranslatedNonConstantExpr te |
+      te.getAST() = expr and
+      not te.producesOwnResult()
+    ) and
+    // Doesn't have a TTranslatedLoad
+    not (
+      expr.hasLValueToRValueConversion() and
+      not ignoreLoad(expr)
+    )
   } or
   // An expression most naturally translated as control flow.
   TTranslatedNativeCondition(Expr expr) {

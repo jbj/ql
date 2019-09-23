@@ -595,6 +595,11 @@ abstract class TranslatedTransparentExpr extends TranslatedNonConstantExpr {
 
   final override Instruction getResult() { result = getOperand().getResult() }
 
+  final override predicate producesOwnResult() {
+    // It's okay to conflate a ParenthesisExpr with its contents.
+    expr instanceof ParenthesisExpr
+  }
+
   final override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
     none()
   }
@@ -788,6 +793,8 @@ abstract class TranslatedNonConstantExpr extends TranslatedCoreExpr, TTranslated
     this = TTranslatedValueExpr(expr) and
     not isIRConstant(expr)
   }
+
+  predicate producesOwnResult() { any() }
 }
 
 /**
@@ -1303,6 +1310,8 @@ class TranslatedAssignExpr extends TranslatedAssignment {
   }
 
   override Instruction getStoredValue() { result = getRightOperand().getResult() }
+
+  override predicate producesOwnResult() { none() }
 }
 
 class TranslatedAssignOperation extends TranslatedAssignment {
@@ -1350,6 +1359,8 @@ class TranslatedAssignOperation extends TranslatedAssignment {
     then result = getInstruction(AssignOperationConvertResultTag())
     else result = getInstruction(AssignOperationOpTag())
   }
+
+  override predicate producesOwnResult() { expr.isPRValueCategory() }
 
   private Type getConvertedLeftOperandType() {
     if
