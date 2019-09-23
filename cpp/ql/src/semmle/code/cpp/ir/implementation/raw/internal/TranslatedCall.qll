@@ -245,6 +245,8 @@ abstract class TranslatedCallExpr extends TranslatedNonConstantExpr, TranslatedC
   final override TranslatedExpr getArgument(int index) {
     result = getTranslatedExpr(expr.getArgument(index).getFullyConverted())
   }
+
+  final override predicate producesOwnResult() { any() }
 }
 
 /**

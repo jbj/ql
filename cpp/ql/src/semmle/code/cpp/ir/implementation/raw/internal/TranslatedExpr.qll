@@ -339,6 +339,8 @@ class TranslatedCommaExpr extends TranslatedNonConstantExpr {
   private TranslatedExpr getRightOperand() {
     result = getTranslatedExpr(expr.getRightOperand().getFullyConverted())
   }
+
+  override predicate producesOwnResult() { none() }
 }
 
 abstract class TranslatedCrementOperation extends TranslatedNonConstantExpr {
@@ -479,6 +481,9 @@ abstract class TranslatedCrementOperation extends TranslatedNonConstantExpr {
       )
     )
   }
+
+  // TODO
+  override predicate producesOwnResult() { any() }
 }
 
 class TranslatedPrefixCrementOperation extends TranslatedCrementOperation {
@@ -574,6 +579,8 @@ class TranslatedArrayExpr extends TranslatedNonConstantExpr {
   private TranslatedExpr getOffsetOperand() {
     result = getTranslatedExpr(expr.getArrayOffset().getFullyConverted())
   }
+
+  override predicate producesOwnResult() { any() }
 }
 
 abstract class TranslatedTransparentExpr extends TranslatedNonConstantExpr {
@@ -675,6 +682,8 @@ class TranslatedThisExpr extends TranslatedNonConstantExpr {
   private Instruction getInitializeThisInstruction() {
     result = getTranslatedFunction(expr.getEnclosingFunction()).getInitializeThisInstruction()
   }
+
+  override predicate producesOwnResult() { any() }
 }
 
 abstract class TranslatedVariableAccess extends TranslatedNonConstantExpr {
@@ -725,6 +734,8 @@ class TranslatedNonFieldVariableAccess extends TranslatedVariableAccess {
     tag = OnlyInstructionTag() and
     result = getIRUserVariable(expr.getEnclosingFunction(), expr.getTarget())
   }
+
+  override predicate producesOwnResult() { any() }
 }
 
 class TranslatedFieldAccess extends TranslatedVariableAccess {
@@ -751,6 +762,8 @@ class TranslatedFieldAccess extends TranslatedVariableAccess {
     tag = OnlyInstructionTag() and
     result = expr.getTarget()
   }
+
+  override predicate producesOwnResult() { any() }
 }
 
 class TranslatedFunctionAccess extends TranslatedNonConstantExpr {
@@ -783,6 +796,8 @@ class TranslatedFunctionAccess extends TranslatedNonConstantExpr {
   }
 
   override Instruction getChildSuccessor(TranslatedElement child) { none() }
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -794,7 +809,7 @@ abstract class TranslatedNonConstantExpr extends TranslatedCoreExpr, TTranslated
     not isIRConstant(expr)
   }
 
-  predicate producesOwnResult() { any() }
+  abstract predicate producesOwnResult();
 }
 
 /**
@@ -882,6 +897,8 @@ abstract class TranslatedSingleInstructionExpr extends TranslatedNonConstantExpr
   }
 
   final override Instruction getResult() { result = getInstruction(OnlyInstructionTag()) }
+
+  override predicate producesOwnResult() { any() }
 }
 
 class TranslatedUnaryExpr extends TranslatedSingleInstructionExpr {
@@ -935,6 +952,8 @@ abstract class TranslatedConversion extends TranslatedNonConstantExpr {
   final override TranslatedElement getChild(int id) { id = 0 and result = getOperand() }
 
   final TranslatedExpr getOperand() { result = getTranslatedExpr(expr.(Conversion).getExpr()) }
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -1733,6 +1752,8 @@ class TranslatedDestructorFieldDestruction extends TranslatedNonConstantExpr, St
   final override Instruction getReceiver() { result = getInstruction(OnlyInstructionTag()) }
 
   private TranslatedExpr getDestructorCall() { result = getTranslatedExpr(expr.getExpr()) }
+
+  override predicate producesOwnResult() { any() }
 }
 
 class TranslatedConditionalExpr extends TranslatedNonConstantExpr, ConditionContext {
@@ -1920,6 +1941,8 @@ class TranslatedConditionalExpr extends TranslatedNonConstantExpr, ConditionCont
   }
 
   private predicate resultIsVoid() { getResultType() instanceof VoidType }
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -1946,6 +1969,8 @@ abstract class TranslatedThrowExpr extends TranslatedNonConstantExpr {
   override Instruction getResult() { none() }
 
   abstract Opcode getThrowOpcode();
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -2105,6 +2130,8 @@ class TranslatedBuiltInOperation extends TranslatedNonConstantExpr {
     tag = OnlyInstructionTag() and
     result = expr
   }
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -2195,6 +2222,8 @@ abstract class TranslatedNewOrNewArrayExpr extends TranslatedNonConstantExpr, In
   private TranslatedAllocatorCall getAllocatorCall() { result = getTranslatedAllocatorCall(expr) }
 
   abstract TranslatedInitialization getInitialization();
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -2333,6 +2362,8 @@ class TranslatedConditionDeclExpr extends TranslatedNonConstantExpr {
   private TranslatedExpr getConditionExpr() {
     result = getTranslatedExpr(expr.getVariableAccess().getFullyConverted())
   }
+
+  override predicate producesOwnResult() { none() }
 }
 
 /**
@@ -2431,6 +2462,8 @@ class TranslatedLambdaExpr extends TranslatedNonConstantExpr, InitializationCont
   private TranslatedInitialization getInitialization() {
     result = getTranslatedInitialization(expr.getChild(0).getFullyConverted())
   }
+
+  override predicate producesOwnResult() { any() }
 }
 
 /**
@@ -2473,6 +2506,8 @@ class TranslatedStmtExpr extends TranslatedNonConstantExpr {
   }
 
   TranslatedStmt getStmt() { result = getTranslatedStmt(expr.getStmt()) }
+
+  override predicate producesOwnResult() { any() }
 }
 
 class TranslatedErrorExpr extends TranslatedSingleInstructionExpr {
