@@ -1,7 +1,6 @@
 import cpp
 import BasicBlocks
 private import semmle.code.cpp.controlflow.internal.ConstantExprs
-private import semmle.code.cpp.controlflow.internal.CFG
 
 /**
  * A control-flow node is either a statement or an expression; in addition,
@@ -87,11 +86,11 @@ import ControlFlowGraphPublic
 class ControlFlowNodeBase extends ElementBase, @cfgnode { }
 
 predicate truecond_base(ControlFlowNodeBase n1, ControlFlowNodeBase n2) {
-  qlCFGTrueSuccessor(n1, n2)
+  truecond(unresolveElement(n1), unresolveElement(n2))
 }
 
 predicate falsecond_base(ControlFlowNodeBase n1, ControlFlowNodeBase n2) {
-  qlCFGFalseSuccessor(n1, n2)
+  falsecond(unresolveElement(n1), unresolveElement(n2))
 }
 
 /**
@@ -121,7 +120,7 @@ abstract class AdditionalControlFlowEdge extends ControlFlowNodeBase {
  * `AdditionalControlFlowEdge`. Use this relation instead of `successors`.
  */
 predicate successors_extended(ControlFlowNodeBase source, ControlFlowNodeBase target) {
-  qlCFGSuccessor(source, target)
+  successors(unresolveElement(source), unresolveElement(target))
   or
   source.(AdditionalControlFlowEdge).getAnEdgeTarget() = target
 }
