@@ -164,8 +164,8 @@ private module Cached {
       hasPhiOperandDefinition(defLocation, useLocation, phiBlock, predBlock, defBlock, defOffset) and
       instr = Phi(phiBlock, useLocation) and
       newPredecessorBlock = getNewBlock(predBlock) and
-      result = getDefinitionOrChiInstruction(defBlock, defOffset, defLocation, actualDefLocation) and
-      overlap = Alias::getOverlap(actualDefLocation, useLocation)
+      overlap = Alias::getOverlap(actualDefLocation, useLocation) and
+      result = getDefinitionOrChiInstruction(defBlock, defOffset, defLocation, actualDefLocation)
     )
   }
 
