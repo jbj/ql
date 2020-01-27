@@ -136,16 +136,26 @@ private predicate nodeIsBarrier(DataFlow::Node node) {
   )
 }
 
+private predicate taintIntoPureFunctionArgument(CallInstruction call, int argumentIndex) {
+  isPureFunction(call.getStaticCallTarget().getName()) and
+  // All other arguments must be "predictable"
+  exists(Instruction argument |
+    argument = call.getPositionalArgument(argumentIndex) and
+    forall(Instruction otherArgument | otherArgument = call.getAnArgument() |
+      otherArgument = argument or predictableInstruction(otherArgument)
+    )
+  ) and
+  // flow through `strlen` tends to cause dubious results, if the length is
+  // bounded.
+  not call.getStaticCallTarget().getName() = "strlen"
+}
+
 private predicate instructionTaintStep(Instruction i1, Instruction i2) {
   // Expressions computed from tainted data are also tainted
-  i2 = any(CallInstruction call |
-      isPureFunction(call.getStaticCallTarget().getName()) and
-      call.getAnArgument() = i1 and
-      forall(Instruction arg | arg = call.getAnArgument() | arg = i1 or predictableInstruction(arg)) and
-      // flow through `strlen` tends to cause dubious results, if the length is
-      // bounded.
-      not call.getStaticCallTarget().getName() = "strlen"
-    )
+  exists(int indexIn |
+    i1 = getACallArgumentOrIndirection(i2, indexIn) and
+    taintIntoPureFunctionArgument(i2, indexIn)
+  )
   or
   // Flow through pointer dereference
   i2.(LoadInstruction).getSourceAddress() = i1
@@ -164,9 +174,14 @@ private predicate instructionTaintStep(Instruction i1, Instruction i2) {
   or
   // Flow from argument to return value
   i2 = any(CallInstruction call |
-      exists(int indexIn |
-        modelTaintToReturnValue(call.getStaticCallTarget(), indexIn) and
-        i1 = getACallArgumentOrIndirection(call, indexIn)
+      exists(int indexIn, Function f |
+        f = call.getStaticCallTarget() and
+        modelTaintToReturnValue(f, indexIn) and
+        i1 = getACallArgumentOrIndirection(call, indexIn) and
+        // If the function is one of the "pure functions" modeled by
+        // security.TaintTracking, we apply the additional requirements such as
+        // "predictability" of the other arguments.
+        (isPureFunction(f.getName()) implies taintIntoPureFunctionArgument(call, indexIn))
       )
     )
   or
