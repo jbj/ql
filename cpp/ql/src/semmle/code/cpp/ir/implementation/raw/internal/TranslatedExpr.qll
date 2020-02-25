@@ -124,7 +124,7 @@ class TranslatedConditionValue extends TranslatedCoreExpr, ConditionContext,
 
   override TranslatedElement getChild(int id) { id = 0 and result = getCondition() }
 
-  override Instruction getFirstInstruction() { result = getCondition().getFirstInstruction() }
+  override InstructionDesc getFirstInstruction() { result = FirstInstruction(getCondition()) }
 
   override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
     (
@@ -154,29 +154,29 @@ class TranslatedConditionValue extends TranslatedCoreExpr, ConditionContext,
     resultType = getResultType()
   }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     kind instanceof GotoEdge and
     (
       tag = ConditionValueTrueTempAddressTag() and
-      result = getInstruction(ConditionValueTrueConstantTag())
+      result = SelfInstruction(ConditionValueTrueConstantTag())
       or
       tag = ConditionValueTrueConstantTag() and
-      result = getInstruction(ConditionValueTrueStoreTag())
+      result = SelfInstruction(ConditionValueTrueStoreTag())
       or
       tag = ConditionValueTrueStoreTag() and
-      result = getInstruction(ConditionValueResultTempAddressTag())
+      result = SelfInstruction(ConditionValueResultTempAddressTag())
       or
       tag = ConditionValueFalseTempAddressTag() and
-      result = getInstruction(ConditionValueFalseConstantTag())
+      result = SelfInstruction(ConditionValueFalseConstantTag())
       or
       tag = ConditionValueFalseConstantTag() and
-      result = getInstruction(ConditionValueFalseStoreTag())
+      result = SelfInstruction(ConditionValueFalseStoreTag())
       or
       tag = ConditionValueFalseStoreTag() and
-      result = getInstruction(ConditionValueResultTempAddressTag())
+      result = SelfInstruction(ConditionValueResultTempAddressTag())
       or
       tag = ConditionValueResultTempAddressTag() and
-      result = getInstruction(ConditionValueResultLoadTag())
+      result = SelfInstruction(ConditionValueResultLoadTag())
       or
       tag = ConditionValueResultLoadTag() and
       result = getParent().getChildSuccessor(this)
@@ -234,7 +234,7 @@ class TranslatedConditionValue extends TranslatedCoreExpr, ConditionContext,
 
   override Instruction getResult() { result = getInstruction(ConditionValueResultLoadTag()) }
 
-  override Instruction getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
 
   override Instruction getChildTrueSuccessor(TranslatedCondition child) {
     child = getCondition() and
@@ -258,7 +258,7 @@ class TranslatedLoad extends TranslatedExpr, TTranslatedLoad {
 
   override string toString() { result = "Load of " + expr.toString() }
 
-  override Instruction getFirstInstruction() { result = getOperand().getFirstInstruction() }
+  override InstructionDesc getFirstInstruction() { result = FirstInstruction(getOperand()) }
 
   override TranslatedElement getChild(int id) { id = 0 and result = getOperand() }
 
@@ -270,14 +270,14 @@ class TranslatedLoad extends TranslatedExpr, TTranslatedLoad {
 
   override predicate isResultGLValue() { none() }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = LoadTag() and
     result = getParent().getChildSuccessor(this) and
     kind instanceof GotoEdge
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
-    child = getOperand() and result = getInstruction(LoadTag())
+  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+    child = getOperand() and result = SelfInstruction(LoadTag())
   }
 
   override Instruction getResult() { result = getInstruction(LoadTag()) }
@@ -310,7 +310,7 @@ class TranslatedResultCopy extends TranslatedExpr, TTranslatedResultCopy {
 
   override string toString() { result = "Result of " + expr.toString() }
 
-  override Instruction getFirstInstruction() { result = getOperand().getFirstInstruction() }
+  override InstructionDesc getFirstInstruction() { result = FirstInstruction(getOperand()) }
 
   override TranslatedElement getChild(int id) { id = 0 and result = getOperand() }
 
