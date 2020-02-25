@@ -494,9 +494,15 @@ private predicate isFirstValueInitializedElementInRange(
   )
 }
 
+// TODO: New predicate dependencies:
+// getChildSuccessor
+// getFirstInstruction
+// getInstructionSuccessor calls getChildSuccessor (for now)
 newtype InstructionDesc =
+  GivenInstruction(Instruction instr) or // only used by getInstructionSuccessor
   SelfInstruction(InstructionTag tag) or
-  FirstInstruction(TranslatedElement e)
+  FirstInstruction(TranslatedElement e) or
+  SelfSuccessorInstruction() // only used in getInstructionSuccessor
 
 /**
  * Represents an AST node for which IR needs to be generated.
@@ -517,7 +523,19 @@ abstract class TranslatedElement extends TTranslatedElement {
   /**
    * Get the first instruction to be executed in the evaluation of this element.
    */
-  abstract InstructionDesc getFirstInstruction();
+  abstract InstructionDesc getFirstInstructionDesc();
+
+  final Instruction getFirstInstruction() {
+    exists(InstructionTag tag |
+      getFirstInstructionDesc() = SelfInstruction(tag) and
+      result = getInstruction(tag)
+    )
+    or
+    exists(TranslatedElement e |
+      getFirstInstructionDesc() = FirstInstruction(e) and
+      result = e.getFirstInstruction()
+    )
+  }
 
   /**
    * Get the immediate child elements of this element.
@@ -591,6 +609,18 @@ abstract class TranslatedElement extends TTranslatedElement {
    * child element specified by `child` has finished execution.
    */
   abstract InstructionDesc getChildSuccessor(TranslatedElement child);
+
+  final Instruction getChildSuccessorInstruction(TranslatedElement child) {
+    exists(InstructionTag tag |
+      getChildSuccessor(child) = SelfInstruction(tag) and
+      result = getInstruction(tag)
+    )
+    or
+    exists(TranslatedElement e |
+      getChildSuccessor(child) = FirstInstruction(e) and
+      result = e.getFirstInstruction()
+    )
+  }
 
   /**
    * Gets the instruction to which control should flow if an exception is thrown

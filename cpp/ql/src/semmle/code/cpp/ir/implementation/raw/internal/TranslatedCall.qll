@@ -28,9 +28,9 @@ abstract class TranslatedCall extends TranslatedExpr {
     id = getNumberOfArguments() and result = getSideEffects()
   }
 
-  final override Instruction getFirstInstruction() {
+  final override InstructionDesc getFirstInstructionDesc() {
     if exists(getQualifier())
-    then result = getQualifier().getFirstInstruction()
+    then result = FirstInstruction(getQualifier())
     else result = getFirstCallTargetInstruction()
   }
 
@@ -53,7 +53,7 @@ abstract class TranslatedCall extends TranslatedExpr {
     )
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessor(TranslatedElement child) {
     child = getQualifier() and
     result = getFirstCallTargetInstruction()
     or
@@ -63,33 +63,33 @@ abstract class TranslatedCall extends TranslatedExpr {
     exists(int argIndex |
       child = getArgument(argIndex) and
       if exists(getArgument(argIndex + 1))
-      then result = getArgument(argIndex + 1).getFirstInstruction()
-      else result = getInstruction(CallTag())
+      then result = FirstInstruction(getArgument(argIndex + 1))
+      else result = SelfInstruction(CallTag())
     )
     or
     child = getSideEffects() and
-    result = getParent().getChildSuccessor(this)
+    result = SelfSuccessorInstruction()
   }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     kind instanceof GotoEdge and
     (
       (
         tag = CallTag() and
         if hasSideEffect()
-        then result = getInstruction(CallSideEffectTag())
+        then result = SelfInstruction(CallSideEffectTag())
         else
           if hasPreciseSideEffect()
-          then result = getSideEffects().getFirstInstruction()
-          else result = getParent().getChildSuccessor(this)
+          then result = FirstInstruction(getSideEffects())
+          else result = SelfSuccessorInstruction()
       )
       or
       (
         hasSideEffect() and
         tag = CallSideEffectTag() and
         if hasPreciseSideEffect()
-        then result = getSideEffects().getFirstInstruction()
-        else result = getParent().getChildSuccessor(this)
+        then result = FirstInstruction(getSideEffects())
+        else result = SelfSuccessorInstruction()
       )
     )
   }
@@ -145,7 +145,7 @@ abstract class TranslatedCall extends TranslatedExpr {
    * it can be overridden by a subclass for cases where there is a call target
    * that is not computed from an expression (e.g. a direct call).
    */
-  Instruction getFirstCallTargetInstruction() { result = getCallTarget().getFirstInstruction() }
+  InstructionDesc getFirstCallTargetInstruction() { result = FirstInstruction(getCallTarget()) }
 
   /**
    * Gets the instruction whose result value is the target of the call. By
@@ -181,10 +181,10 @@ abstract class TranslatedCall extends TranslatedExpr {
    * If there are any arguments, gets the first instruction of the first
    * argument. Otherwise, returns the call instruction.
    */
-  final Instruction getFirstArgumentOrCallInstruction() {
+  final InstructionDesc getFirstArgumentOrCallInstruction() {
     if hasArguments()
-    then result = getArgument(0).getFirstInstruction()
-    else result = getInstruction(CallTag())
+    then result = FirstInstruction(getArgument(0))
+    else result = SelfInstruction(CallTag())
   }
 
   /**
@@ -215,8 +215,8 @@ abstract class TranslatedCall extends TranslatedExpr {
  * (`TranslatedAllocatorCall`).
  */
 abstract class TranslatedDirectCall extends TranslatedCall {
-  final override Instruction getFirstCallTargetInstruction() {
-    result = getInstruction(CallTargetTag())
+  final override InstructionDesc getFirstCallTargetInstruction() {
+    result = SelfInstruction(CallTargetTag())
   }
 
   final override Instruction getCallTargetResult() { result = getInstruction(CallTargetTag()) }
@@ -229,7 +229,7 @@ abstract class TranslatedDirectCall extends TranslatedCall {
     resultType = getFunctionGLValueType()
   }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     result = TranslatedCall.super.getInstructionSuccessor(tag, kind)
     or
     tag = CallTargetTag() and
@@ -332,20 +332,20 @@ class TranslatedSideEffects extends TranslatedElement, TTranslatedSideEffects {
       )
   }
 
-  override Instruction getChildSuccessor(TranslatedElement te) {
+  override InstructionDesc getChildSuccessor(TranslatedElement te) {
     exists(int i |
       getChild(i) = te and
       if exists(getChild(i + 1))
-      then result = getChild(i + 1).getFirstInstruction()
-      else result = getParent().getChildSuccessor(this)
+      then result = FirstInstruction(getChild(i + 1))
+      else result = SelfSuccessorInstruction()
     )
   }
 
   override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType type) { none() }
 
-  override Instruction getFirstInstruction() { result = getChild(0).getFirstInstruction() }
+  override InstructionDesc getFirstInstructionDesc() { result = FirstInstruction(getChild(0)) }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
 
   override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) { none() }
 
@@ -380,17 +380,17 @@ class TranslatedStructorCallSideEffects extends TranslatedSideEffects {
     t = getTypeForPRValue(expr.getTarget().getDeclaringType())
   }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     (
       if exists(getChild(0))
-      then result = getChild(0).getFirstInstruction()
-      else result = getParent().getChildSuccessor(this)
+      then result = FirstInstruction(getChild(0))
+      else result = SelfSuccessorInstruction()
     ) and
     tag = OnlyInstructionTag() and
     kind instanceof GotoEdge
   }
 
-  override Instruction getFirstInstruction() { result = getInstruction(OnlyInstructionTag()) }
+  override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(OnlyInstructionTag()) }
 
   override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
     tag instanceof OnlyInstructionTag and
@@ -432,9 +432,9 @@ class TranslatedSideEffect extends TranslatedElement, TTranslatedArgumentSideEff
 
   override TranslatedElement getChild(int n) { none() }
 
-  override Instruction getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
 
-  override Instruction getFirstInstruction() { result = getInstruction(OnlyInstructionTag()) }
+  override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(OnlyInstructionTag()) }
 
   override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType type) {
     isWrite() and
@@ -462,8 +462,8 @@ class TranslatedSideEffect extends TranslatedElement, TTranslatedArgumentSideEff
     type = getVoidType()
   }
 
-  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
-    result = getParent().getChildSuccessor(this) and
+  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+    result = SelfSuccessorInstruction() and
     tag = OnlyInstructionTag() and
     kind instanceof GotoEdge
   }
