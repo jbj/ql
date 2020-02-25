@@ -52,7 +52,7 @@ abstract class TranslatedVariableInitialization extends TranslatedElement, Initi
     resultType = getTypeForPRValue(getTargetType())
   }
 
-  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     (
       tag = InitializerVariableAddressTag() and
       kind instanceof GotoEdge and
@@ -168,7 +168,7 @@ abstract class TranslatedListInitialization extends TranslatedInitialization, In
       child = getChild(index) and
       if exists(getChild(index + 1))
       then result = getChild(index + 1).getFirstInstruction()
-      else result = SelfSuccessorInstruction()
+      else result = getParent().getChildSuccessor(this)
     )
   }
 
@@ -250,7 +250,7 @@ class TranslatedSimpleDirectInitialization extends TranslatedDirectInitializatio
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = InitializerStoreTag() and
-    result = SelfSuccessorInstruction() and
+    result = getParent().getChildSuccessor(this) and
     kind instanceof GotoEdge
   }
 
@@ -339,10 +339,10 @@ class TranslatedStringLiteralInitialization extends TranslatedDirectInitializati
         result = getInstruction(ZeroPadStringStoreTag())
         or
         tag = ZeroPadStringStoreTag() and
-        result = SelfSuccessorInstruction()
+        result = getParent().getChildSuccessor(this)
       ) else (
         tag = InitializerStoreTag() and
-        result = SelfSuccessorInstruction()
+        result = getParent().getChildSuccessor(this)
       )
     )
   }
@@ -586,7 +586,7 @@ class TranslatedFieldValueInitialization extends TranslatedFieldInitialization,
       result = getInstruction(getFieldDefaultValueStoreTag())
       or
       tag = getFieldDefaultValueStoreTag() and
-      result = SelfSuccessorInstruction()
+      result = getParent().getChildSuccessor(this)
     )
   }
 
@@ -758,7 +758,7 @@ class TranslatedElementValueInitialization extends TranslatedElementInitializati
       result = getInstruction(getElementDefaultValueStoreTag())
       or
       tag = getElementDefaultValueStoreTag() and
-      result = SelfSuccessorInstruction()
+      result = getParent().getChildSuccessor(this)
     )
   }
 

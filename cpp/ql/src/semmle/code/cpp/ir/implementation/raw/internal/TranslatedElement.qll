@@ -494,15 +494,10 @@ private predicate isFirstValueInitializedElementInRange(
   )
 }
 
-// TODO: New predicate dependencies:
-// getChildSuccessor
-// getFirstInstruction
-// getInstructionSuccessor calls getChildSuccessor (for now)
 newtype InstructionDesc =
-  GivenInstruction(Instruction instr) or // only used by getInstructionSuccessor
   SelfInstruction(InstructionTag tag) or
   FirstInstruction(TranslatedElement e) or
-  SelfSuccessorInstruction() // only used in getInstructionSuccessor
+  SelfSuccessorInstruction() // used in getChildSuccessor
 
 /**
  * Represents an AST node for which IR needs to be generated.

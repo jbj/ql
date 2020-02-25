@@ -44,7 +44,7 @@ class TranslatedEmptyStmt extends TranslatedStmt {
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = OnlyInstructionTag() and
-    result = SelfSuccessorInstruction() and
+    result = getParent().getChildSuccessor(this) and
     kind instanceof GotoEdge
   }
 
@@ -244,7 +244,7 @@ class TranslatedBlock extends TranslatedStmt {
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = OnlyInstructionTag() and
-    result = SelfSuccessorInstruction() and
+    result = getParent().getChildSuccessor(this) and
     kind instanceof GotoEdge
   }
 
