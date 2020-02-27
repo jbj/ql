@@ -53,12 +53,12 @@ abstract class TranslatedCall extends TranslatedExpr {
     )
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getQualifier() and
     result = getFirstCallTargetInstruction()
     or
     child = getCallTarget() and
-    result = getFirstArgumentOrCallInstruction()
+    result = getFirstArgumentOrCallDesc()
     or
     exists(int argIndex |
       child = getArgument(argIndex) and
@@ -181,10 +181,20 @@ abstract class TranslatedCall extends TranslatedExpr {
    * If there are any arguments, gets the first instruction of the first
    * argument. Otherwise, returns the call instruction.
    */
-  final InstructionDesc getFirstArgumentOrCallInstruction() {
+  final InstructionDesc getFirstArgumentOrCallDesc() {
     if hasArguments()
     then result = FirstInstruction(getArgument(0))
     else result = SelfInstruction(CallTag())
+  }
+
+  /**
+   * If there are any arguments, gets the first instruction of the first
+   * argument. Otherwise, returns the call instruction.
+   */
+  final Instruction getFirstArgumentOrCallInstruction() {
+    if hasArguments()
+    then result = getArgument(0).getFirstInstruction()
+    else result = getInstruction(CallTag())
   }
 
   /**
@@ -332,7 +342,7 @@ class TranslatedSideEffects extends TranslatedElement, TTranslatedSideEffects {
       )
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement te) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement te) {
     exists(int i |
       getChild(i) = te and
       if exists(getChild(i + 1))
@@ -432,7 +442,7 @@ class TranslatedSideEffect extends TranslatedElement, TTranslatedArgumentSideEff
 
   override TranslatedElement getChild(int n) { none() }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(OnlyInstructionTag()) }
 

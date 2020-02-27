@@ -154,32 +154,32 @@ class TranslatedConditionValue extends TranslatedCoreExpr, ConditionContext,
     resultType = getResultType()
   }
 
-  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     kind instanceof GotoEdge and
     (
       tag = ConditionValueTrueTempAddressTag() and
-      result = SelfInstruction(ConditionValueTrueConstantTag())
+      result = getInstruction(ConditionValueTrueConstantTag())
       or
       tag = ConditionValueTrueConstantTag() and
-      result = SelfInstruction(ConditionValueTrueStoreTag())
+      result = getInstruction(ConditionValueTrueStoreTag())
       or
       tag = ConditionValueTrueStoreTag() and
-      result = SelfInstruction(ConditionValueResultTempAddressTag())
+      result = getInstruction(ConditionValueResultTempAddressTag())
       or
       tag = ConditionValueFalseTempAddressTag() and
-      result = SelfInstruction(ConditionValueFalseConstantTag())
+      result = getInstruction(ConditionValueFalseConstantTag())
       or
       tag = ConditionValueFalseConstantTag() and
-      result = SelfInstruction(ConditionValueFalseStoreTag())
+      result = getInstruction(ConditionValueFalseStoreTag())
       or
       tag = ConditionValueFalseStoreTag() and
-      result = SelfInstruction(ConditionValueResultTempAddressTag())
+      result = getInstruction(ConditionValueResultTempAddressTag())
       or
       tag = ConditionValueResultTempAddressTag() and
-      result = SelfInstruction(ConditionValueResultLoadTag())
+      result = getInstruction(ConditionValueResultLoadTag())
       or
       tag = ConditionValueResultLoadTag() and
-      result = SelfSuccessorInstruction()
+      result = getParent().getChildSuccessor(this)
     )
   }
 
@@ -234,7 +234,7 @@ class TranslatedConditionValue extends TranslatedCoreExpr, ConditionContext,
 
   override Instruction getResult() { result = getInstruction(ConditionValueResultLoadTag()) }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   override Instruction getChildTrueSuccessor(TranslatedCondition child) {
     child = getCondition() and
@@ -270,13 +270,13 @@ class TranslatedLoad extends TranslatedExpr, TTranslatedLoad {
 
   override predicate isResultGLValue() { none() }
 
-  override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = LoadTag() and
     result = getParent().getChildSuccessor(this) and
     kind instanceof GotoEdge
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(LoadTag())
   }
 
@@ -326,7 +326,7 @@ class TranslatedResultCopy extends TranslatedExpr, TTranslatedResultCopy {
     kind instanceof GotoEdge
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(ResultCopyTag())
   }
 
@@ -358,7 +358,7 @@ class TranslatedCommaExpr extends TranslatedNonConstantExpr {
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getLeftOperand() and
     result = FirstInstruction(getRightOperand())
     or
@@ -467,7 +467,7 @@ abstract class TranslatedCrementOperation extends TranslatedNonConstantExpr {
     )
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getLoadedOperand() and result = SelfInstruction(CrementConstantTag())
   }
 
@@ -564,7 +564,7 @@ class TranslatedArrayExpr extends TranslatedNonConstantExpr {
     kind instanceof GotoEdge
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getBaseOperand() and
     result = FirstInstruction(getOffsetOperand())
     or
@@ -612,7 +612,7 @@ abstract class TranslatedTransparentExpr extends TranslatedNonConstantExpr {
 
   final override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfSuccessorInstruction()
   }
 
@@ -683,7 +683,7 @@ class TranslatedThisExpr extends TranslatedNonConstantExpr {
     result = getParent().getChildSuccessor(this)
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   final override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
     tag = OnlyInstructionTag() and
@@ -715,7 +715,7 @@ abstract class TranslatedVariableAccess extends TranslatedNonConstantExpr {
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getQualifier() and result = SelfInstruction(OnlyInstructionTag())
   }
 }
@@ -792,7 +792,7 @@ class TranslatedFunctionAccess extends TranslatedNonConstantExpr {
     result = expr.getTarget()
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 }
 
 /**
@@ -838,7 +838,7 @@ abstract class TranslatedConstantExpr extends TranslatedCoreExpr, TTranslatedVal
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   abstract Opcode getOpcode();
 }
@@ -902,7 +902,7 @@ class TranslatedUnaryExpr extends TranslatedSingleInstructionExpr {
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(OnlyInstructionTag())
   }
 
@@ -948,7 +948,7 @@ abstract class TranslatedSingleInstructionConversion extends TranslatedConversio
     kind instanceof GotoEdge
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(OnlyInstructionTag())
   }
 
@@ -1054,7 +1054,7 @@ class TranslatedBoolConversion extends TranslatedConversion {
     )
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(BoolConversionConstantTag())
   }
 
@@ -1173,7 +1173,7 @@ class TranslatedBinaryOperation extends TranslatedSingleInstructionExpr {
     kind instanceof GotoEdge
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getLeftOperand() and
     result = FirstInstruction(getRightOperand())
     or
@@ -1268,7 +1268,7 @@ class TranslatedAssignExpr extends TranslatedNonConstantExpr {
     kind instanceof GotoEdge
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     // Operands are evaluated right-to-left.
     child = getRightOperand() and
     result = FirstInstruction(getLeftOperand())
@@ -1362,7 +1362,7 @@ class TranslatedAssignOperation extends TranslatedNonConstantExpr {
     )
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     // Operands are evaluated right-to-left.
     child = getRightOperand() and
     result = FirstInstruction(getLoadedLeftOperand())
@@ -1535,15 +1535,15 @@ class TranslatedConstantAllocationSize extends TranslatedAllocationSize {
     resultType = getTypeForPRValue(expr.getAllocator().getParameter(0).getType())
   }
 
-  final override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  final override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = AllocationSizeTag() and
     kind instanceof GotoEdge and
-    result = SelfSuccessorInstruction()
+    result = getParent().getChildSuccessor(this)
   }
 
   final override TranslatedElement getChild(int id) { none() }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   final override string getInstructionConstantValue(InstructionTag tag) {
     tag = AllocationSizeTag() and
@@ -1593,7 +1593,7 @@ class TranslatedNonConstantAllocationSize extends TranslatedAllocationSize {
 
   final override TranslatedElement getChild(int id) { id = 0 and result = getExtent() }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getExtent() and
     result = SelfInstruction(AllocationExtentConvertTag())
   }
@@ -1705,7 +1705,7 @@ class TranslatedDestructorFieldDestruction extends TranslatedNonConstantExpr, St
     result = getDestructorCall().getFirstInstruction()
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getDestructorCall() and
     result = SelfSuccessorInstruction()
   }
@@ -1859,7 +1859,7 @@ class TranslatedConditionalExpr extends TranslatedNonConstantExpr, ConditionCont
     result = getInstruction(ConditionValueResultLoadTag())
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     (
       child = getThen() and
       if thenIsVoid()
@@ -2007,7 +2007,7 @@ class TranslatedReThrowExpr extends TranslatedThrowExpr {
 
   override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(ThrowTag()) }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   final override Opcode getThrowOpcode() { result instanceof Opcode::ReThrow }
 }
@@ -2041,7 +2041,7 @@ class TranslatedBuiltInOperation extends TranslatedNonConstantExpr {
     result = getParent().getChildSuccessor(this)
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     exists(int id |
       child = getChild(id) and
       (
@@ -2142,7 +2142,7 @@ abstract class TranslatedNewOrNewArrayExpr extends TranslatedNonConstantExpr, In
     else result = getParent().getChildSuccessor(this)
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getAllocatorCall() and result = SelfInstruction(OnlyInstructionTag())
     or
     child = getInitialization() and result = SelfSuccessorInstruction()
@@ -2201,13 +2201,13 @@ class TranslatedDeleteArrayExprPlaceHolder extends TranslatedSingleInstructionEx
 
   final override TranslatedElement getChild(int id) { id = 0 and result = getOperand() }
 
-  final override InstructionDesc getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
+  final override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {
     tag = OnlyInstructionTag() and
     result = SelfSuccessorInstruction() and
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(OnlyInstructionTag())
   }
 
@@ -2241,7 +2241,7 @@ class TranslatedDeleteExprPlaceHolder extends TranslatedSingleInstructionExpr {
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getOperand() and result = SelfInstruction(OnlyInstructionTag())
   }
 
@@ -2279,7 +2279,7 @@ class TranslatedConditionDeclExpr extends TranslatedNonConstantExpr {
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getDecl() and
     result = FirstInstruction(getConditionExpr())
     or
@@ -2330,7 +2330,7 @@ class TranslatedLambdaExpr extends TranslatedNonConstantExpr, InitializationCont
     result = getParent().getChildSuccessor(this)
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getInitialization() and
     result = SelfInstruction(LoadTag())
   }
@@ -2407,7 +2407,7 @@ class TranslatedStmtExpr extends TranslatedNonConstantExpr {
     result = getParent().getChildSuccessor(this)
   }
 
-  override InstructionDesc getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getStmt() and
     result = SelfInstruction(OnlyInstructionTag())
   }
@@ -2442,7 +2442,7 @@ class TranslatedErrorExpr extends TranslatedSingleInstructionExpr {
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   final override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
     none()
@@ -2526,5 +2526,5 @@ class TranslatedAssumeExpr extends TranslatedSingleInstructionExpr {
     kind instanceof GotoEdge
   }
 
-  final override InstructionDesc getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 }

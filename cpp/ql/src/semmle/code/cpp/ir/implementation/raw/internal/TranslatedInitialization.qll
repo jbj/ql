@@ -71,7 +71,7 @@ abstract class TranslatedVariableInitialization extends TranslatedElement, Initi
     )
   }
 
-  final override Instruction getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getInitialization() and result = getInitializationSuccessor()
   }
 
