@@ -686,18 +686,26 @@ module DefUse {
   predicate definitionReachesEndOfBlock(
     Alias::MemoryLocation useLocation, OldBlock defBlock, int defRank, OldBlock block
   ) {
-    hasDefinitionAtRank(useLocation, _, defBlock, defRank, _) and
-    (
-      // If we're looking at the def's own block, just see if it reaches the exit
-      // rank of the block.
-      block = defBlock and
-      locationLiveOnExitFromBlock(useLocation, defBlock) and
-      definitionReachesRank(useLocation, defBlock, defRank, exitRank(useLocation, defBlock))
-      or
-      exists(OldBlock idom |
-        definitionReachesEndOfBlock(useLocation, defBlock, defRank, idom) and
-        noDefinitionsSinceIDominator(useLocation, idom, block)
-      )
+    definitionReachesRank(useLocation, defBlock, defRank, exitRank(useLocation, defBlock)) and
+    lastDefinitionReachesEndOfBlock(useLocation, defBlock, block)
+  }
+
+  /**
+   * Holds if the last definition in `defBlock` that overlaps `useLocation` reaches the end of
+   * block `block` without any intervening definitions that overlap `useLocation`.
+   */
+  private predicate lastDefinitionReachesEndOfBlock(
+    Alias::MemoryLocation useLocation, OldBlock defBlock, OldBlock block
+  ) {
+    // If we're looking at the def's own block, just see if it reaches the exit
+    // rank of the block.
+    block = defBlock and
+    locationLiveOnExitFromBlock(useLocation, defBlock) and
+    hasDefinition(useLocation, _, defBlock, _)
+    or
+    exists(OldBlock idom |
+      lastDefinitionReachesEndOfBlock(useLocation, defBlock, idom) and
+      noDefinitionsSinceIDominator(useLocation, idom, block)
     )
   }
 
