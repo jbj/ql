@@ -497,7 +497,7 @@ private predicate isFirstValueInitializedElementInRange(
 newtype InstructionDesc =
   SelfInstruction(InstructionTag tag) or
   FirstInstruction(TranslatedElement e) or
-  SelfSuccessorInstruction() // used in getChildSuccessor
+  SelfSuccessorInstruction()
 
 /**
  * Represents an AST node for which IR needs to be generated.
@@ -530,6 +530,9 @@ abstract class TranslatedElement extends TTranslatedElement {
       getFirstInstructionDesc() = FirstInstruction(e) and
       result = e.getFirstInstruction()
     )
+    or
+    getFirstInstructionDesc() = SelfSuccessorInstruction() and
+    result = getParent().getChildSuccessor(this)
   }
 
   /**
@@ -615,6 +618,9 @@ abstract class TranslatedElement extends TTranslatedElement {
       getChildSuccessorDesc(child) = FirstInstruction(e) and
       result = e.getFirstInstruction()
     )
+    or
+    getChildSuccessorDesc(child) = SelfSuccessorInstruction() and
+    result = getParent().getChildSuccessor(this)
   }
 
   /**

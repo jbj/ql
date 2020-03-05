@@ -36,7 +36,7 @@ abstract class TranslatedFlexibleCondition extends TranslatedCondition, Conditio
 
   final override TranslatedElement getChild(int id) { id = 0 and result = getOperand() }
 
-  final override Instruction getFirstInstruction() { result = getOperand().getFirstInstruction() }
+  final override InstructionDesc getFirstInstructionDesc() { result = FirstInstruction(getOperand()) }
 
   final override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
     none()
@@ -44,7 +44,7 @@ abstract class TranslatedFlexibleCondition extends TranslatedCondition, Conditio
 
   final override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
 
-  final override Instruction getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   abstract TranslatedCondition getOperand();
 }
@@ -88,7 +88,7 @@ class TranslatedNotCondition extends TranslatedFlexibleCondition {
 abstract class TranslatedNativeCondition extends TranslatedCondition, TTranslatedNativeCondition {
   TranslatedNativeCondition() { this = TTranslatedNativeCondition(expr) }
 
-  final override Instruction getChildSuccessor(TranslatedElement child) { none() }
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 }
 
 abstract class TranslatedBinaryLogicalOperation extends TranslatedNativeCondition, ConditionContext {
@@ -100,8 +100,8 @@ abstract class TranslatedBinaryLogicalOperation extends TranslatedNativeConditio
     id = 1 and result = getRightOperand()
   }
 
-  final override Instruction getFirstInstruction() {
-    result = getLeftOperand().getFirstInstruction()
+  final override InstructionDesc getFirstInstructionDesc() {
+    result = FirstInstruction(getLeftOperand())
   }
 
   final override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
@@ -158,7 +158,7 @@ class TranslatedValueCondition extends TranslatedCondition, TTranslatedValueCond
 
   override TranslatedElement getChild(int id) { id = 0 and result = getValueExpr() }
 
-  override Instruction getFirstInstruction() { result = getValueExpr().getFirstInstruction() }
+  override InstructionDesc getFirstInstructionDesc() { result = FirstInstruction(getValueExpr()) }
 
   override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
     tag = ValueConditionConditionalBranchTag() and
@@ -166,9 +166,9 @@ class TranslatedValueCondition extends TranslatedCondition, TTranslatedValueCond
     resultType = getVoidType()
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getValueExpr() and
-    result = getInstruction(ValueConditionConditionalBranchTag())
+    result = SelfInstruction(ValueConditionConditionalBranchTag())
   }
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) {

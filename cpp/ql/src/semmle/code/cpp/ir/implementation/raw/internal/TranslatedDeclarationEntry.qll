@@ -56,8 +56,8 @@ abstract class TranslatedLocalVariableDeclaration extends TranslatedVariableInit
       getTranslatedInitialization(getVariable().getInitializer().getExpr().getFullyConverted())
   }
 
-  final override Instruction getInitializationSuccessor() {
-    result = getParent().getChildSuccessor(this)
+  final override InstructionDesc getInitializationSuccessorDesc() {
+    result = SelfSuccessorInstruction()
   }
 
   final override IRVariable getIRVariable() {

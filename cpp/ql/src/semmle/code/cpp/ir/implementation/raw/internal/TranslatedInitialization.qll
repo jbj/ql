@@ -72,7 +72,7 @@ abstract class TranslatedVariableInitialization extends TranslatedElement, Initi
   }
 
   final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
-    child = getInitialization() and result = getInitializationSuccessor()
+    child = getInitialization() and result = getInitializationSuccessorDesc()
   }
 
   override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
@@ -108,7 +108,26 @@ abstract class TranslatedVariableInitialization extends TranslatedElement, Initi
   /**
    * Gets the `Instruction` to be executed immediately after the initialization.
    */
-  abstract Instruction getInitializationSuccessor();
+  final Instruction getInitializationSuccessor() {
+    // Implementation adapted from `getChildSuccessor`
+    exists(InstructionTag tag |
+      getInitializationSuccessorDesc() = SelfInstruction(tag) and
+      result = getInstruction(tag)
+    )
+    or
+    exists(TranslatedElement e |
+      getInitializationSuccessorDesc() = FirstInstruction(e) and
+      result = e.getFirstInstruction()
+    )
+    or
+    getInitializationSuccessorDesc() = SelfSuccessorInstruction() and
+    result = getParent().getChildSuccessor(this)
+  }
+
+  /**
+   * Gets the `InstructionDesc` to be executed immediately after the initialization.
+   */
+  abstract InstructionDesc getInitializationSuccessorDesc();
 
   /**
    * Holds if this initialization requires an `Uninitialized` instruction to be emitted before
@@ -157,18 +176,18 @@ abstract class TranslatedInitialization extends TranslatedElement, TTranslatedIn
  * Represents the IR translation of an initialization from an initializer list.
  */
 abstract class TranslatedListInitialization extends TranslatedInitialization, InitializationContext {
-  override Instruction getFirstInstruction() {
-    result = getChild(0).getFirstInstruction()
+  override InstructionDesc getFirstInstructionDesc() {
+    result = FirstInstruction(getChild(0))
     or
     not exists(getChild(0)) and result = SelfSuccessorInstruction()
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     exists(int index |
       child = getChild(index) and
       if exists(getChild(index + 1))
-      then result = getChild(index + 1).getFirstInstruction()
-      else result = getParent().getChildSuccessor(this)
+      then result = FirstInstruction(getChild(index + 1))
+      else result = SelfSuccessorInstruction()
     )
   }
 
@@ -226,7 +245,7 @@ abstract class TranslatedDirectInitialization extends TranslatedInitialization {
 
   override TranslatedElement getChild(int id) { id = 0 and result = getInitializer() }
 
-  override Instruction getFirstInstruction() { result = getInitializer().getFirstInstruction() }
+  override InstructionDesc getFirstInstructionDesc() { result = FirstInstruction(getInitializer()) }
 
   final TranslatedExpr getInitializer() { result = getTranslatedExpr(expr) }
 }
@@ -254,8 +273,8 @@ class TranslatedSimpleDirectInitialization extends TranslatedDirectInitializatio
     kind instanceof GotoEdge
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
-    child = getInitializer() and result = getInstruction(InitializerStoreTag())
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
+    child = getInitializer() and result = SelfInstruction(InitializerStoreTag())
   }
 
   override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
@@ -347,8 +366,8 @@ class TranslatedStringLiteralInitialization extends TranslatedDirectInitializati
     )
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
-    child = getInitializer() and result = getInstruction(InitializerLoadStringTag())
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
+    child = getInitializer() and result = SelfInstruction(InitializerLoadStringTag())
   }
 
   override Instruction getInstructionOperand(InstructionTag tag, OperandTag operandTag) {
@@ -453,7 +472,7 @@ class TranslatedConstructorInitialization extends TranslatedDirectInitialization
 
   override Instruction getInstructionSuccessor(InstructionTag tag, EdgeKind kind) { none() }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getInitializer() and result = SelfSuccessorInstruction()
   }
 
@@ -490,7 +509,7 @@ abstract class TranslatedFieldInitialization extends TranslatedElement {
 
   final override Function getFunction() { result = ast.getEnclosingFunction() }
 
-  final override Instruction getFirstInstruction() { result = getInstruction(getFieldAddressTag()) }
+  final override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(getFieldAddressTag()) }
 
   /**
    * Gets the zero-based index describing the order in which this field is to be
@@ -541,7 +560,7 @@ class TranslatedExplicitFieldInitialization extends TranslatedFieldInitializatio
     kind instanceof GotoEdge
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getInitialization() and result = SelfSuccessorInstruction()
   }
 
@@ -608,7 +627,7 @@ class TranslatedFieldValueInitialization extends TranslatedFieldInitialization,
     )
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   override TranslatedElement getChild(int id) { none() }
 
@@ -634,7 +653,7 @@ abstract class TranslatedElementInitialization extends TranslatedElement {
 
   final override Function getFunction() { result = initList.getEnclosingFunction() }
 
-  final override Instruction getFirstInstruction() { result = getInstruction(getElementIndexTag()) }
+  final override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(getElementIndexTag()) }
 
   override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
     tag = getElementIndexTag() and
@@ -708,7 +727,7 @@ class TranslatedExplicitElementInitialization extends TranslatedElementInitializ
     kind instanceof GotoEdge
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) {
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getInitialization() and result = SelfSuccessorInstruction()
   }
 
@@ -791,7 +810,7 @@ class TranslatedElementValueInitialization extends TranslatedElementInitializati
     )
   }
 
-  override Instruction getChildSuccessor(TranslatedElement child) { none() }
+  override InstructionDesc getChildSuccessorDesc(TranslatedElement child) { none() }
 
   override TranslatedElement getChild(int id) { none() }
 
@@ -828,7 +847,7 @@ abstract class TranslatedStructorCallFromStructor extends TranslatedElement, Str
 
   final override Function getFunction() { result = call.getEnclosingFunction() }
 
-  final override Instruction getChildSuccessor(TranslatedElement child) {
+  final override InstructionDesc getChildSuccessorDesc(TranslatedElement child) {
     child = getStructorCall() and
     result = SelfSuccessorInstruction()
   }
@@ -841,7 +860,7 @@ abstract class TranslatedStructorCallFromStructor extends TranslatedElement, Str
  * destructor from within a derived class constructor or destructor.
  */
 abstract class TranslatedBaseStructorCall extends TranslatedStructorCallFromStructor {
-  final override Instruction getFirstInstruction() { result = getInstruction(OnlyInstructionTag()) }
+  final override InstructionDesc getFirstInstructionDesc() { result = SelfInstruction(OnlyInstructionTag()) }
 
   final override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
     tag = OnlyInstructionTag() and
@@ -892,8 +911,8 @@ class TranslatedConstructorDelegationInit extends TranslatedConstructorCallFromC
 
   final override string toString() { result = "delegation construct: " + call.toString() }
 
-  final override Instruction getFirstInstruction() {
-    result = getStructorCall().getFirstInstruction()
+  final override InstructionDesc getFirstInstructionDesc() {
+    result = FirstInstruction(getStructorCall())
   }
 
   final override predicate hasInstruction(Opcode opcode, InstructionTag tag, CppType resultType) {
