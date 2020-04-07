@@ -1,0 +1,6 @@
+---
+sourceLocationPrefix: "C:\\semmle\\code\\ql\\cpp\\ql\\src"
+unicodeNewlines: false
+columnKind: "utf8"
+inProgress:
+  extractorPath: "C:\\semmle\\code\\target\\intree\\codeql\\cpp"

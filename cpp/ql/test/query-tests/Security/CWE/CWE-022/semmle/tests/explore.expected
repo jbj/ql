@@ -1,0 +1,2 @@
+ERROR: Could not resolve type Default::DefaultTaintTrackingCfg (explore.ql:7,6-38)
+ERROR: Query predicates cannot be annotated with cached (explore.ql:5,1-6)

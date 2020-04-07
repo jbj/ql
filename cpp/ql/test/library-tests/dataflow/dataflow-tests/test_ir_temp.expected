@@ -1,0 +1,437 @@
+sources
+| BarrierGuard.cpp:5:19:5:24 | source |
+| BarrierGuard.cpp:13:17:13:22 | source |
+| BarrierGuard.cpp:21:17:21:22 | source |
+| BarrierGuard.cpp:29:16:29:21 | source |
+| BarrierGuard.cpp:37:20:37:25 | source |
+| BarrierGuard.cpp:49:10:49:15 | call to source |
+| BarrierGuard.cpp:60:11:60:16 | call to source |
+| acrossLinkTargets.cpp:19:27:19:32 | call to source |
+| acrossLinkTargets.cpp:41:19:41:24 | call to source |
+| clang.cpp:12:9:12:20 | sourceArray1 |
+| clang.cpp:14:18:14:30 | sourceStruct1 |
+| clang.cpp:15:19:15:35 | sourceStruct1_ptr |
+| clang.cpp:16:11:16:31 | sourceFunctionPointer |
+| clang.cpp:28:27:28:32 | call to source |
+| clang.cpp:34:22:34:27 | call to source |
+| clang.cpp:34:32:34:37 | call to source |
+| clang.cpp:39:32:39:37 | call to source |
+| clang.cpp:39:42:39:47 | call to source |
+| clang.cpp:43:35:43:40 | call to source |
+| clang.cpp:49:25:49:30 | call to source |
+| clang.cpp:49:35:49:40 | call to source |
+| clang.cpp:50:19:50:24 | call to source |
+| dispatch.cpp:9:37:9:42 | call to source |
+| dispatch.cpp:10:37:10:42 | call to source |
+| dispatch.cpp:16:37:16:42 | call to source |
+| dispatch.cpp:22:37:22:42 | call to source |
+| dispatch.cpp:33:18:33:23 | call to source |
+| dispatch.cpp:37:19:37:24 | call to source |
+| dispatch.cpp:41:17:41:22 | call to source |
+| dispatch.cpp:45:18:45:23 | call to source |
+| dispatch.cpp:69:15:69:20 | call to source |
+| dispatch.cpp:73:14:73:19 | call to source |
+| dispatch.cpp:81:13:81:18 | call to source |
+| dispatch.cpp:89:28:89:33 | call to source |
+| dispatch.cpp:90:25:90:30 | call to source |
+| dispatch.cpp:107:17:107:22 | call to source |
+| dispatch.cpp:108:16:108:21 | call to source |
+| dispatch.cpp:117:38:117:43 | call to source |
+| dispatch.cpp:140:8:140:13 | call to source |
+| dispatch.cpp:144:8:144:13 | call to source |
+| dispatch.cpp:160:8:160:13 | call to source |
+| dispatch.cpp:164:8:164:13 | call to source |
+| globals.cpp:5:17:5:22 | call to source |
+| globals.cpp:13:23:13:28 | call to source |
+| globals.cpp:23:23:23:28 | call to source |
+| lambdas.cpp:8:10:8:15 | call to source |
+| lambdas.cpp:23:7:23:12 | call to source |
+| lambdas.cpp:43:7:43:12 | call to source |
+| ref.cpp:29:11:29:16 | call to source |
+| ref.cpp:44:11:44:16 | call to source |
+| ref.cpp:55:23:55:28 | call to source |
+| ref.cpp:58:19:58:24 | call to source |
+| ref.cpp:94:15:94:20 | call to source |
+| ref.cpp:109:15:109:20 | call to source |
+| ref.cpp:122:23:122:28 | call to source |
+| ref.cpp:125:19:125:24 | call to source |
+| test.cpp:6:12:6:17 | call to source |
+| test.cpp:35:10:35:15 | call to source |
+| test.cpp:36:13:36:18 | call to source |
+| test.cpp:42:13:42:18 | call to source |
+| test.cpp:50:14:50:19 | call to source |
+| test.cpp:66:30:66:36 | source1 |
+| test.cpp:89:28:89:34 | source1 |
+| test.cpp:100:13:100:18 | call to source |
+| test.cpp:109:9:109:14 | call to source |
+| test.cpp:115:10:115:15 | call to source |
+| test.cpp:138:27:138:32 | call to source |
+| test.cpp:151:33:151:38 | call to source |
+| test.cpp:164:34:164:39 | call to source |
+| test.cpp:171:11:171:16 | call to source |
+| test.cpp:194:29:194:34 | call to source |
+| test.cpp:200:33:200:38 | source |
+| test.cpp:209:35:209:40 | call to source |
+| test.cpp:213:34:213:39 | source |
+| test.cpp:223:36:223:41 | call to source |
+| test.cpp:230:13:230:18 | call to source |
+| test.cpp:245:14:245:19 | call to source |
+| test.cpp:246:18:246:23 | call to source |
+| test.cpp:265:22:265:27 | call to source |
+| test.cpp:267:22:267:27 | call to source |
+| test.cpp:305:17:305:22 | call to source |
+| test.cpp:314:4:314:9 | call to source |
+| test.cpp:333:17:333:22 | call to source |
+| test.cpp:347:17:347:22 | call to source |
+| test.cpp:359:13:359:18 | call to source |
+| test.cpp:373:13:373:18 | call to source |
+| test.cpp:382:48:382:54 | source1 |
+| test.cpp:388:53:388:59 | source1 |
+| test.cpp:449:26:449:32 | source1 |
+| true_upon_entry.cpp:9:11:9:16 | call to source |
+| true_upon_entry.cpp:17:11:17:16 | call to source |
+| true_upon_entry.cpp:27:9:27:14 | call to source |
+| true_upon_entry.cpp:33:11:33:16 | call to source |
+| true_upon_entry.cpp:43:11:43:16 | call to source |
+| true_upon_entry.cpp:54:11:54:16 | call to source |
+| true_upon_entry.cpp:62:11:62:16 | call to source |
+| true_upon_entry.cpp:70:11:70:16 | call to source |
+| true_upon_entry.cpp:83:11:83:16 | call to source |
+| true_upon_entry.cpp:90:11:90:16 | call to source |
+| true_upon_entry.cpp:98:11:98:16 | call to source |
+#select
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:189:27:189:27 | p : void | 1 |
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:190:12:190:12 | Store : void | 1 |
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:190:12:190:12 | p : void | 1 |
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:194:13:194:27 | Store : void | 0 |
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:194:13:194:27 | call to returnParameter : void | 0 |
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:195:19:195:19 | Store : void | 0 |
+| BarrierTests::callReturnParameter | test.cpp:194:29:194:34 | call to source : void | test.cpp:195:19:195:19 | x : void | 0 |
+| BarrierTests::callReturnSourceParameter | test.cpp:209:35:209:40 | call to source : void | test.cpp:200:33:200:38 | source : void | 0 |
+| BarrierTests::callReturnSourceParameter | test.cpp:209:35:209:40 | call to source : void | test.cpp:201:19:201:24 | Store : void | 0 |
+| BarrierTests::callReturnSourceParameter | test.cpp:209:35:209:40 | call to source : void | test.cpp:201:19:201:24 | source : void | 0 |
+| BarrierTests::callReturnSourceParameter | test.cpp:209:35:209:40 | call to source : void | test.cpp:209:13:209:33 | Store : void | 0 |
+| BarrierTests::callReturnSourceParameter | test.cpp:209:35:209:40 | call to source : void | test.cpp:209:13:209:33 | call to returnSourceParameter : void | 0 |
+| BarrierTests::callReturnSourceParameter | test.cpp:209:35:209:40 | call to source : void | test.cpp:210:10:210:10 | y : void | 0 |
+| BarrierTests::callReturnSourceParameter2 | test.cpp:223:36:223:41 | call to source : void | test.cpp:213:34:213:39 | source : void | 0 |
+| BarrierTests::callReturnSourceParameter2 | test.cpp:223:36:223:41 | call to source : void | test.cpp:214:19:214:24 | Store : void | 0 |
+| BarrierTests::callReturnSourceParameter2 | test.cpp:223:36:223:41 | call to source : void | test.cpp:214:19:214:24 | source : void | 0 |
+| BarrierTests::callReturnSourceParameter2 | test.cpp:223:36:223:41 | call to source : void | test.cpp:223:13:223:34 | Store : void | 0 |
+| BarrierTests::callReturnSourceParameter2 | test.cpp:223:36:223:41 | call to source : void | test.cpp:223:13:223:34 | call to returnSourceParameter2 : void | 0 |
+| BarrierTests::callReturnSourceParameter2 | test.cpp:223:36:223:41 | call to source : void | test.cpp:224:10:224:10 | y : void | 0 |
+| BarrierTests::returnSource | test.cpp:230:13:230:18 | call to source : void | test.cpp:230:13:230:18 | Store : void | 0 |
+| BarrierTests::returnSource | test.cpp:230:13:230:18 | call to source : void | test.cpp:231:19:231:19 | Store : void | 0 |
+| BarrierTests::returnSource | test.cpp:230:13:230:18 | call to source : void | test.cpp:231:19:231:19 | x : void | 0 |
+| BarrierTests::returnSourceParameter | test.cpp:200:33:200:38 | source : void | test.cpp:201:19:201:24 | Store : void | 0 |
+| BarrierTests::returnSourceParameter | test.cpp:200:33:200:38 | source : void | test.cpp:201:19:201:24 | Store : void | 0 |
+| BarrierTests::returnSourceParameter | test.cpp:200:33:200:38 | source : void | test.cpp:201:19:201:24 | source : void | 0 |
+| BarrierTests::returnSourceParameter | test.cpp:200:33:200:38 | source : void | test.cpp:201:19:201:24 | source : void | 0 |
+| BarrierTests::returnSourceParameter2 | test.cpp:213:34:213:39 | source : void | test.cpp:214:19:214:24 | Store : void | 0 |
+| BarrierTests::returnSourceParameter2 | test.cpp:213:34:213:39 | source : void | test.cpp:214:19:214:24 | Store : void | 0 |
+| BarrierTests::returnSourceParameter2 | test.cpp:213:34:213:39 | source : void | test.cpp:214:19:214:24 | source : void | 0 |
+| BarrierTests::returnSourceParameter2 | test.cpp:213:34:213:39 | source : void | test.cpp:214:19:214:24 | source : void | 0 |
+| Bottom::isSource1 | dispatch.cpp:22:37:22:42 | call to source : void | dispatch.cpp:22:37:22:42 | Store : void | 0 |
+| Bottom::isSource1 | dispatch.cpp:22:37:22:42 | call to source : void | dispatch.cpp:31:16:31:24 | call to isSource1 : void | 0 |
+| Bottom::isSource1 | dispatch.cpp:22:37:22:42 | call to source : void | dispatch.cpp:39:15:39:23 | call to isSource1 : void | 0 |
+| Bottom::isSource1 | dispatch.cpp:22:37:22:42 | call to source : void | dispatch.cpp:55:22:55:30 | call to isSource1 : void | 1 |
+| Bottom::isSource1 | dispatch.cpp:22:37:22:42 | call to source : void | dispatch.cpp:58:28:58:36 | call to isSource1 : void | 1 |
+| FlowThroughFields::taintAndCall | test.cpp:373:13:373:18 | call to source : void | test.cpp:373:5:373:20 | Store : void | 0 |
+| FlowThroughFields::taintField | test.cpp:359:13:359:18 | call to source : void | test.cpp:359:5:359:20 | Store : void | 0 |
+| FlowThroughGlobals::taintAndCall | test.cpp:347:17:347:22 | call to source : void | test.cpp:347:5:347:24 | Store : void | 0 |
+| FlowThroughGlobals::taintGlobal | test.cpp:333:17:333:22 | call to source : void | test.cpp:333:5:333:24 | Store : void | 0 |
+| Middle::isSource2 | dispatch.cpp:16:37:16:42 | call to source : void | dispatch.cpp:16:37:16:42 | Store : void | 0 |
+| Middle::isSource2 | dispatch.cpp:16:37:16:42 | call to source : void | dispatch.cpp:32:16:32:24 | call to isSource2 : void | 0 |
+| Middle::isSource2 | dispatch.cpp:16:37:16:42 | call to source : void | dispatch.cpp:40:15:40:23 | call to isSource2 : void | 0 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:245:14:245:19 | call to source : void | test.cpp:249:21:249:21 | x : void | 1 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:245:14:245:19 | call to source : void | test.cpp:250:15:250:15 | Store : void | 1 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:245:14:245:19 | call to source : void | test.cpp:250:15:250:15 | x : void | 1 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:245:14:245:19 | call to source : void | test.cpp:251:14:251:14 | y : void | 1 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:245:14:245:19 | call to source : void | test.cpp:259:21:259:21 | x : void | 2 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:245:14:245:19 | call to source : void | test.cpp:260:12:260:12 | x : void | 2 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:246:18:246:23 | call to source : void | test.cpp:254:25:254:25 | x : void | 1 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:246:18:246:23 | call to source : void | test.cpp:255:21:255:21 | Store : void | 1 |
+| NestedTests::FlowIntoParameter::level0 | test.cpp:246:18:246:23 | call to source : void | test.cpp:255:21:255:21 | x : void | 1 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:316:18:316:18 | p : void | 1 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:317:10:317:10 | Store : void | 1 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:317:10:317:10 | call to h : void | 1 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:317:12:317:12 | p : void | 1 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:318:7:318:7 | x : void | 1 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:323:17:323:17 | p : void | 2 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:324:9:324:9 | Store : void | 2 |
+| NestedTests::FlowOutOfFunction::f | test.cpp:314:4:314:9 | call to source : void | test.cpp:324:9:324:9 | p : void | 2 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:288:17:288:22 | Store : void | 2 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:288:17:288:22 | call to level1 : void | 2 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:289:14:289:14 | x : void | 2 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:295:17:295:22 | Store : void | 1 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:295:17:295:22 | call to level2 : void | 1 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:296:16:296:16 | Store : void | 1 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:296:16:296:16 | y : void | 1 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:300:23:300:28 | Store : void | 1 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:300:23:300:28 | call to level2 : void | 1 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:305:17:305:22 | Store : void | 0 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:306:16:306:16 | Store : void | 0 |
+| NestedTests::FlowOutOfFunction::level2 | test.cpp:305:17:305:22 | call to source : void | test.cpp:306:16:306:16 | y : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:265:15:265:20 | Store : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:265:15:265:20 | call to level1 : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:266:12:266:12 | x : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:271:20:271:20 | x : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:272:15:272:15 | Store : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:272:15:272:15 | x : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:273:14:273:19 | Store : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:273:14:273:19 | call to level2 : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:273:21:273:21 | y : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:281:20:281:20 | x : void | 2 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:282:15:282:15 | Store : void | 2 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:282:15:282:15 | x : void | 2 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:283:14:283:14 | Store : void | 2 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:265:22:265:27 | call to source : void | test.cpp:283:14:283:14 | y : void | 2 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:267:22:267:27 | call to source : void | test.cpp:267:7:267:30 | Store : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:267:22:267:27 | call to source : void | test.cpp:267:11:267:20 | call to safelevel1 : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:267:22:267:27 | call to source : void | test.cpp:268:12:268:12 | x : void | 0 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:267:22:267:27 | call to source : void | test.cpp:276:24:276:24 | x : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:267:22:267:27 | call to source : void | test.cpp:277:21:277:21 | Store : void | 1 |
+| NestedTests::FlowThroughFunctionReturn::level0 | test.cpp:267:22:267:27 | call to source : void | test.cpp:277:21:277:21 | x : void | 1 |
+| Top::notSource1 | dispatch.cpp:9:37:9:42 | call to source : void | dispatch.cpp:9:37:9:42 | Store : void | 0 |
+| Top::notSource1 | dispatch.cpp:9:37:9:42 | call to source : void | dispatch.cpp:35:16:35:25 | call to notSource1 : void | 0 |
+| Top::notSource1 | dispatch.cpp:9:37:9:42 | call to source : void | dispatch.cpp:43:15:43:24 | call to notSource1 : void | 0 |
+| Top::notSource2 | dispatch.cpp:10:37:10:42 | call to source : void | dispatch.cpp:10:37:10:42 | Store : void | 0 |
+| Top::notSource2 | dispatch.cpp:10:37:10:42 | call to source : void | dispatch.cpp:36:16:36:25 | call to notSource2 : void | 0 |
+| Top::notSource2 | dispatch.cpp:10:37:10:42 | call to source : void | dispatch.cpp:44:15:44:24 | call to notSource2 : void | 0 |
+| VirtualDispatch | dispatch.cpp:33:18:33:23 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:33:18:33:23 | call to source : void | dispatch.cpp:23:19:23:19 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:33:18:33:23 | call to source : void | dispatch.cpp:23:38:23:38 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:37:19:37:24 | call to source : void | dispatch.cpp:11:28:11:28 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:37:19:37:24 | call to source : void | dispatch.cpp:11:38:11:38 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:37:19:37:24 | call to source : void | dispatch.cpp:25:20:25:20 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:41:17:41:22 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:41:17:41:22 | call to source : void | dispatch.cpp:23:19:23:19 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:41:17:41:22 | call to source : void | dispatch.cpp:23:38:23:38 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:45:18:45:23 | call to source : void | dispatch.cpp:11:28:11:28 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:45:18:45:23 | call to source : void | dispatch.cpp:11:38:11:38 | x : void | 1 |
+| VirtualDispatch | dispatch.cpp:45:18:45:23 | call to source : void | dispatch.cpp:25:20:25:20 | x : void | 1 |
+| alwaysAssignSource | test.cpp:115:10:115:15 | call to source : void | test.cpp:115:3:115:17 | Store : void | 0 |
+| bg_and | BarrierGuard.cpp:21:17:21:22 | source : void | BarrierGuard.cpp:22:15:22:20 | source : void | 0 |
+| bg_and | BarrierGuard.cpp:21:17:21:22 | source : void | BarrierGuard.cpp:25:10:25:15 | source : void | 0 |
+| bg_basic | BarrierGuard.cpp:5:19:5:24 | source : void | BarrierGuard.cpp:6:15:6:20 | source : void | 0 |
+| bg_basic | BarrierGuard.cpp:5:19:5:24 | source : void | BarrierGuard.cpp:9:10:9:15 | source : void | 0 |
+| bg_not | BarrierGuard.cpp:13:17:13:22 | source : void | BarrierGuard.cpp:14:16:14:21 | source : void | 0 |
+| bg_not | BarrierGuard.cpp:13:17:13:22 | source : void | BarrierGuard.cpp:15:10:15:15 | source : void | 0 |
+| bg_or | BarrierGuard.cpp:29:16:29:21 | source : void | BarrierGuard.cpp:30:15:30:20 | source : void | 0 |
+| bg_or | BarrierGuard.cpp:29:16:29:21 | source : void | BarrierGuard.cpp:31:10:31:15 | source : void | 0 |
+| bg_or | BarrierGuard.cpp:29:16:29:21 | source : void | BarrierGuard.cpp:33:10:33:15 | source : void | 0 |
+| bg_return | BarrierGuard.cpp:37:20:37:25 | source : void | BarrierGuard.cpp:38:16:38:21 | source : void | 0 |
+| bg_stackstruct | BarrierGuard.cpp:49:10:49:15 | call to source : void | BarrierGuard.cpp:49:3:49:17 | Store : void | 0 |
+| bg_stackstruct | BarrierGuard.cpp:49:10:49:15 | call to source : void | BarrierGuard.cpp:50:18:50:18 | x : void | 0 |
+| bg_stackstruct | BarrierGuard.cpp:49:10:49:15 | call to source : void | BarrierGuard.cpp:53:13:53:13 | x : void | 0 |
+| bg_stackstruct | BarrierGuard.cpp:49:10:49:15 | call to source : void | BarrierGuard.cpp:55:13:55:13 | x : void | 0 |
+| bg_structptr | BarrierGuard.cpp:60:11:60:16 | call to source : void | BarrierGuard.cpp:60:3:60:18 | Store : void | 0 |
+| bg_structptr | BarrierGuard.cpp:60:11:60:16 | call to source : void | BarrierGuard.cpp:61:19:61:19 | x : void | 0 |
+| bg_structptr | BarrierGuard.cpp:60:11:60:16 | call to source : void | BarrierGuard.cpp:64:14:64:14 | x : void | 0 |
+| bg_structptr | BarrierGuard.cpp:60:11:60:16 | call to source : void | BarrierGuard.cpp:66:14:66:14 | x : void | 0 |
+| branching | test.cpp:42:13:42:18 | call to source : void | test.cpp:42:13:42:18 | Store : void | 0 |
+| branching | test.cpp:42:13:42:18 | call to source : void | test.cpp:43:10:43:10 | t : void | 0 |
+| branching | test.cpp:50:14:50:19 | call to source : void | test.cpp:50:14:50:19 | Store : void | 0 |
+| branching | test.cpp:50:14:50:19 | call to source : void | test.cpp:52:7:52:12 | Store : void | 0 |
+| branching | test.cpp:50:14:50:19 | call to source : void | test.cpp:52:11:52:12 | t1 : void | 0 |
+| branching | test.cpp:50:14:50:19 | call to source : void | test.cpp:58:5:58:8 | Phi : void | 0 |
+| branching | test.cpp:50:14:50:19 | call to source : void | test.cpp:58:10:58:10 | t : void | 0 |
+| callIdentityFunctions | dispatch.cpp:89:28:89:33 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| callIdentityFunctions | dispatch.cpp:90:25:90:30 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:133:25:133:25 | p : void | 1 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:134:10:134:10 | Store : void | 1 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:134:10:134:10 | p : void | 1 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:138:11:138:25 | Store : void | 0 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:138:11:138:25 | call to returnParameter : void | 0 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:139:11:139:11 | Store : void | 0 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:139:11:139:11 | x : void | 0 |
+| callReturnParameter | test.cpp:138:27:138:32 | call to source : void | test.cpp:140:8:140:8 | y : void | 0 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:143:31:143:31 | s : void | 1 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:144:8:144:8 | s : void | 1 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:145:10:145:10 | Store : void | 1 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:145:10:145:10 | s : void | 1 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:151:11:151:31 | Store : void | 0 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:151:11:151:31 | call to returnSourceParameter : void | 0 |
+| callReturnSourceParameter | test.cpp:151:33:151:38 | call to source : void | test.cpp:152:8:152:8 | y : void | 0 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:155:32:155:32 | s : void | 1 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:156:11:156:11 | Store : void | 1 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:156:11:156:11 | s : void | 1 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:157:8:157:8 | x : void | 1 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:158:10:158:10 | Store : void | 1 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:158:10:158:10 | x : void | 1 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:164:11:164:32 | Store : void | 0 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:164:11:164:32 | call to returnSourceParameter2 : void | 0 |
+| callReturnSourceParameter2 | test.cpp:164:34:164:39 | call to source : void | test.cpp:165:8:165:8 | y : void | 0 |
+| callSinkByPointer | dispatch.cpp:69:15:69:20 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| callSinkByPointer | dispatch.cpp:69:15:69:20 | call to source : void | dispatch.cpp:23:19:23:19 | x : void | 1 |
+| callSinkByPointer | dispatch.cpp:69:15:69:20 | call to source : void | dispatch.cpp:23:38:23:38 | x : void | 1 |
+| callSinkByReference | dispatch.cpp:73:14:73:19 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| callSinkByReference | dispatch.cpp:73:14:73:19 | call to source : void | dispatch.cpp:23:19:23:19 | x : void | 1 |
+| callSinkByReference | dispatch.cpp:73:14:73:19 | call to source : void | dispatch.cpp:23:38:23:38 | x : void | 1 |
+| call_sink_through_union_field_f | dispatch.cpp:140:8:140:13 | call to source : void | dispatch.cpp:95:19:95:19 | x : void | 1 |
+| call_sink_through_union_field_f | dispatch.cpp:140:8:140:13 | call to source : void | dispatch.cpp:96:8:96:8 | x : void | 1 |
+| call_sink_through_union_field_g | dispatch.cpp:144:8:144:13 | call to source : void | dispatch.cpp:95:19:95:19 | x : void | 1 |
+| call_sink_through_union_field_g | dispatch.cpp:144:8:144:13 | call to source : void | dispatch.cpp:96:8:96:8 | x : void | 1 |
+| caller | test.cpp:35:10:35:15 | call to source : void | test.cpp:29:24:29:24 | t : void | 1 |
+| caller | test.cpp:35:10:35:15 | call to source : void | test.cpp:30:8:30:8 | t : void | 1 |
+| caller | test.cpp:36:13:36:18 | call to source : void | test.cpp:29:31:29:31 | c : void | 1 |
+| caller | test.cpp:36:13:36:18 | call to source : void | test.cpp:31:8:31:8 | c : void | 1 |
+| callerAcrossLinkTargets | acrossLinkTargets.cpp:19:27:19:32 | call to source : void | acrossLinkTargets.cpp:11:35:11:35 | x : void | 1 |
+| callerAcrossLinkTargets | acrossLinkTargets.cpp:19:27:19:32 | call to source : void | acrossLinkTargets.cpp:12:8:12:8 | (int)... : void | 1 |
+| callerAcrossLinkTargets | acrossLinkTargets.cpp:19:27:19:32 | call to source : void | acrossLinkTargets.cpp:12:8:12:8 | x : void | 1 |
+| flowThroughMemcpy_blockvar_with_local_flow | test.cpp:388:53:388:59 | source1 : void | test.cpp:391:3:391:8 | call to memcpy : void | 0 |
+| flowThroughMemcpy_blockvar_with_local_flow | test.cpp:388:53:388:59 | source1 : void | test.cpp:391:10:391:13 | SizedBufferMustWriteSideEffect : void | 0 |
+| flowThroughMemcpy_ssa_with_local_flow | test.cpp:382:48:382:54 | source1 : void | test.cpp:384:3:384:8 | call to memcpy : void | 0 |
+| flowThroughMemcpy_ssa_with_local_flow | test.cpp:382:48:382:54 | source1 : void | test.cpp:384:10:384:13 | SizedBufferMustWriteSideEffect : void | 0 |
+| following_pointers | clang.cpp:12:9:12:20 | sourceArray1 : void | clang.cpp:12:9:12:20 | Load : void | 0 |
+| following_pointers | clang.cpp:12:9:12:20 | sourceArray1 : void | clang.cpp:18:8:18:19 | (const int *)... : void | 0 |
+| following_pointers | clang.cpp:12:9:12:20 | sourceArray1 : void | clang.cpp:18:8:18:19 | sourceArray1 : void | 0 |
+| following_pointers | clang.cpp:12:9:12:20 | sourceArray1 : void | clang.cpp:20:8:20:19 | sourceArray1 : void | 0 |
+| following_pointers | clang.cpp:12:9:12:20 | sourceArray1 : void | clang.cpp:21:9:21:20 | sourceArray1 : void | 0 |
+| following_pointers | clang.cpp:12:9:12:20 | sourceArray1 : void | clang.cpp:22:8:22:20 | Chi : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:15:19:15:35 | Load : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:25:8:25:24 | sourceStruct1_ptr : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:26:8:26:24 | sourceStruct1_ptr : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:28:3:28:19 | sourceStruct1_ptr : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:29:8:29:24 | sourceStruct1_ptr : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:30:8:30:24 | sourceStruct1_ptr : void | 0 |
+| following_pointers | clang.cpp:15:19:15:35 | sourceStruct1_ptr : void | clang.cpp:31:8:31:24 | sourceStruct1_ptr : void | 0 |
+| following_pointers | clang.cpp:16:11:16:31 | sourceFunctionPointer : void | clang.cpp:47:8:47:28 | sourceFunctionPointer : void | 0 |
+| following_pointers | clang.cpp:28:27:28:32 | call to source : void | clang.cpp:28:3:28:34 | Store : void | 0 |
+| following_pointers | clang.cpp:28:27:28:32 | call to source : void | clang.cpp:29:27:29:28 | m1 : void | 0 |
+| following_pointers | clang.cpp:34:22:34:27 | call to source : void | clang.cpp:34:22:34:27 | Store : void | 0 |
+| following_pointers | clang.cpp:34:32:34:37 | call to source : void | clang.cpp:34:32:34:37 | Store : void | 0 |
+| following_pointers | clang.cpp:34:32:34:37 | call to source : void | clang.cpp:37:10:37:11 | m2 : void | 0 |
+| following_pointers | clang.cpp:39:32:39:37 | call to source : void | clang.cpp:39:32:39:37 | Store : void | 0 |
+| following_pointers | clang.cpp:39:42:39:47 | call to source : void | clang.cpp:39:42:39:47 | Store : void | 0 |
+| following_pointers | clang.cpp:39:42:39:47 | call to source : void | clang.cpp:41:18:41:19 | m2 : void | 0 |
+| following_pointers | clang.cpp:43:35:43:40 | call to source : void | clang.cpp:43:35:43:40 | Store : void | 0 |
+| following_pointers | clang.cpp:43:35:43:40 | call to source : void | clang.cpp:45:17:45:18 | m2 : void | 0 |
+| following_pointers | clang.cpp:49:25:49:30 | call to source : void | clang.cpp:49:25:49:30 | Store : void | 0 |
+| following_pointers | clang.cpp:49:35:49:40 | call to source : void | clang.cpp:49:35:49:40 | Store : void | 0 |
+| following_pointers | clang.cpp:50:19:50:24 | call to source : void | clang.cpp:50:3:50:26 | Store : void | 0 |
+| globalVirtualDispatch | dispatch.cpp:81:13:81:18 | call to source : void | dispatch.cpp:8:27:8:27 | x : void | 1 |
+| globalVirtualDispatch | dispatch.cpp:81:13:81:18 | call to source : void | dispatch.cpp:23:19:23:19 | x : void | 1 |
+| globalVirtualDispatch | dispatch.cpp:81:13:81:18 | call to source : void | dispatch.cpp:23:38:23:38 | x : void | 1 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:66:30:66:36 | Load : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:67:19:67:37 | (const int *)... : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:67:19:67:37 | (reference dereference) : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:67:19:67:37 | Store : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:68:13:68:32 | Store : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:68:13:68:32 | const_cast<int *>... : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:68:30:68:31 | x1 : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:69:13:69:16 | Store : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:69:14:69:15 | x2 : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:70:19:70:33 | (const int *)... : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:70:19:70:33 | Store : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:70:32:70:33 | x3 : void | 0 |
+| identityOperations | test.cpp:66:30:66:36 | source1 : void | test.cpp:71:8:71:9 | x4 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:6:12:6:17 | Store : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:7:8:7:9 | t1 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:8:3:8:9 | Store : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:8:8:8:9 | t1 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:9:8:9:9 | t1 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:10:8:10:9 | t2 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:11:7:11:8 | t1 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:15:3:15:6 | Phi : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:15:8:15:9 | t2 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:23:19:23:19 | Phi : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:23:23:23:24 | t1 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:24:5:24:11 | Store : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:24:10:24:11 | t2 : void | 0 |
+| intraprocedural_with_local_flow | test.cpp:6:12:6:17 | call to source : void | test.cpp:26:8:26:9 | t1 : void | 0 |
+| local_references | test.cpp:89:28:89:34 | source1 : void | test.cpp:89:28:89:34 | Load : void | 0 |
+| local_references | test.cpp:89:28:89:34 | source1 : void | test.cpp:90:8:90:14 | source1 : void | 0 |
+| local_references | test.cpp:89:28:89:34 | source1 : void | test.cpp:91:3:91:9 | (reference dereference) : void | 0 |
+| local_references | test.cpp:89:28:89:34 | source1 : void | test.cpp:91:3:91:9 | source1 : void | 0 |
+| local_references | test.cpp:89:28:89:34 | source1 : void | test.cpp:92:8:92:14 | source1 : void | 0 |
+| local_references | test.cpp:100:13:100:18 | call to source : void | test.cpp:100:13:100:18 | Store : void | 0 |
+| local_references | test.cpp:109:9:109:14 | call to source : void | test.cpp:109:5:109:16 | Store : void | 0 |
+| local_references | test.cpp:109:9:109:14 | call to source : void | test.cpp:110:10:110:12 | (reference dereference) : void | 0 |
+| readWriteGlobal1 | globals.cpp:13:23:13:28 | call to source : void | globals.cpp:9:5:9:19 | flowTestGlobal1 : void | 1 |
+| readWriteGlobal1 | globals.cpp:13:23:13:28 | call to source : void | globals.cpp:12:10:12:24 | flowTestGlobal1 : void | 0 |
+| readWriteGlobal1 | globals.cpp:13:23:13:28 | call to source : void | globals.cpp:13:5:13:30 | Store : void | 0 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:171:11:171:16 | Store : void | 0 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:172:10:172:10 | Store : void | 0 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:172:10:172:10 | x : void | 0 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:176:11:176:22 | Store : void | 1 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:176:11:176:22 | call to returnSource : void | 1 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:177:11:177:11 | Store : void | 1 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:177:11:177:11 | x : void | 1 |
+| returnSource | test.cpp:171:11:171:16 | call to source : void | test.cpp:178:8:178:8 | y : void | 1 |
+| test1 | true_upon_entry.cpp:9:11:9:16 | call to source : void | true_upon_entry.cpp:9:11:9:16 | Store : void | 0 |
+| test1 | true_upon_entry.cpp:9:11:9:16 | call to source : void | true_upon_entry.cpp:10:19:10:19 | Phi : void | 0 |
+| test1 | true_upon_entry.cpp:9:11:9:16 | call to source : void | true_upon_entry.cpp:13:8:13:8 | x : void | 0 |
+| test2 | true_upon_entry.cpp:17:11:17:16 | call to source : void | true_upon_entry.cpp:17:11:17:16 | Store : void | 0 |
+| test2 | true_upon_entry.cpp:17:11:17:16 | call to source : void | true_upon_entry.cpp:18:19:18:19 | Phi : void | 0 |
+| test2 | true_upon_entry.cpp:17:11:17:16 | call to source : void | true_upon_entry.cpp:21:8:21:8 | x : void | 0 |
+| test3 | true_upon_entry.cpp:27:9:27:14 | call to source : void | true_upon_entry.cpp:26:19:26:19 | Phi : void | 0 |
+| test3 | true_upon_entry.cpp:27:9:27:14 | call to source : void | true_upon_entry.cpp:27:5:27:16 | Store : void | 0 |
+| test3 | true_upon_entry.cpp:27:9:27:14 | call to source : void | true_upon_entry.cpp:29:8:29:8 | x : void | 0 |
+| test4 | true_upon_entry.cpp:33:11:33:16 | call to source : void | true_upon_entry.cpp:33:11:33:16 | Store : void | 0 |
+| test4 | true_upon_entry.cpp:33:11:33:16 | call to source : void | true_upon_entry.cpp:34:19:34:19 | Phi : void | 0 |
+| test4 | true_upon_entry.cpp:33:11:33:16 | call to source : void | true_upon_entry.cpp:39:8:39:8 | x : void | 0 |
+| test5 | true_upon_entry.cpp:43:11:43:16 | call to source : void | true_upon_entry.cpp:43:11:43:16 | Store : void | 0 |
+| test5 | true_upon_entry.cpp:43:11:43:16 | call to source : void | true_upon_entry.cpp:44:3:44:3 | Phi : void | 0 |
+| test5 | true_upon_entry.cpp:43:11:43:16 | call to source : void | true_upon_entry.cpp:44:19:44:19 | Phi : void | 0 |
+| test5 | true_upon_entry.cpp:43:11:43:16 | call to source : void | true_upon_entry.cpp:49:8:49:8 | x : void | 0 |
+| test6 | true_upon_entry.cpp:54:11:54:16 | call to source : void | true_upon_entry.cpp:54:11:54:16 | Store : void | 0 |
+| test6 | true_upon_entry.cpp:54:11:54:16 | call to source : void | true_upon_entry.cpp:57:8:57:8 | x : void | 0 |
+| test7 | true_upon_entry.cpp:62:11:62:16 | call to source : void | true_upon_entry.cpp:62:11:62:16 | Store : void | 0 |
+| test7 | true_upon_entry.cpp:62:11:62:16 | call to source : void | true_upon_entry.cpp:63:19:63:19 | Phi : void | 0 |
+| test7 | true_upon_entry.cpp:62:11:62:16 | call to source : void | true_upon_entry.cpp:66:8:66:8 | x : void | 0 |
+| test8 | true_upon_entry.cpp:70:11:70:16 | call to source : void | true_upon_entry.cpp:70:11:70:16 | Store : void | 0 |
+| test8 | true_upon_entry.cpp:70:11:70:16 | call to source : void | true_upon_entry.cpp:76:19:76:19 | Phi : void | 0 |
+| test8 | true_upon_entry.cpp:70:11:70:16 | call to source : void | true_upon_entry.cpp:78:8:78:8 | x : void | 0 |
+| test9 | true_upon_entry.cpp:83:11:83:16 | call to source : void | true_upon_entry.cpp:83:11:83:16 | Store : void | 0 |
+| test9 | true_upon_entry.cpp:83:11:83:16 | call to source : void | true_upon_entry.cpp:86:8:86:8 | x : void | 0 |
+| test10 | true_upon_entry.cpp:90:11:90:16 | call to source : void | true_upon_entry.cpp:90:11:90:16 | Store : void | 0 |
+| test10 | true_upon_entry.cpp:98:11:98:16 | call to source : void | true_upon_entry.cpp:98:11:98:16 | Store : void | 0 |
+| test10 | true_upon_entry.cpp:98:11:98:16 | call to source : void | true_upon_entry.cpp:101:10:101:10 | Phi : void | 0 |
+| test10 | true_upon_entry.cpp:98:11:98:16 | call to source : void | true_upon_entry.cpp:103:5:103:6 | Phi : void | 0 |
+| test10 | true_upon_entry.cpp:98:11:98:16 | call to source : void | true_upon_entry.cpp:105:8:105:8 | x : void | 0 |
+| testFunctionPointer | dispatch.cpp:107:17:107:22 | call to source : void | dispatch.cpp:95:19:95:19 | x : void | 1 |
+| testFunctionPointer | dispatch.cpp:107:17:107:22 | call to source : void | dispatch.cpp:96:8:96:8 | x : void | 1 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | file://:0:0:0:0 | Store : void | 0 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | file://:0:0:0:0 | t : void | 0 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:8:10:8:15 | Store : void | 0 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:13:12:13:12 | Store : void | 0 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:13:12:13:12 | t : void | 0 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:34:18:34:18 | a : void | 1 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:35:8:35:8 | a : void | 1 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:38:4:38:4 | t : void | 0 |
+| test_lambdas | lambdas.cpp:8:10:8:15 | call to source : void | lambdas.cpp:45:4:45:4 | Chi : void | 0 |
+| throughLocal | globals.cpp:5:17:5:22 | call to source : void | globals.cpp:5:17:5:22 | Store : void | 0 |
+| throughLocal | globals.cpp:5:17:5:22 | call to source : void | globals.cpp:6:10:6:14 | local : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:450:9:450:22 | (statement expression) : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:450:12:450:18 | source1 : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:453:15:460:4 | (statement expression) : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:453:15:460:4 | Store : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:456:7:456:19 | Store : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:456:13:456:19 | source1 : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:459:5:459:7 | Phi : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:459:5:459:7 | tmp : void | 0 |
+| throughStmtExpr | test.cpp:449:26:449:32 | source1 : void | test.cpp:461:8:461:12 | local : void | 0 |
+| virtual_inheritance::Middle::isSource | dispatch.cpp:117:38:117:43 | call to source : void | dispatch.cpp:117:38:117:43 | Store : void | 0 |
+| withFields::notSource | ref.cpp:109:15:109:20 | call to source : void | ref.cpp:109:5:109:22 | Store : void | 0 |
+| withFields::sourceToParam | ref.cpp:94:15:94:20 | call to source : void | ref.cpp:94:5:94:22 | Store : void | 0 |
+| withFields::testRefs | ref.cpp:122:23:122:28 | call to source : void | ref.cpp:74:29:74:31 | rhs : void | 2 |
+| withFields::testRefs | ref.cpp:122:23:122:28 | call to source : void | ref.cpp:75:5:75:17 | Store : void | 2 |
+| withFields::testRefs | ref.cpp:122:23:122:28 | call to source : void | ref.cpp:75:15:75:17 | rhs : void | 2 |
+| withFields::testRefs | ref.cpp:122:23:122:28 | call to source : void | ref.cpp:78:36:78:38 | rhs : void | 1 |
+| withFields::testRefs | ref.cpp:122:23:122:28 | call to source : void | ref.cpp:79:17:79:19 | rhs : void | 1 |
+| withFields::testRefs | ref.cpp:125:19:125:24 | call to source : void | ref.cpp:82:32:82:34 | rhs : void | 1 |
+| withFields::testRefs | ref.cpp:125:19:125:24 | call to source : void | ref.cpp:83:5:83:17 | Store : void | 1 |
+| withFields::testRefs | ref.cpp:125:19:125:24 | call to source : void | ref.cpp:83:15:83:17 | rhs : void | 1 |
+| withoutFields::notSource | ref.cpp:44:11:44:16 | call to source : void | ref.cpp:44:5:44:18 | Store : void | 0 |
+| withoutFields::sourceToParam | ref.cpp:29:11:29:16 | call to source : void | ref.cpp:29:5:29:18 | Store : void | 0 |
+| withoutFields::testRefs | ref.cpp:55:23:55:28 | call to source : void | ref.cpp:10:25:10:27 | rhs : void | 2 |
+| withoutFields::testRefs | ref.cpp:55:23:55:28 | call to source : void | ref.cpp:11:5:11:13 | Store : void | 2 |
+| withoutFields::testRefs | ref.cpp:55:23:55:28 | call to source : void | ref.cpp:11:11:11:13 | rhs : void | 2 |
+| withoutFields::testRefs | ref.cpp:55:23:55:28 | call to source : void | ref.cpp:15:32:15:34 | rhs : void | 1 |
+| withoutFields::testRefs | ref.cpp:55:23:55:28 | call to source : void | ref.cpp:16:17:16:19 | rhs : void | 1 |
+| withoutFields::testRefs | ref.cpp:58:19:58:24 | call to source : void | ref.cpp:19:32:19:34 | rhs : void | 1 |
+| withoutFields::testRefs | ref.cpp:58:19:58:24 | call to source : void | ref.cpp:20:5:20:13 | Store : void | 1 |
+| withoutFields::testRefs | ref.cpp:58:19:58:24 | call to source : void | ref.cpp:20:11:20:13 | rhs : void | 1 |
+| writeGlobal2 | globals.cpp:23:23:23:28 | call to source : void | globals.cpp:16:12:16:26 | flowTestGlobal2 : void | 1 |
+| writeGlobal2 | globals.cpp:23:23:23:28 | call to source : void | globals.cpp:19:10:19:24 | flowTestGlobal2 : void | 2 |
+| writeGlobal2 | globals.cpp:23:23:23:28 | call to source : void | globals.cpp:23:5:23:30 | Store : void | 0 |
