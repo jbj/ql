@@ -199,18 +199,19 @@ private predicate instructionTaintStep(Instruction i1, Instruction i2) {
   // Flow through pointer dereference
   i2.(LoadInstruction).getSourceAddress() = i1
   or
-  // Flow through partial reads of arrays, unions, and pointer parameters
-  // TODO: `UnknownType` includes *all* pointer parameters. We only want
-  // array-like pointer parameters
-  i2.(LoadInstruction).getSourceValueOperand().getAnyDef() = i1 and
-  not i1.isResultConflated() and
+  // Unary instructions tend to preserve enough information in practice that we
+  // want taint to flow through.
+  // The exception is `FieldAddressInstruction`. Together with the rule for
+  // `LoadInstruction` above and for `ChiInstruction` below, flow through
+  // `FieldAddressInstruction` could cause flow into one field to come out an
+  // unrelated field. This would happen across function boundaries, where the IR
+  // would not be able to match loads to stores.
+  i2.(UnaryInstruction).getUnary() = i1 and
   (
-    i1.getResultType() instanceof ArrayType or
-    i1.getResultType() instanceof UnknownType or
-    i1.getResultType() instanceof Union
- )
-  or
-  i2.(UnaryInstruction).getUnary() = i1
+    not i2 instanceof FieldAddressInstruction
+    or
+    i2.(FieldAddressInstruction).getField().getDeclaringType() instanceof Union
+  )
   or
   // Flow out of definition-by-reference
   i2.(ChiInstruction).getPartial() = i1.(WriteSideEffectInstruction) and
@@ -224,7 +225,7 @@ private predicate instructionTaintStep(Instruction i1, Instruction i2) {
     or
     t instanceof ArrayType
     or
-    // Buffers or unknown size
+    // Buffers of unknown size
     t instanceof UnknownType
   )
   or
