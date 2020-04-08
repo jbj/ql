@@ -189,7 +189,16 @@ private predicate instructionTaintStep(Instruction i1, Instruction i2) {
   // Flow through pointer dereference
   i2.(LoadInstruction).getSourceAddress() = i1
   or
-  i2.(LoadInstruction).getSourceValueOperand().getAnyDef() = i1
+  // Flow through partial reads of arrays, unions, and pointer parameters
+  // TODO: `UnknownType` includes *all* pointer parameters. We only want
+  // array-like pointer parameters
+  i2.(LoadInstruction).getSourceValueOperand().getAnyDef() = i1 and
+  not i1.isResultConflated() and
+  (
+    i1.getResultType() instanceof ArrayType or
+    i1.getResultType() instanceof UnknownType or
+    i1.getResultType() instanceof Union
+ )
   or
   i2.(UnaryInstruction).getUnary() = i1
   or
