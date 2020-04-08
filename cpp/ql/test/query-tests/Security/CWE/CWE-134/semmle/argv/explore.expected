@@ -1,0 +1,196 @@
+WARNING: Unused predicate taintedIncludingGlobalVars (explore.ql:353,11-37)
+| argvLocal.c:63:9:63:12 | Load: argv | argvLocal.c:63:9:63:12 | Load: argv |
+| argvLocal.c:63:9:63:12 | Load: argv | argvLocal.c:63:9:63:15 | Load: access to array |
+| argvLocal.c:63:9:63:12 | Load: argv | argvLocal.c:63:9:63:15 | PointerAdd: access to array |
+| argvLocal.c:64:15:64:18 | Load: argv | argvLocal.c:64:15:64:18 | Load: argv |
+| argvLocal.c:64:15:64:18 | Load: argv | argvLocal.c:64:15:64:21 | Load: access to array |
+| argvLocal.c:64:15:64:18 | Load: argv | argvLocal.c:64:15:64:21 | PointerAdd: access to array |
+| argvLocal.c:67:14:67:17 | Load: argv | argvLocal.c:67:14:67:17 | Load: argv |
+| argvLocal.c:67:14:67:17 | Load: argv | argvLocal.c:67:14:67:20 | Load: access to array |
+| argvLocal.c:67:14:67:17 | Load: argv | argvLocal.c:67:14:67:20 | PointerAdd: access to array |
+| argvLocal.c:95:9:95:12 | Load: argv | argvLocal.c:95:9:95:12 | Load: argv |
+| argvLocal.c:95:9:95:12 | Load: argv | argvLocal.c:95:9:95:15 | Convert: (const char *)... |
+| argvLocal.c:95:9:95:12 | Load: argv | argvLocal.c:95:9:95:15 | Load: access to array |
+| argvLocal.c:95:9:95:12 | Load: argv | argvLocal.c:95:9:95:15 | PointerAdd: access to array |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:96:15:96:18 | Load: argv |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:96:15:96:21 | BufferMayWriteSideEffect: access to array |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:96:15:96:21 | Load: access to array |
+| argvLocal.c:96:15:96:18 | Load: argv | argvLocal.c:96:15:96:21 | PointerAdd: access to array |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:100:2:100:13 | Store: ... = ... |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:100:7:100:10 | Load: argv |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:100:7:100:13 | Load: access to array |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:100:7:100:13 | PointerAdd: access to array |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:101:9:101:10 | Convert: (const char *)... |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:101:9:101:10 | Load: i1 |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:102:15:102:16 | BufferMayWriteSideEffect: i1 |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:102:15:102:16 | Load: i1 |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:143:13:143:26 | Store: (...) |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:143:14:143:25 | CopyValue: ... , ... |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:143:24:143:25 | Load: i1 |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:144:9:144:10 | Convert: (const char *)... |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:144:9:144:10 | Load: i7 |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:145:15:145:16 | BufferMayWriteSideEffect: i7 |
+| argvLocal.c:100:7:100:10 | Load: argv | argvLocal.c:145:15:145:16 | Load: i7 |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:105:14:105:17 | Load: argv |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:105:14:105:17 | Store: argv |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:106:9:106:10 | Load: i2 |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:106:9:106:13 | Convert: (const char *)... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:106:9:106:13 | Load: access to array |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:106:9:106:13 | PointerAdd: access to array |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:107:15:107:16 | Load: i2 |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:107:15:107:19 | BufferMayWriteSideEffect: access to array |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:107:15:107:19 | Load: access to array |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:107:15:107:19 | PointerAdd: access to array |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:110:9:110:11 | Convert: (const char *)... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:110:9:110:11 | Load: * ... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:110:10:110:11 | Load: i2 |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:111:15:111:17 | BufferMayWriteSideEffect: * ... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:111:15:111:17 | Load: * ... |
+| argvLocal.c:105:14:105:17 | Load: argv | argvLocal.c:111:16:111:17 | Load: i2 |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:2:115:7 | Call: call to memcpy |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:9:115:10 | Chi: (void *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:9:115:10 | SizedBufferMustWriteSideEffect: (void *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:13:115:16 | Load: argv |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:13:115:19 | Convert: (const void *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:13:115:19 | Load: access to array |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:115:13:115:19 | PointerAdd: access to array |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:116:9:116:10 | Chi: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:116:9:116:10 | Convert: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:117:15:117:16 | BufferMayWriteSideEffect: array to pointer conversion |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:117:15:117:16 | Chi: array to pointer conversion |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:117:15:117:16 | Convert: array to pointer conversion |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:121:9:121:10 | Chi: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:121:9:121:10 | Convert: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:122:15:122:16 | BufferMayWriteSideEffect: i4 |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:122:15:122:16 | Chi: i4 |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:122:15:122:16 | Load: i4 |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:135:9:135:12 | Chi: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:135:9:135:12 | Convert: (const char *)... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:136:15:136:18 | BufferMayWriteSideEffect: -- ... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:136:15:136:18 | Chi: -- ... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:136:15:136:18 | PointerSub: -- ... |
+| argvLocal.c:115:13:115:16 | Load: argv | argvLocal.c:136:15:136:18 | Store: -- ... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:2:126:19 | Chi: ... = ... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:2:126:19 | Store: ... = ... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:10:126:13 | Load: argv |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:10:126:16 | Load: access to array |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:10:126:16 | PointerAdd: access to array |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:10:126:19 | Load: access to array |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:126:10:126:19 | PointerAdd: access to array |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:127:9:127:10 | Chi: (const char *)... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:127:9:127:10 | Convert: (const char *)... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:128:15:128:16 | BufferMayWriteSideEffect: array to pointer conversion |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:128:15:128:16 | Chi: array to pointer conversion |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:128:15:128:16 | Convert: array to pointer conversion |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:131:9:131:14 | Chi: (const char *)... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:131:9:131:14 | Convert: (const char *)... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:132:15:132:20 | BufferMayWriteSideEffect: ... + ... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:132:15:132:20 | Chi: ... + ... |
+| argvLocal.c:126:10:126:13 | Load: argv | argvLocal.c:132:15:132:20 | PointerAdd: ... + ... |
+| argvLocal.c:139:9:139:12 | Load: argv | argvLocal.c:139:9:139:12 | Load: argv |
+| argvLocal.c:139:9:139:12 | Load: argv | argvLocal.c:139:9:139:15 | Load: access to array |
+| argvLocal.c:139:9:139:12 | Load: argv | argvLocal.c:139:9:139:15 | PointerAdd: access to array |
+| argvLocal.c:140:15:140:18 | Load: argv | argvLocal.c:140:15:140:18 | Load: argv |
+| argvLocal.c:140:15:140:18 | Load: argv | argvLocal.c:140:15:140:21 | Load: access to array |
+| argvLocal.c:140:15:140:18 | Load: argv | argvLocal.c:140:15:140:21 | PointerAdd: access to array |
+| argvLocal.c:143:14:143:17 | Load: argv | argvLocal.c:143:14:143:17 | Load: argv |
+| argvLocal.c:143:14:143:17 | Load: argv | argvLocal.c:143:14:143:20 | Load: access to array |
+| argvLocal.c:143:14:143:17 | Load: argv | argvLocal.c:143:14:143:20 | PointerAdd: access to array |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:149:2:149:17 | Store: ... = ... |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:149:11:149:14 | Load: argv |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:149:11:149:17 | Load: access to array |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:149:11:149:17 | PointerAdd: access to array |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:150:9:150:10 | Convert: (const char *)... |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:150:9:150:10 | Load: i8 |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:151:15:151:16 | BufferMayWriteSideEffect: i8 |
+| argvLocal.c:149:11:149:14 | Load: argv | argvLocal.c:151:15:151:16 | Load: i8 |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:2:156:7 | Call: call to memcpy |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:9:156:20 | Chi: (void *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:9:156:20 | SizedBufferMustWriteSideEffect: (void *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:23:156:26 | Load: argv |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:23:156:29 | Convert: (const void *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:23:156:29 | Load: access to array |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:156:23:156:29 | PointerAdd: access to array |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:157:9:157:10 | Chi: (const char *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:157:9:157:10 | Convert: (const char *)... |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:158:15:158:16 | BufferMayWriteSideEffect: i9 |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:158:15:158:16 | Chi: i9 |
+| argvLocal.c:156:23:156:26 | Load: argv | argvLocal.c:158:15:158:16 | Load: i9 |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:2:163:7 | Call: call to memcpy |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:9:163:19 | Chi: (void *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:9:163:19 | SizedBufferMustWriteSideEffect: (void *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:22:163:25 | Load: argv |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:22:163:28 | Load: access to array |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:22:163:28 | PointerAdd: access to array |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:22:163:32 | Convert: (const void *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:163:22:163:32 | PointerAdd: ... + ... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:164:9:164:11 | Chi: (const char *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:164:9:164:11 | Convert: (const char *)... |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:165:15:165:17 | BufferMayWriteSideEffect: i91 |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:165:15:165:17 | Chi: i91 |
+| argvLocal.c:163:22:163:25 | Load: argv | argvLocal.c:165:15:165:17 | Load: i91 |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:9:25:9:31 | InitializeIndirection: correct |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:9:25:9:31 | InitializeParameter: correct |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:9:25:9:31 | Load: correct |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:10:9:10:15 | Chi: (const char *)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:10:9:10:15 | Convert: (const char *)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:10:9:10:15 | Load: correct |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:168:12:168:24 | Convert: (int)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:168:12:168:24 | Store: (int)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:168:18:168:21 | Load: argv |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:168:18:168:24 | Load: access to array |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:168:18:168:24 | PointerAdd: access to array |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:169:9:169:20 | Convert: (char *)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:169:9:169:20 | Convert: (const char *)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:169:18:169:20 | Load: i10 |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:170:15:170:26 | BufferMayWriteSideEffect: (char *)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:170:15:170:26 | Convert: (char *)... |
+| argvLocal.c:168:18:168:21 | Load: argv | argvLocal.c:170:24:170:26 | Load: i10 |

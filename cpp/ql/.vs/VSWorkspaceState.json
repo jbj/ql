@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\semmle",
+    "\\src\\semmle\\code",
+    "\\src\\semmle\\code\\cpp",
+    "\\src\\semmle\\code\\cpp\\ir",
+    "\\src\\semmle\\code\\cpp\\ir\\implementation",
+    "\\src\\semmle\\code\\cpp\\ir\\implementation\\raw",
+    "\\src\\semmle\\code\\cpp\\ir\\implementation\\raw\\internal",
+    "\\src\\semmle\\code\\cpp\\models"
+  ],
+  "SelectedNode": "\\src\\semmle\\code\\cpp\\ir\\implementation\\raw\\internal\\TranslatedElement.qll",
+  "PreviewInSolutionExplorer": false
+}
