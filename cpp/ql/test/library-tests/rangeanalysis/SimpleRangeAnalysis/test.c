@@ -602,3 +602,26 @@ void notequal_variations(short n, float f) {
     out(n); // -32766 ..
   }
 }
+
+void conversion_range(short ss, unsigned short us) {
+  if (ss < sizeof(int)) {
+    out(ss); // 0 .. 3
+  }
+
+  if ((short)us >= 0) {
+    out(us); // 0 .. 32767
+  }
+
+  if ((short)us >= -32768) { // tests nothing
+    out(us); // 0 .. 65535
+  }
+
+  if (ss >= sizeof(int)) { // test is true for negative numbers
+    out(ss); // -32768 .. 32767
+  }
+
+  if (ss + 1 < sizeof(int)) {
+    out(ss); // 0 .. 3
+  }
+
+}
