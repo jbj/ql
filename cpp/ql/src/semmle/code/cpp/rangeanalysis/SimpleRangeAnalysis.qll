@@ -585,6 +585,11 @@ private float addRoundingDownSmall(float x, float small) {
   if (x + small) - x > small then result = (x + small).nextDown() else result = (x + small)
 }
 
+pragma[noinline]
+private predicate hasNonOverflowingUpperBound(Expr expr) {
+  getUpperBoundsImpl(expr) <= exprMaxVal(expr)
+}
+
 /**
  * Gets the lower bounds of the expression.
  *
@@ -626,7 +631,7 @@ private float getTruncatedLowerBounds(Expr expr) {
           else result = newLB
         else result = exprMinVal(expr)
       ) and
-      getUpperBoundsImpl(expr) <= exprMaxVal(expr)
+      hasNonOverflowingUpperBound(expr)
       or
       // The expression might overflow and wrap. If so, the
       // lower bound is exprMinVal.
