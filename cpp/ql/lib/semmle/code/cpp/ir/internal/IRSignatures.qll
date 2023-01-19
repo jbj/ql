@@ -187,3 +187,79 @@ signature module LanguageTypeSig {
    */
   string getOpaqueTagIdentityString(OpaqueTypeTag tag);
 }
+
+signature module LanguageSig {
+  class Function;
+
+  class Location;
+
+  class UnknownLocation extends Location;
+
+  class UnknownDefaultLocation extends Location;
+
+  class File;
+
+  class AST;
+
+  class Type;
+
+  class UnknownType extends Type;
+
+  class VoidType extends Type;
+
+  class IntegralType extends Type;
+
+  class FloatingPointType extends Type;
+
+  // REVIEW: May need to synthesize this for other languages. Or do we really need it at all?
+  class ClassDerivation;
+
+  class StringLiteral;
+
+  class Variable;
+
+  class AutomaticVariable extends Variable;
+
+  class StaticVariable extends Variable;
+
+  class GlobalVariable extends Variable;
+
+  class Parameter extends Variable;
+
+  class Field extends Variable;
+
+  class BuiltInOperation;
+
+  class Declaration;
+
+  // TODO: Remove necessity for these.
+  class Expr;
+
+  class Class; // Used for inheritance conversions
+
+  predicate hasCaseEdge(string minValue, string maxValue);
+
+  predicate hasPositionalArgIndex(int argIndex);
+
+  predicate hasAsmOperandIndex(int operandIndex);
+
+  int getTypeSize(Type type);
+
+  int getPointerSize();
+
+  string getStringLiteralText(StringLiteral s);
+
+  predicate hasPotentialLoop(Function f);
+
+  predicate hasGoto(Function f);
+
+  /**
+   * Gets the offset of field `field` in bits.
+   */
+  int getFieldBitOffset(Field field);
+
+  /**
+   * Holds if the specified `Function` can be overridden in a derived class.
+   */
+  predicate isFunctionVirtual(Function f);
+}

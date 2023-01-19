@@ -118,7 +118,7 @@ class IRAutomaticVariable extends IRVariable {
   IRAutomaticVariable() {
     exists(Language::Variable var |
       this = TIRUserVariable(var, _, func) and
-      Language::isVariableAutomatic(var)
+      var instanceof Language::AutomaticVariable
     )
     or
     this = TIRTempVariable(func, _, _, _)
@@ -142,7 +142,7 @@ class IRAutomaticUserVariable extends IRUserVariable, IRAutomaticVariable {
 class IRStaticUserVariable extends IRUserVariable {
   override Language::StaticVariable var;
 
-  IRStaticUserVariable() { not Language::isVariableAutomatic(var) }
+  IRStaticUserVariable() { not var instanceof Language::AutomaticVariable }
 
   final override Language::StaticVariable getVariable() { result = var }
 }
