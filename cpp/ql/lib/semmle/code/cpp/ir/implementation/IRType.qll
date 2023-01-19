@@ -12,7 +12,7 @@ private newtype TIRType =
   TIRBooleanType(int byteSize) { Language::hasBooleanType(byteSize) } or
   TIRSignedIntegerType(int byteSize) { Language::hasSignedIntegerType(byteSize) } or
   TIRUnsignedIntegerType(int byteSize) { Language::hasUnsignedIntegerType(byteSize) } or
-  TIRFloatingPointType(int byteSize, int base, Language::TypeDomain domain) {
+  TIRFloatingPointType(int byteSize, int base, Language::TypeDomainType domain) {
     Language::hasFloatingPointType(byteSize, base, domain)
   } or
   TIRAddressType(int byteSize) { Language::hasAddressType(byteSize) } or
@@ -201,7 +201,7 @@ class IRUnsignedIntegerType extends IRIntegerType, TIRUnsignedIntegerType {
  */
 class IRFloatingPointType extends IRNumericType, TIRFloatingPointType {
   final private int base;
-  final private Language::TypeDomain domain;
+  final private Language::TypeDomainType domain;
 
   IRFloatingPointType() { this = TIRFloatingPointType(_, base, domain) }
 
@@ -222,7 +222,7 @@ class IRFloatingPointType extends IRNumericType, TIRFloatingPointType {
   /**
    * Gets the type domain of the type. Can be `RealDomain`, `ComplexDomain`, or `ImaginaryDomain`.
    */
-  final Language::TypeDomain getDomain() { result = domain }
+  final Language::TypeDomainType getDomain() { result = domain }
 
   private string getBaseString() {
     base = 2 and result = "float"
@@ -231,11 +231,11 @@ class IRFloatingPointType extends IRNumericType, TIRFloatingPointType {
   }
 
   private string getDomainPrefix() {
-    domain instanceof Language::RealDomain and result = ""
+    domain instanceof Language::RealDomainType and result = ""
     or
-    domain instanceof Language::ComplexDomain and result = "c"
+    domain instanceof Language::ComplexDomainType and result = "c"
     or
-    domain instanceof Language::ImaginaryDomain and result = "i"
+    domain instanceof Language::ImaginaryDomainType and result = "i"
   }
 }
 
