@@ -1,5 +1,46 @@
 private import semmle.code.cpp.ir.internal.IRSignatures
+private import semmle.code.cpp.ir.implementation.IRType
 import CppTypeImpl // so imports of this file in callers are unchanged
+private import MkIRType<CppTypeImpl>
+
+// This boiler-plate class is all about adding `getIRType` to the
+// `LanguageType` that's imported from MkIRType. It's unfortunate that it has
+// to be repeated for each language. The long-term solution will have to be
+// that CppType and IRType are each split in two so they can depend on each
+// other in layers: the lowest layer of CppType defines what's needed for
+// `class IRType`, then the upper layer defines what's needed to add
+// `getIRType` to `LanguageType`.
+class LanguageType instanceof CppTypeImpl::LanguageType {
+  string toString() { result = this.(CppTypeImpl::LanguageType).toString() }
+
+  /** Gets a string used in IR dumps */
+  string getDumpString() { result = this.(CppTypeImpl::LanguageType).getDumpString() }
+
+  /** Gets the size of the type in bytes, if known. */
+  int getByteSize() { result = this.(CppTypeImpl::LanguageType).getByteSize() }
+
+  /**
+   * Gets the `IRType` that represents this `LanguageType`. Many different `LanguageType`s can map to a single
+   * `IRType`.
+   */
+  IRType getIRType() { result = this.(CppTypeImpl::LanguageType).getIRType() }
+
+  /**
+   * Holds if the `LanguageType` represents a prvalue of type `type` (if `isGLValue` is `false`), or if
+   * it represents a glvalue of type `type` (if `isGLValue` is `true`).
+   */
+  predicate hasType(OpaqueTypeTag type, boolean isGLValue) {
+    this.(CppTypeImpl::LanguageType).hasType(type, isGLValue)
+  }
+
+  /**
+   * Holds if this type represents the C++ type `type`. If `isGLValue` is `true`, then this type
+   * represents a glvalue of type `type`. Otherwise, it represents a prvalue of type `type`.
+   */
+  predicate hasUnspecifiedType(OpaqueTypeTag type, boolean isGLValue) {
+    this.(CppTypeImpl::LanguageType).hasUnspecifiedType(type, isGLValue)
+  }
+}
 
 module CppTypeImpl implements LanguageTypeSig {
   private import cpp
@@ -570,17 +611,19 @@ module CppTypeImpl implements LanguageTypeSig {
     hasOpaqueType(tag, _) and
     result = getTypeIdentityString(tag)
   }
+}
 
-  module LanguageTypeConsistency {
-    /**
-     * Consistency query to detect C++ `Type` objects which have no corresponding `CppType` object.
-     */
-    query predicate missingCppType(Type type, string message) {
-      not exists(getTypeForPRValue(type)) and
-      exists(type.getSize()) and
-      // `ProxyClass`es have a size, but only appear in uninstantiated templates
-      not type instanceof ProxyClass and
-      message = "Type does not have an associated `CppType`."
-    }
+module CppLanguageTypeConsistency {
+  private import cpp
+
+  /**
+   * Consistency query to detect C++ `Type` objects which have no corresponding `CppType` object.
+   */
+  query predicate missingCppType(Type type, string message) {
+    not exists(getTypeForPRValue(type)) and
+    exists(type.getSize()) and
+    // `ProxyClass`es have a size, but only appear in uninstantiated templates
+    not type instanceof ProxyClass and
+    message = "Type does not have an associated `CppType`."
   }
 }

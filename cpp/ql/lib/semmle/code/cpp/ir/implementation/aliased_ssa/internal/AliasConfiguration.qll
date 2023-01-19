@@ -3,6 +3,7 @@ private import semmle.code.cpp.ir.implementation.unaliased_ssa.IR
 private import cpp
 private import AliasAnalysis
 private import semmle.code.cpp.ir.implementation.unaliased_ssa.internal.SimpleSSA as UnaliasedSsa
+import semmle.code.cpp.ir.implementation.IRTypeCpp
 
 private newtype TAllocation =
   TVariableAllocation(IRVariable var) {

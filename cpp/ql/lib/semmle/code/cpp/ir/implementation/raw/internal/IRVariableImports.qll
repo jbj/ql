@@ -1,4 +1,5 @@
-import semmle.code.cpp.ir.implementation.IRType as IRType
+private import semmle.code.cpp.ir.internal.CppType as CppType
+import semmle.code.cpp.ir.implementation.IRType::MkIRType<CppType::CppTypeImpl> as IRType
 import semmle.code.cpp.ir.implementation.TempVariableTag as TempVariableTag
 import semmle.code.cpp.ir.internal.IRUtilities as IRUtilities
 import semmle.code.cpp.ir.internal.TempVariableTag as TTempVariableTag

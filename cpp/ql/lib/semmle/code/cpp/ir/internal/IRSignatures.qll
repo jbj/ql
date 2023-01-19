@@ -11,12 +11,6 @@ signature module LanguageTypeSig {
     int getByteSize();
 
     /**
-     * Gets the `IRType` that represents this `LanguageType`. Many different `LanguageType`s can map to a single
-     * `IRType`.
-     */
-    IRType getIRType();
-
-    /**
      * Holds if the `LanguageType` represents a prvalue of type `type` (if `isGLValue` is `false`), or if
      * it represents a glvalue of type `type` (if `isGLValue` is `true`).
      */
@@ -32,7 +26,9 @@ signature module LanguageTypeSig {
   /**
    * The underlying type of types from the language that this IR type is based on.
    */
-  class OpaqueTypeTag;
+  class OpaqueTypeTag {
+    string toString();
+  }
 
   class TypeDomainType;
 
