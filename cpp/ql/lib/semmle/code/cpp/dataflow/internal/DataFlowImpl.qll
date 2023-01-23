@@ -267,7 +267,7 @@ private module Impl<GeneralConfigSig Config> {
    * should instead depend on a `DataFlow2::Configuration`, a
    * `DataFlow3::Configuration`, or a `DataFlow4::Configuration`.
    */
-  class Configuration extends string {
+  private class Configuration extends string {
     Configuration() { this = "Compat wrapper for paramaterised module" }
 
     /**
@@ -5059,4 +5059,6 @@ private module Impl<GeneralConfigSig Config> {
     sink.isRevSink() and
     node.getASuccessor+() = sink
   }
+
+  predicate hasFlowPath(PathNode source, PathNode sink) { hasFlowPath(source, sink, _) }
 }

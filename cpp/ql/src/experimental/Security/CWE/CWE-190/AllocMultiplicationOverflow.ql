@@ -33,8 +33,8 @@ module MultToAllocConfig implements DataFlow::NoStateConfigSig {
 module DataFlowResult = DataFlow::NoStateImpl<MultToAllocConfig>;
 import DataFlowResult::PathGraph
 
-from DataFlowResult::Configuration config, DataFlowResult::PathNode source, DataFlowResult::PathNode sink
-where config.hasFlowPath(source, sink)
+from DataFlowResult::PathNode source, DataFlowResult::PathNode sink
+where DataFlowResult::hasFlowPath(source, sink)
 select sink, source, sink,
   "Potentially overflowing value from $@ is used in the size of this allocation.", source,
   "multiplication"
