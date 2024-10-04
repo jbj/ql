@@ -48,7 +48,7 @@ private predicate specifiesContentType(SpringRequestMappingMethod method) {
   exists(method.getAProducesExpr())
 }
 
-private class SpringXssSink extends XSS::XssSink {
+private class SpringXssSink extends XSS::AbstractXssSink {
   SpringXssSink() {
     exists(SpringRequestMappingMethod requestMappingMethod, ReturnStmt rs |
       requestMappingMethod = rs.getEnclosingCallable() and
