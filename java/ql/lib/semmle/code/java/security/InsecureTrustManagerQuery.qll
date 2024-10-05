@@ -18,6 +18,8 @@ module InsecureTrustManagerConfig implements DataFlow::ConfigSig {
     node.getType() instanceof Array and
     c instanceof DataFlow::ArrayContent
   }
+
+  predicate observeDiffInformedIncrementalMode() { any() }
 }
 
 module InsecureTrustManagerFlow = DataFlow::Global<InsecureTrustManagerConfig>;
