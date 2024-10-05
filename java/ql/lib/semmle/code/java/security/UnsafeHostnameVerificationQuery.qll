@@ -65,6 +65,8 @@ module TrustAllHostnameVerifierConfig implements DataFlow::ConfigSig {
             "|(set)?(accept|trust|ignore|allow)(all|every|any)" +
             "|(use|do|enable)insecure|(set|do|use)?no.*(check|validation|verify|verification)|disable).*$")
   }
+
+  predicate observeDiffInformedIncrementalMode() { any() }
 }
 
 /** Data flow to model the flow of a `TrustAllHostnameVerifier` to a `set(Default)HostnameVerifier` call. */
