@@ -37,6 +37,17 @@ private module PredictableSeedFlowConfig implements DataFlow::ConfigSig {
   predicate isAdditionalFlowStep(DataFlow::Node node1, DataFlow::Node node2) {
     predictableCalcStep(node1.asExpr(), node2.asExpr())
   }
+
+  predicate observeDiffInformedIncrementalMode() { any() }
+
+  /** This configuration is only used from `PredictableSeed.ql`. */
+  Location getASelectedSinkLocation(DataFlow::Node sink) {
+    exists(GetRandomData da, VarRead use |
+      result = da.getLocation() and
+      da.getQualifier() = use and
+      isSeeding(sink.asExpr(), use)
+    )
+  }
 }
 
 private module PredictableSeedFlow = DataFlow::Global<PredictableSeedFlowConfig>;
