@@ -285,6 +285,10 @@ deprecated private module Config implements FullStateConfigSig {
   predicate includeHiddenNodes() { any(Configuration config).includeHiddenNodes() }
 
   predicate observeDiffInformedIncrementalMode() { none() }
+
+  Location getASelectedSourceLocation(Node source) { none() }
+
+  Location getASelectedSinkLocation(Node sink) { none() }
 }
 
 deprecated private import Impl<Config> as I

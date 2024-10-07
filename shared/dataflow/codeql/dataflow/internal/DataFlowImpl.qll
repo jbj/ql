@@ -135,6 +135,10 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
      * are used directly in a query result.
      */
     predicate observeDiffInformedIncrementalMode();
+
+    Location getASelectedSourceLocation(Node source);
+
+    Location getASelectedSinkLocation(Node sink);
   }
 
   /**
@@ -173,7 +177,7 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
       private predicate isFilteredSource(Node source) {
         Config::isSource(source, _) and
         if Config::observeDiffInformedIncrementalMode()
-        then AlertFiltering::filterByLocation(source.getLocation())
+        then AlertFiltering::filterByLocation(Config::getASelectedSourceLocation(source))
         else any()
       }
 
@@ -184,7 +188,7 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
           Config::isSink(sink)
         ) and
         if Config::observeDiffInformedIncrementalMode()
-        then AlertFiltering::filterByLocation(sink.getLocation())
+        then AlertFiltering::filterByLocation(Config::getASelectedSinkLocation(sink))
         else any()
       }
 

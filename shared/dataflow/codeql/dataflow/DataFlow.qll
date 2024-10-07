@@ -442,6 +442,26 @@ module Configs<LocationSig Location, InputSig<Location> Lang> {
      * are used directly in a query result.
      */
     default predicate observeDiffInformedIncrementalMode() { none() }
+
+    /**
+     * Gets a location that will be associated with the given `source` in a
+     * diff-informed query that uses this configuration (see
+     * `observeDiffInformedIncrementalMode`). By default, this is the location
+     * of the source itself, but this predicate should include any locations
+     * that are reported as the primary-location of the query or as an
+     * additional location ("$@" interpolation).
+     */
+    default Location getASelectedSourceLocation(Node source) { result = source.getLocation() }
+
+    /**
+     * Gets a location that will be associated with the given `sink` in a
+     * diff-informed query that uses this configuration (see
+     * `observeDiffInformedIncrementalMode`). By default, this is the location
+     * of the sink itself, but this predicate should include any locations
+     * that are reported as the primary-location of the query or as an
+     * additional location ("$@" interpolation).
+     */
+    default Location getASelectedSinkLocation(Node sink) { result = sink.getLocation() }
   }
 
   /** An input configuration for data flow using flow state. */
@@ -569,6 +589,26 @@ module Configs<LocationSig Location, InputSig<Location> Lang> {
      * are used directly in a query result.
      */
     default predicate observeDiffInformedIncrementalMode() { none() }
+
+    /**
+     * Gets a location that will be associated with the given `source` in a
+     * diff-informed query that uses this configuration (see
+     * `observeDiffInformedIncrementalMode`). By default, this is the location
+     * of the source itself, but this predicate should include any locations
+     * that are reported as the primary-location of the query or as an
+     * additional location ("$@" interpolation).
+     */
+    default Location getASelectedSourceLocation(Node source) { result = source.getLocation() }
+
+    /**
+     * Gets a location that will be associated with the given `sink` in a
+     * diff-informed query that uses this configuration (see
+     * `observeDiffInformedIncrementalMode`). By default, this is the location
+     * of the sink itself, but this predicate should include any locations
+     * that are reported as the primary-location of the query or as an
+     * additional location ("$@" interpolation).
+     */
+    default Location getASelectedSinkLocation(Node sink) { result = sink.getLocation() }
   }
 }
 
