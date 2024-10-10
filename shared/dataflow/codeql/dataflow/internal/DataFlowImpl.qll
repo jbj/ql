@@ -10,6 +10,7 @@ private import codeql.util.Unit
 private import codeql.util.Option
 private import codeql.util.Boolean
 private import codeql.util.Location
+private import codeql.util.AlertFiltering
 private import codeql.dataflow.DataFlow
 
 module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
@@ -17,6 +18,8 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
   private import DataFlowMake<Location, Lang>
   private import DataFlowImplCommon::MakeImplCommon<Location, Lang>
   private import DataFlowImplCommonPublic
+
+  private module AlertFiltering = AlertFilteringImpl<Location>;
 
   /**
    * An input configuration for data flow using flow state. This signature equals
@@ -4634,6 +4637,38 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
      * Holds if data can flow from some source to `sink`.
      */
     predicate flowToExpr(DataFlowExpr sink) { flowTo(exprNode(sink)) }
+
+    /**
+     * Holds if the configuration has at least one source in the diff range as
+     * determined by `AlertFiltering`. This predicate is independent of whether
+     * diff-informed mode is observed by the configuration and is also
+     * independent whether there was flow.
+     */
+    pragma[nomagic]
+    predicate hasSourceInDiffRange() {
+      exists(Node source |
+        Config::isSource(source, _) and
+        AlertFiltering::filterByLocation(Config::getASelectedSourceLocation(source))
+        // TODO: also require `Config::isSink(_, _)`? Because if the source
+        // isn't reachable, it may as well not be there.
+      )
+    }
+
+    /**
+     * Holds if the configuration has at least one sink in the diff range as
+     * determined by `AlertFiltering`. This predicate is independent of whether
+     * diff-informed mode is observed by the configuration and is also
+     * independent whether there was flow.
+     */
+    pragma[nomagic]
+    predicate hasSinkInDiffRange() {
+      exists(Node sink |
+        Config::isSink(sink, _) and
+        AlertFiltering::filterByLocation(Config::getASelectedSinkLocation(sink))
+        // TODO: also require `Config::isSource(_, _)`? Because if the sink
+        // isn't reachable, it may as well not be there.
+      )
+    }
 
     /**
      * INTERNAL: Only for debugging.
