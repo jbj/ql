@@ -171,7 +171,7 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
     private module SourceSinkFiltering {
       private import codeql.util.AlertFiltering
 
-      private module AlertFiltering = AlertFilteringImpl<Location>;
+      module AlertFiltering = AlertFilteringImpl<Location>;
 
       pragma[nomagic]
       private predicate isFilteredSource(Node source) {
@@ -4628,6 +4628,34 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
 
     /** DEPRECATED: Use `flowToExpr` instead. */
     deprecated predicate hasFlowToExpr = flowToExpr/1;
+
+    /**
+     * Holds if this configuration has at least one source in the diff range
+     * as determined by `AlertFiltering`. This predicate is independent of
+     * whether diff-informed mode is observed by the configuration and is also
+     * independent whether there was flow.
+     */
+    pragma[nomagic]
+    predicate hasSourceInDiffRange() {
+      exists(Node source |
+        Config::isSource(source, _) and
+        AlertFiltering::filterByLocation(Config::getASelectedSourceLocation(source))
+      )
+    }
+
+    /**
+     * Holds if this configuration has at least one sink in the diff range
+     * as determined by `AlertFiltering`. This predicate is independent of
+     * whether diff-informed mode is observed by the configuration and is also
+     * independent whether there was flow.
+     */
+    pragma[nomagic]
+    predicate hasSinkInDiffRange() {
+      exists(Node sink |
+        Config::isSink(sink, _) and
+        AlertFiltering::filterByLocation(Config::getASelectedSinkLocation(sink))
+      )
+    }
 
     /**
      * INTERNAL: Only for debugging.
