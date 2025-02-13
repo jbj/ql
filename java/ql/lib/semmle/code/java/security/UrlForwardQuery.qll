@@ -19,13 +19,18 @@ private class DefaultUrlForwardSink extends UrlForwardSink {
   DefaultUrlForwardSink() { sinkNode(this, "url-forward") }
 }
 
+pragma[nomagic]
+predicate globalPolyCalls(Callable caller, Callable callee) {
+  caller.polyCalls(callee)
+}
+
 /**
  * An expression appended (perhaps indirectly) to `"forward:"`
  * and reachable from a Spring entry point.
  */
 private class SpringUrlForwardPrefixSink extends UrlForwardSink {
   SpringUrlForwardPrefixSink() {
-    any(SpringRequestMappingMethod srmm).polyCalls*(this.getEnclosingCallable()) and
+    globalPolyCalls*(any(SpringRequestMappingMethod srmm), this.getEnclosingCallable()) and
     appendedToForwardPrefix(this)
   }
 }

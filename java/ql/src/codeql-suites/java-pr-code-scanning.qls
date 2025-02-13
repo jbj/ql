@@ -1,0 +1,7 @@
+- import: codeql-suites/java-code-scanning.qls
+- exclude:
+    kind:
+      - diagnostic
+      - metric
+- exclude:
+    id: java/static-initialization-vector
