@@ -3,8 +3,10 @@
  *
  * Only import this directly from .ql files, to avoid the possibility of polluting the Configuration hierarchy accidentally.
  */
-overlay[local?]
-module;
+// TODO: This file should be named `RequestForgeryQuery.qll` so it won't get
+// these automatic annotations.
+//overlay[local?]
+//module;
 
 import semmle.code.java.dataflow.FlowSources
 import semmle.code.java.security.RequestForgery
