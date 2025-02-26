@@ -3,5 +3,3 @@
     kind:
       - diagnostic
       - metric
-- exclude:
-    id: java/static-initialization-vector
