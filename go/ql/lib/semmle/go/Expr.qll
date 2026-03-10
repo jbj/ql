@@ -236,6 +236,7 @@ class Ellipsis extends @ellipsis, Expr {
  * ```
  */
 class Literal extends Expr {
+  pragma[nomagic]
   Literal() {
     this instanceof @basiclit or this instanceof @funclit or this instanceof @compositelit
   }
